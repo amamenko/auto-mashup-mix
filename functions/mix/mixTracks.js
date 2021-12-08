@@ -2,7 +2,7 @@ const fs = require("fs");
 const ffmpeg = require("fluent-ffmpeg");
 const createComplexFilter = require("./createComplexFilter");
 const checkFileExists = require("../utils/checkFileExists");
-const trimResultingMix = require("../trimResultingMix");
+const trimResultingMix = require("./trimResultingMix");
 
 const mixTracks = (instrumentals, vox, accompanimentModPath, voxModPath) => {
   const start = Date.now();

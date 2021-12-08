@@ -1,7 +1,7 @@
 const keysArr = require("../arrays/keysArr");
 const timeStampToSeconds = require("../utils/timeStampToSeconds");
 const getLongestContinuous = require("./getLongestContinuous");
-const { getFourSectionMatchArr } = require("./getFourSectionMatchArr");
+const { getNSectionMatchArr } = require("./getNSectionMatchArr");
 
 const findMatchingSongs = (allSongs) => {
   const matches = [];
@@ -122,7 +122,7 @@ const findMatchingSongs = (allSongs) => {
                 bothSections[1].continuousSections =
                   song2LongestContinuous.sections;
 
-                const matchArr = getFourSectionMatchArr(bothSections);
+                const matchArr = getNSectionMatchArr(bothSections);
 
                 if (
                   matchArr[0] &&
@@ -154,12 +154,7 @@ const findMatchingSongs = (allSongs) => {
                       (section) => item === section.sectionName
                     )
                   );
-                  if (song2Obj.fields.title === "Without Me") {
-                    console.log({
-                      newAccompanimentSections,
-                      vocalsSections: song1Obj.fields.sections,
-                    });
-                  }
+
                   matches.push({
                     accompaniment: {
                       ...song2Obj,

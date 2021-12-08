@@ -6,7 +6,7 @@ const {
   postChorusSections,
   bridgeSections,
   spokenSections,
-} = require("../../../auto-mashup/functions/arrays/songSectionsArr");
+} = require("../arrays/songSectionsArr");
 
 const adequateMatchCheck = (currentSongSections, otherSongSections) => {
   const acceptableSections = [];
@@ -20,7 +20,6 @@ const adequateMatchCheck = (currentSongSections, otherSongSections) => {
 
       if (
         current &&
-        current.length === 4 &&
         !current.includes("intro 1") &&
         !current.includes("intro 2") &&
         !current.includes("outro 1")

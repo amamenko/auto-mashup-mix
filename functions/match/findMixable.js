@@ -1,5 +1,5 @@
 const contentful = require("contentful");
-const normalizeInputsAndMix = require("./normalizeInputsAndMix");
+const normalizeInputsAndMix = require("../mix/normalizeInputsAndMix");
 const findMatchingSongs = require("./findMatchingSongs");
 
 const findMixable = async () => {
@@ -47,11 +47,16 @@ const findMixable = async () => {
           const list = matchArr.map((item) => JSON.stringify(item));
           const uniqueList = new Set(list);
           matchArr = Array.from(uniqueList).map((item) => JSON.parse(item));
-          console.log(matchArr.length);
+
           if (matchArr && matchArr.length > 0) {
             console.log(matchArr.length);
 
-            // normalizeInputsAndMix(matchArr[0].accompaniment, matchArr[0].vocals);
+            if (foundMatch) {
+              normalizeInputsAndMix(
+                matchArr[0].accompaniment,
+                matchArr[0].vocals
+              );
+            }
           }
         }
       }

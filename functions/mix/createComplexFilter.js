@@ -9,7 +9,7 @@ const {
   outroSections,
 } = require("../arrays/songSectionsArr");
 const removeAccents = require("remove-accents");
-const getClosestBeatArr = require("../utils/getClosestBeatArr");
+const getClosestBeatArr = require("./getClosestBeatArr");
 
 const createComplexFilter = (instrumentals, vox) => {
   const vocalsKeyScale = vox.keyScaleFactor;
