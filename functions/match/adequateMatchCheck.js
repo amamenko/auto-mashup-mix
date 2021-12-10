@@ -20,11 +20,12 @@ const adequateMatchCheck = (currentSongSections, otherSongSections) => {
 
       if (
         current &&
+        generalSections.length > 0 &&
         !current.includes("intro 1") &&
         !current.includes("intro 2") &&
         !current.includes("outro 1")
       ) {
-        const applicableSongsSectionsArr = [
+        let applicableSongsSectionsArr = [
           verseSections,
           refrainSections,
           preChorusSections,
@@ -55,7 +56,7 @@ const adequateMatchCheck = (currentSongSections, otherSongSections) => {
         }
 
         if (noMatch === 0) {
-          acceptableSections.push(currentSongSections[j]);
+          acceptableSections.push(current);
         }
       }
     }

@@ -50,13 +50,6 @@ const findMixable = async () => {
 
           if (matchArr && matchArr.length > 0) {
             console.log(matchArr.length);
-
-            if (foundMatch) {
-              normalizeInputsAndMix(
-                matchArr[0].accompaniment,
-                matchArr[0].vocals
-              );
-            }
           }
         }
       }

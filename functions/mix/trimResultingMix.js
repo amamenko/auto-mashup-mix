@@ -70,7 +70,7 @@ const trimResultingMix = async (instrumentals) => {
           },
           // Bring down instrumental intro volume a little bit
           {
-            filter: "volume=0.75",
+            filter: "volume=0.85",
             inputs: "intro_norm",
             outputs: "intro",
           },

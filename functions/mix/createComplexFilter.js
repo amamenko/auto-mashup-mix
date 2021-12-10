@@ -31,6 +31,13 @@ const createComplexFilter = (instrumentals, vox) => {
     instrumentalSections = instrumentalSections.slice(0, mixLastSectionIndex);
   }
 
+  const mixLastSection = instrumentalSections.find(
+    (section) => section.start - mixStart >= 80
+  );
+  const mixEnd = mixLastSection
+    ? mixLastSection.start
+    : instrumentalSections[instrumentalSections.length - 1].start;
+
   const vocalSections = vox.sections.map(getClosestBeatArr, vox);
   const voxNameSections = vox.sections.map((item) => item.sectionName);
 
@@ -200,7 +207,7 @@ const createComplexFilter = (instrumentals, vox) => {
                 duration - 2
               },${duration})':t=out:st=${duration - 2}:d=1,`
             : ""
-        }aloop=loop=${numberOfLoops === 0 ? 0 : 5}:size=${
+        }aloop=loop=${numberOfLoops === 0 ? 0 : numberOfLoops}:size=${
           loopTime * 44100
         }:start=0`,
         inputs: `${ffmpegSectionName}_pts`,
