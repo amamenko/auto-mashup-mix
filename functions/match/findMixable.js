@@ -1,4 +1,5 @@
 const contentful = require("contentful");
+const { generateSongImage } = require("../images/generateSongImage");
 const normalizeInputsAndMix = require("../mix/normalizeInputsAndMix");
 const findMatchingSongs = require("./findMatchingSongs");
 
@@ -11,9 +12,8 @@ const findMixable = async () => {
   await client
     .getEntries({
       "fields.mode": "major",
-      "fields.goat": "no" || "both",
       select:
-        "fields.title,fields.artist,fields.tempo,fields.key,fields.duration,fields.expectedSections,fields.sections,fields.beats,fields.accompaniment,fields.vocals",
+        "fields.title,fields.artist,fields.tempo,fields.key,fields.mode,fields.duration,fields.expectedSections,fields.sections,fields.cover,fields.charts,fields.beats,fields.accompaniment,fields.vocals",
       content_type: "song",
       limit: 1000,
     })
@@ -50,6 +50,10 @@ const findMixable = async () => {
 
           if (matchArr && matchArr.length > 0) {
             console.log(matchArr.length);
+
+            if (matchArr[0]) {
+              generateSongImage(matchArr[0].accompaniment, matchArr[0].vocals);
+            }
           }
         }
       }

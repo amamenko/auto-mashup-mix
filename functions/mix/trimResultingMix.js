@@ -18,7 +18,7 @@ const trimResultingMix = async (instrumentals) => {
 
       const mixStart = instrumentalSections[0].start;
       const mixLastSection = instrumentalSections.find(
-        (section) => section.start - mixStart >= 80
+        (section) => section.start - mixStart >= 75
       );
       const mixEnd = mixLastSection
         ? mixLastSection.start
@@ -64,7 +64,7 @@ const trimResultingMix = async (instrumentals) => {
             outputs: "intro_0",
           },
           {
-            filter: "loudnorm=tp=-7:i=-28",
+            filter: "loudnorm=tp=-9:i=-31",
             inputs: "intro_0",
             outputs: "intro_norm",
           },
@@ -108,7 +108,7 @@ const trimResultingMix = async (instrumentals) => {
             outputs: "outro_0",
           },
           {
-            filter: "loudnorm=tp=-7:i=-28",
+            filter: "loudnorm=tp=-9:i=-31",
             inputs: "outro_0",
             outputs: "outro_normalized",
           },
@@ -140,7 +140,7 @@ const trimResultingMix = async (instrumentals) => {
             outputs: "full_mix",
           },
           {
-            filter: "loudnorm=tp=-7:i=-28",
+            filter: "loudnorm=tp=-9:i=-31",
             inputs: "full_mix",
             outputs: "full_mix_normalized",
           },

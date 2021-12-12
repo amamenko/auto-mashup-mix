@@ -24,7 +24,7 @@ const createComplexFilter = (instrumentals, vox) => {
   );
   const mixStart = instrumentalSections[0].start;
   const mixLastSectionIndex = instrumentalSections.findIndex(
-    (section) => section.start - mixStart >= 80
+    (section) => section.start - mixStart >= 75
   );
 
   if (mixLastSectionIndex >= -1) {
@@ -32,7 +32,7 @@ const createComplexFilter = (instrumentals, vox) => {
   }
 
   const mixLastSection = instrumentalSections.find(
-    (section) => section.start - mixStart >= 80
+    (section) => section.start - mixStart >= 75
   );
   const mixEnd = mixLastSection
     ? mixLastSection.start
@@ -205,7 +205,7 @@ const createComplexFilter = (instrumentals, vox) => {
           numberOfLoops >= 0
             ? `afade=enable='between(t,0,2)':t=in:st=0:d=2,afade=enable='between(t,${
                 duration - 2
-              },${duration})':t=out:st=${duration - 2}:d=1,`
+              },${duration})':t=out:st=${duration - 2}:d=2,`
             : ""
         }aloop=loop=${numberOfLoops === 0 ? 0 : numberOfLoops}:size=${
           loopTime * 44100
@@ -237,9 +237,15 @@ const createComplexFilter = (instrumentals, vox) => {
         inputs: `loop${i + 1}_pts_trim_pts`,
         outputs: `${ffmpegSectionName}_fade`,
       },
+
+      {
+        filter: `afade=t=out:st=${maxDuration - 2}:d=2`,
+        inputs: `${ffmpegSectionName}_fade`,
+        outputs: `${ffmpegSectionName}_fade_again`,
+      },
       {
         filter: "loudnorm=tp=-3:i=-25",
-        inputs: `${ffmpegSectionName}_fade`,
+        inputs: `${ffmpegSectionName}_fade_again`,
         outputs: `${ffmpegSectionName}_normalized`,
       },
       {
@@ -260,7 +266,7 @@ const createComplexFilter = (instrumentals, vox) => {
     return [
       // Push the vocal volume up for vox
       {
-        filter: "volume=2",
+        filter: "volume=2.85",
         inputs: `${audioInputNum}:a`,
         outputs: `${audioInputNum}_louder:a`,
       },
@@ -279,7 +285,7 @@ const createComplexFilter = (instrumentals, vox) => {
   const complexFilter = [
     // Normalize instrumental audio
     {
-      filter: "loudnorm=tp=-7:i=-28",
+      filter: "loudnorm=tp=-9:i=-31",
       inputs: "0:a",
       outputs: "0:a:normalized",
     },
@@ -294,7 +300,7 @@ const createComplexFilter = (instrumentals, vox) => {
     },
   ];
 
-  console.log({ complexFilter });
+  // console.log({ complexFilter });
   return complexFilter;
 };
 

@@ -14,6 +14,8 @@ YouTubeSubtitles.vtt
 YouTubeSubtitles.json
 *.mp3
 *.wav
+*.png
+*.jpg
 
 # misc
 .DS_Store

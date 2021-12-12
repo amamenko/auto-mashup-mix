@@ -1,0 +1,325 @@
+const nodeHtmlToImage = require("node-html-to-image");
+const fs = require("fs");
+const svg64 = require("svg64");
+
+const svg = fs.readFileSync("./assets/automashup_logo.svg", "utf-8");
+const base64fromSVG = svg64(svg);
+
+const generateSongImage = (instrumentals, vocals) => {
+  nodeHtmlToImage({
+    output: "./image.png",
+    html: `<html>
+      <head>
+        <style>
+          @font-face {
+              font-family: neue-haas-grotesk-display;
+              src: url(https://use.typekit.net/af/9395af/00000000000000003b9b2046/27/l?subset_id=2&fvd=n4&v=3)
+                  format("woff2"),
+              url(https://use.typekit.net/af/9395af/00000000000000003b9b2046/27/d?subset_id=2&fvd=n4&v=3)
+                  format("woff"),
+              url(https://use.typekit.net/af/9395af/00000000000000003b9b2046/27/a?subset_id=2&fvd=n4&v=3)
+                  format("opentype");
+              font-weight: 400;
+              font-style: normal;
+              font-display: auto;
+          }
+          @font-face {
+              font-family: neue-haas-grotesk-display;
+              src: url(https://use.typekit.net/af/28f000/00000000000000003b9b2048/27/l?subset_id=2&fvd=n5&v=3)
+                  format("woff2"),
+              url(https://use.typekit.net/af/28f000/00000000000000003b9b2048/27/d?subset_id=2&fvd=n5&v=3)
+                  format("woff"),
+              url(https://use.typekit.net/af/28f000/00000000000000003b9b2048/27/a?subset_id=2&fvd=n5&v=3)
+                  format("opentype");
+              font-weight: 500;
+              font-style: normal;
+              font-display: auto;
+          }
+          @font-face {
+              font-family: neue-haas-grotesk-display;
+              src: url(https://use.typekit.net/af/d562ce/00000000000000003b9b204c/27/l?subset_id=2&fvd=n7&v=3)
+                  format("woff2"),
+              url(https://use.typekit.net/af/d562ce/00000000000000003b9b204c/27/d?subset_id=2&fvd=n7&v=3)
+                  format("woff"),
+              url(https://use.typekit.net/af/d562ce/00000000000000003b9b204c/27/a?subset_id=2&fvd=n7&v=3)
+                  format("opentype");
+              font-weight: 700;
+              font-style: normal;
+              font-display: auto;
+          }
+          body {
+              background: rgb(204, 204, 204);
+              font-family: "neue-haas-grotesk-display";
+          }
+          .song_profile {
+              background: #fff;
+              height: 90vh;
+              margin: 3rem;
+          }
+          .top_banner {
+              background: rgb(26, 72, 196);
+              color: #fff;
+              text-transform: uppercase;
+              width: 100%;
+              height: 5.25rem;
+              line-height: 1.1;
+              display: flex;
+              justify-content: space-between;
+          }
+          .top_banner img {
+              width: 50px;
+              heigh: auto;
+              margin-right: 4rem;
+          }
+          .top_banner_text {
+              display: flex;
+              justify-content: flex-end;
+              align-items: center;
+              font-size: 1rem;
+              display: flex;
+              padding: 0 3.1rem;
+          }
+          .top_banner_text.vocals {
+            padding: 0 2.5rem;
+          }
+          .top_banner_text h3 {
+              font-family: "neue-haas-grotesk-display";
+              font-weight: 500;
+          }
+          .all_profiles_container {
+              display: flex;
+              justify-content: space-between;
+          }
+          .accompaniment_profile {
+              border-right: 1px solid rgb(204, 204, 204);
+              padding-right: 1.6rem;
+              height: 100vh;
+          }
+          .primary_song_details {
+              display: flex;
+              justify-content: flex-start;
+              margin: 3rem;
+          }
+          .primary_song_details img {
+              width: 60px;
+              height: 60px;
+          }
+          .song_details_container {
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+              padding-left: 1.75rem;
+              line-height: 1.35;
+              height: 75px;
+              margin-top: -0.5rem;
+            }
+            .song_details_container.vocals {
+              padding-left: 0;
+              padding-right: 1.75rem;
+              text-align: right;
+            }
+            .song_details_container h3 {
+              padding: 0;
+              margin: 0;
+              line-height: 1.25;
+              letter-spacing: 0.028rem;
+              font-size: 1rem;
+              font-weight: 900;
+              width: 150px;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              display: -webkit-box;
+              -webkit-line-clamp: 2;
+              -webkit-box-orient: vertical;
+            }
+          .song_details_container span {
+              overflow: hidden;
+              text-overflow: ellipsis;
+              letter-spacing: 0.021rem;
+              font-weight: 500;
+              font-size: 0.6rem;
+              width: 150px;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              display: -webkit-box;
+              -webkit-line-clamp: 2;
+              -webkit-box-orient: vertical;
+          }
+          .rankings_list {
+              min-width: 305px;
+              margin-top: -1rem;
+          }
+          .rankings_list,
+          .audio_analysis {
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: flex-start;
+              text-align: left;
+          }
+          .rankings_list.vocals {
+              text-align: right;
+          }
+          .rankings_list h4,
+          .audio_analysis h4,
+          .audio_analysis p {
+              font-size: 0.9rem;
+              font-weight: 700;
+              text-align: left;
+              margin: 0;
+              width: 100%;
+              margin-left: 6rem;
+          }
+          .rankings_list h4 {
+              margin-bottom: 0.5rem;
+          }
+          .analyses_container {
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              text-align: left;
+              margin-right: 9.5rem;
+              margin-top: 2rem;
+          }
+          .analyses_container.vocals {
+              text-align: right;
+              margin-right: 0;
+              margin-right: 2.2rem;
+          }
+          .audio_analysis {
+              text-align: left;
+              line-height: 0.8;
+          }
+          .audio_analysis.vocals h4 {
+              text-align: right;
+          }
+          .audio_analysis p {
+              font-weight: 500;
+              padding: 1rem;
+          }
+          .audio_analysis.vocals p {
+              text-align: right;
+          }
+          .rankings_list.vocals h4 {
+              text-align: right;
+              margin-left: 0;
+              margin-right: 6rem;
+          }
+          .rankings_list ul {
+              list-style-type: none;
+              margin-right: 8rem;
+              padding-left: 6rem;
+              margin: 0;
+              text-align: left;
+              font-size: 0.9rem;
+              width: 100%;
+              line-height: 0.1;
+          }
+          .rankings_list.vocals ul {
+              margin-right: 0;
+              padding-left: 0;
+              margin-left: -5.7rem;
+              text-align: right;
+          }
+          .rankings_list ul li {
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              width: 220px;
+          }
+          .rankings_list.vocals ul li {
+              margin-left: 112px;
+          }
+        </style>
+      </head>
+      <body>
+          <div class="song_profile">
+              <div class="top_banner">
+              <span class="top_banner_text">
+                  <h3>Instrumentals</h3>
+              </span>
+              <img src=${base64fromSVG} />
+              <span class="top_banner_text vocals">
+                  <h3>Vocals</h3>
+              </span>
+              </span>
+              </div>
+              <div class="all_profiles_container">
+              <div class="accompaniment_profile">
+                  <div class="primary_song_details">
+                  <img src=${instrumentals.cover} />
+                  <div class="song_details_container">
+                      <h3>${instrumentals.title}</h3>
+                      <span>${instrumentals.artist}</span>
+                  </div>
+                  </div>
+                  <div class="additional_info">
+                  <div class="rankings_list">
+                      <h4>This Week's Rankings</h4>
+                      <ul>
+                      ${instrumentals.charts
+                        .slice(0, 5)
+                        .map(
+                          (chart) =>
+                            `<li>
+                                  <p>${chart.chartName}:</p>
+                                  <p>#${chart.rank}</p>
+                              </li>`
+                        )
+                        .join(" ")}
+                      </ul>
+                  </div>
+                  <div class="analyses_container">
+                      <div class="audio_analysis">
+                      <h4>Key</h4>
+                      <p>${instrumentals.key} ${instrumentals.mode}</p>
+                      </div>
+                      <div class="audio_analysis">
+                      <h4>Tempo</h4>
+                      <p>${Math.floor(instrumentals.tempo)} BPM</p>
+                      </div>
+                  </div>
+                  </div>
+              </div>
+              <div class="vocals_profile">
+                  <div class="primary_song_details">
+                  <div class="song_details_container vocals">
+                      <h3>${vocals.title}</h3>
+                      <span>${vocals.artist}</span>
+                  </div>
+                  <img src=${vocals.cover} />
+                  </div>
+                  <div class="additional_info">
+                  <div class="rankings_list vocals">
+                      <h4>This Week's Rankings</h4>
+                      <ul>
+                      ${vocals.charts.slice(0, 5).map(
+                        (chart) =>
+                          `<li>
+                            <p>${chart.chartName}:</p>
+                            <p>#${chart.rank}</p>
+                          </li>`
+                      )}
+                      </ul>
+                  </div>
+                  <div class="analyses_container vocals">
+                      <div class="audio_analysis vocals">
+                      <h4>Key</h4>
+                      <p>${vocals.key} ${vocals.mode}</p>
+                      </div>
+                      <div class="audio_analysis vocals">
+                      <h4>Tempo</h4>
+                      <p>${Math.round(vocals.tempo)} BPM</p>
+                      </div>
+                  </div>
+                  </div>
+              </div>
+              </div>
+          </div>
+      </body>
+    </html>`,
+  }).then(() => console.log("The image was created successfully!"));
+};
+
+module.exports = { generateSongImage };
