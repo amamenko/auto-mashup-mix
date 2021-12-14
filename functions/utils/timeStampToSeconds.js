@@ -12,4 +12,4 @@ const timeStampToSeconds = (timestamp) => {
   }
 };
 
-module.exports = timeStampToSeconds;
+module.exports = { timeStampToSeconds };

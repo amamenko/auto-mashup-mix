@@ -1,7 +1,11 @@
-const timeStampToSeconds = require("../utils/timeStampToSeconds");
+const { timeStampToSeconds } = require("../utils/timeStampToSeconds");
 
 const findClosestBeat = (seconds, song) => {
-  const beats = song.beats;
+  let beats = song.fields.beats;
+
+  if (typeof beats === "string") {
+    beats = beats.split(", ");
+  }
 
   const closest = beats.reduce((a, b) => {
     return Math.abs(b - seconds) < Math.abs(a - seconds) ? b : a;
@@ -26,4 +30,4 @@ function getClosestBeatArr(section, index, arr) {
   };
 }
 
-module.exports = getClosestBeatArr;
+module.exports = { getClosestBeatArr };

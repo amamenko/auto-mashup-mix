@@ -1,9 +1,12 @@
 const fs = require("fs");
 const ffmpeg = require("fluent-ffmpeg");
-const checkFileExists = require("../utils/checkFileExists");
-const getClosestBeatArr = require("./getClosestBeatArr");
+const { checkFileExists } = require("../utils/checkFileExists");
+const { getClosestBeatArr } = require("./getClosestBeatArr");
+const { getAudioDurationInSeconds } = require("get-audio-duration");
+const { generateSongImage } = require("../images/generateSongImage");
+const { addMixToContentful } = require("../contentful/addMixToContentful");
 
-const trimResultingMix = async (instrumentals) => {
+const trimResultingMix = async (instrumentals, vocals) => {
   const mp3Exists = await checkFileExists("original_mix.mp3");
 
   if (mp3Exists) {
@@ -27,12 +30,16 @@ const trimResultingMix = async (instrumentals) => {
       const accompanimentModPath =
         "./functions/mix/inputs/accompaniment_mod.mp3";
 
-      const allBeats = instrumentals.beats;
+      const allBeats = instrumentals.beats
+        ? instrumentals.beats
+        : typeof instrumentals.fields.beats === "string"
+        ? instrumentals.fields.beats.split(", ")
+        : instrumentals.fields.beats;
       const indexOfFirstBeat = allBeats.findIndex((beat) => beat === mixStart);
       const introStartBeat =
         indexOfFirstBeat >= 16
           ? allBeats[indexOfFirstBeat - 16]
-          : indexOfFirstBeat;
+          : allBeats[indexOfFirstBeat];
       const introEndBeat =
         indexOfFirstBeat >= 16 ? mixStart : allBeats[indexOfFirstBeat + 16];
 
@@ -155,7 +162,6 @@ const trimResultingMix = async (instrumentals) => {
               err.message
           );
 
-          console.log("FFMPEG stdout:\n" + stdout);
           console.log("FFMPEG stderr:\n" + stderr);
 
           const inputsExists = await checkFileExists("./functions/mix/inputs");
@@ -198,13 +204,6 @@ const trimResultingMix = async (instrumentals) => {
 
           return;
         })
-        .on("progress", (progress) => {
-          console.log(
-            "Processing: " +
-              (progress.percent ? progress.percent : "0") +
-              "% done"
-          );
-        })
         .on("end", async () => {
           console.log(
             `\nDone in ${
@@ -237,6 +236,18 @@ const trimResultingMix = async (instrumentals) => {
             );
           }
 
+          const mp3Duration = await getAudioDurationInSeconds(
+            "trimmed_mix.mp3"
+          ).catch((e) => console.error(e));
+
+          addMixToContentful(
+            instrumentals,
+            vocals,
+            mp3Duration,
+            introDuration,
+            outroDelay / 1000
+          );
+
           return;
         })
         .run();
@@ -250,4 +261,4 @@ const trimResultingMix = async (instrumentals) => {
   }
 };
 
-module.exports = trimResultingMix;
+module.exports = { trimResultingMix };

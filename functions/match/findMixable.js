@@ -1,9 +1,13 @@
 const contentful = require("contentful");
+const contentfulManagement = require("contentful-management");
 const { generateSongImage } = require("../images/generateSongImage");
-const normalizeInputsAndMix = require("../mix/normalizeInputsAndMix");
-const findMatchingSongs = require("./findMatchingSongs");
+const { normalizeInputsAndMix } = require("../mix/normalizeInputsAndMix");
+const { getUniqueOnly } = require("../utils/getUniqueOnly");
+const { findMatchingSongs } = require("./findMatchingSongs");
+require("dotenv").config();
 
-const findMixable = async () => {
+const findMixable = async (applicableMode) => {
+  // Access to Contentful Delivery API
   const client = contentful.createClient({
     space: process.env.CONTENTFUL_SPACE_ID,
     accessToken: process.env.CONTENTFUL_ACCESS_TOKEN,
@@ -11,13 +15,13 @@ const findMixable = async () => {
 
   await client
     .getEntries({
-      "fields.mode": "major",
+      "fields.mode": applicableMode,
       select:
         "fields.title,fields.artist,fields.tempo,fields.key,fields.mode,fields.duration,fields.expectedSections,fields.sections,fields.cover,fields.charts,fields.beats,fields.accompaniment,fields.vocals",
       content_type: "song",
       limit: 1000,
     })
-    .then((res) => {
+    .then(async (res) => {
       if (res) {
         if (res.items) {
           const matches = findMatchingSongs(res.items);
@@ -34,30 +38,100 @@ const findMixable = async () => {
                 beats: makeBeatArr(item.accompaniment.fields.beats),
                 keyScaleFactor: item.accompaniment.keyScaleFactor,
                 tempoScaleFactor: item.accompaniment.tempoScaleFactor,
+                id: item.accompaniment.sys.id,
               },
               vocals: {
                 ...item.vocals.fields,
                 beats: makeBeatArr(item.vocals.fields.beats),
                 keyScaleFactor: item.vocals.keyScaleFactor,
                 tempoScaleFactor: item.vocals.tempoScaleFactor,
+                id: item.vocals.sys.id,
               },
             };
           });
 
-          const list = matchArr.map((item) => JSON.stringify(item));
-          const uniqueList = new Set(list);
-          matchArr = Array.from(uniqueList).map((item) => JSON.parse(item));
+          matchArr = getUniqueOnly(matchArr);
 
           if (matchArr && matchArr.length > 0) {
-            console.log(matchArr.length);
+            const matchNames = [];
 
-            if (matchArr[0]) {
-              generateSongImage(matchArr[0].accompaniment, matchArr[0].vocals);
+            for (let i = 0; i < matchArr.length; i++) {
+              const currentAccompaniment = matchArr[i].accompaniment;
+              const currentVocals = matchArr[i].vocals;
+
+              matchNames.push({
+                accompanimentTitle: currentAccompaniment.title,
+                accompanimentArtist: currentAccompaniment.artist,
+                accompanimentID: currentAccompaniment.id,
+                vocalsTitle: currentVocals.title,
+                vocalsArtist: currentVocals.artist,
+                vocalsID: currentVocals.id,
+              });
             }
+
+            console.log(matchNames.length);
+
+            // Access to Contentful Delivery API
+            const client = contentful.createClient({
+              space: process.env.CONTENTFUL_SPACE_ID,
+              accessToken: process.env.CONTENTFUL_ACCESS_TOKEN,
+            });
+
+            const capitalizedMode =
+              applicableMode.charAt(0).toUpperCase() + applicableMode.slice(1);
+
+            await client
+              .getEntries({
+                "fields.title": `${capitalizedMode} Key Mashups`,
+                content_type: "mixList",
+              })
+              .then(async (res) => {
+                if (res) {
+                  if (res.items) {
+                    const mixListID = res.items[0].sys.id;
+
+                    if (mixListID) {
+                      // Access to Contentful Management API
+                      const managementClient =
+                        contentfulManagement.createClient({
+                          accessToken: process.env.CONTENT_MANAGEMENT_TOKEN,
+                        });
+
+                      await managementClient
+                        .getSpace(process.env.CONTENTFUL_SPACE_ID)
+                        .then(async (space) => {
+                          return await space
+                            .getEnvironment("master")
+                            .then(async (environment) => {
+                              await environment
+                                .getEntry(mixListID)
+                                .then(async (entry) => {
+                                  entry.fields.mashups = {
+                                    "en-US": matchNames,
+                                  };
+
+                                  return await entry.update().then(() => {
+                                    environment
+                                      .getEntry(mixListID)
+                                      .then((updatedEntry) => {
+                                        updatedEntry.publish().then(() => {
+                                          console.log(
+                                            `${capitalizedMode} key mashups mix list has been updated! Total number of mixes: ${matchNames.length}`
+                                          );
+                                        });
+                                      });
+                                  });
+                                });
+                            });
+                        });
+                    }
+                  }
+                }
+              });
           }
         }
       }
     });
 };
 
-module.exports = findMixable;
+module.exports = { findMixable };

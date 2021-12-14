@@ -9,14 +9,16 @@ const {
   outroSections,
 } = require("../arrays/songSectionsArr");
 const removeAccents = require("remove-accents");
-const getClosestBeatArr = require("./getClosestBeatArr");
+const { getClosestBeatArr } = require("./getClosestBeatArr");
 
 const createComplexFilter = (instrumentals, vox) => {
   const vocalsKeyScale = vox.keyScaleFactor;
   const vocalsTempoScale = vox.tempoScaleFactor;
 
   // Apply BPM adjustment matching to original BPM of vocal track
-  vox.beats = vox.beats.map((beat) => (1 / vocalsTempoScale) * beat);
+  vox.fields.beats = vox.fields.beats
+    .split(", ")
+    .map((beat) => (1 / vocalsTempoScale) * Number(beat));
 
   let instrumentalSections = instrumentals.sections.map(
     getClosestBeatArr,
@@ -31,15 +33,8 @@ const createComplexFilter = (instrumentals, vox) => {
     instrumentalSections = instrumentalSections.slice(0, mixLastSectionIndex);
   }
 
-  const mixLastSection = instrumentalSections.find(
-    (section) => section.start - mixStart >= 75
-  );
-  const mixEnd = mixLastSection
-    ? mixLastSection.start
-    : instrumentalSections[instrumentalSections.length - 1].start;
-
-  const vocalSections = vox.sections.map(getClosestBeatArr, vox);
-  const voxNameSections = vox.sections.map((item) => item.sectionName);
+  const vocalSections = vox.fields.sections.map(getClosestBeatArr, vox);
+  const voxNameSections = vox.fields.sections.map((item) => item.sectionName);
 
   let matchedVocalSections = instrumentalSections.map((instrumentalSection) => {
     if (instrumentalSection) {
@@ -143,8 +138,8 @@ const createComplexFilter = (instrumentals, vox) => {
     let endTime = nextSection
       ? nextSection.start
         ? nextSection.start
-        : vox.duration
-      : vox.duration;
+        : vox.fields.duration
+      : vox.fields.duration;
 
     const defaultDuration = endTime - startTime;
 
@@ -163,11 +158,11 @@ const createComplexFilter = (instrumentals, vox) => {
     const numberOfLoops =
       maxDuration <= duration ? 0 : Math.round(maxDuration / duration) - 1;
 
-    const currentBeatsIndex = vox.beats.findIndex(
+    const currentBeatsIndex = vox.fields.beats.findIndex(
       (beat) => beat === section.start
     );
-    const eightMeasuresAfterStart = vox.beats[currentBeatsIndex + 32];
-    const fourMeasuresAfterStart = vox.beats[currentBeatsIndex + 16];
+    const eightMeasuresAfterStart = vox.fields.beats[currentBeatsIndex + 32];
+    const fourMeasuresAfterStart = vox.fields.beats[currentBeatsIndex + 16];
 
     let loopTime = 0;
 
@@ -244,7 +239,7 @@ const createComplexFilter = (instrumentals, vox) => {
         outputs: `${ffmpegSectionName}_fade_again`,
       },
       {
-        filter: "loudnorm=tp=-3:i=-25",
+        filter: "loudnorm=tp=-7:i=-28",
         inputs: `${ffmpegSectionName}_fade_again`,
         outputs: `${ffmpegSectionName}_normalized`,
       },
@@ -300,8 +295,7 @@ const createComplexFilter = (instrumentals, vox) => {
     },
   ];
 
-  // console.log({ complexFilter });
   return complexFilter;
 };
 
-module.exports = createComplexFilter;
+module.exports = { createComplexFilter };

@@ -1,4 +1,4 @@
-const timeStampToSeconds = require("../utils/timeStampToSeconds");
+const { timeStampToSeconds } = require("../utils/timeStampToSeconds");
 
 const getLongestContinuous = (song) => {
   const noIntroOrOutro = (item) => item !== "intro" && item !== "outro";
@@ -71,4 +71,4 @@ const getLongestContinuous = (song) => {
   }
 };
 
-module.exports = getLongestContinuous;
+module.exports = { getLongestContinuous };

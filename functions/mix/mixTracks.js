@@ -1,8 +1,8 @@
 const fs = require("fs");
 const ffmpeg = require("fluent-ffmpeg");
-const createComplexFilter = require("./createComplexFilter");
-const checkFileExists = require("../utils/checkFileExists");
-const trimResultingMix = require("./trimResultingMix");
+const { createComplexFilter } = require("./createComplexFilter");
+const { checkFileExists } = require("../utils/checkFileExists");
+const { trimResultingMix } = require("./trimResultingMix");
 
 const mixTracks = (instrumentals, vox, accompanimentModPath, voxModPath) => {
   const start = Date.now();
@@ -30,7 +30,6 @@ const mixTracks = (instrumentals, vox, accompanimentModPath, voxModPath) => {
             err.message
         );
 
-        console.log("FFMPEG stdout:\n" + stdout);
         console.log("FFMPEG stderr:\n" + stderr);
 
         const inputsExists = await checkFileExists("./functions/mix/inputs");
@@ -60,21 +59,26 @@ const mixTracks = (instrumentals, vox, accompanimentModPath, voxModPath) => {
 
         return;
       })
-      .on("progress", (progress) => {
-        console.log("Processing: " + progress.percent + "% done");
-      })
       .on("end", async () => {
         console.log(
           `\nDone in ${
             (Date.now() - start) / 1000
           }s\nSuccessfully mixed the instrumentals of the track "${
             instrumentals.title
-          }" by ${instrumentals.artist} with the vocals of the track "${
-            vox.title
-          }" by ${vox.artist}.\nSaved to original_mix.mp3.`
+              ? instrumentals.title
+              : instrumentals.fields.title
+          }" by ${
+            instrumentals.artist
+              ? instrumentals.artist
+              : instrumentals.fields.artist
+          } with the vocals of the track "${
+            vox.title ? vox.title : vox.fields.title
+          }" by ${
+            vox.artist ? vox.artist : vox.fields.artist
+          }.\nSaved to original_mix.mp3.`
         );
 
-        trimResultingMix(instrumentals);
+        trimResultingMix(instrumentals, vox);
 
         return;
       })
@@ -87,4 +91,4 @@ const mixTracks = (instrumentals, vox, accompanimentModPath, voxModPath) => {
   }
 };
 
-module.exports = mixTracks;
+module.exports = { mixTracks };

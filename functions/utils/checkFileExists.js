@@ -7,4 +7,4 @@ const checkFileExists = async (file) => {
     .catch(() => false);
 };
 
-module.exports = checkFileExists;
+module.exports = { checkFileExists };

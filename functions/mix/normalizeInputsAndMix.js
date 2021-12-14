@@ -2,12 +2,13 @@ const fs = require("fs");
 const axios = require("axios");
 const ffmpeg = require("fluent-ffmpeg");
 const { PythonShell } = require("python-shell");
-const mixTracks = require("./mixTracks");
+const { mixTracks } = require("./mixTracks");
 
 const normalizeInputsAndMix = async (instrumentals, vocals) => {
   if (instrumentals && vocals) {
-    const accompanimentLink = instrumentals.accompaniment.fields.file.url;
-    const voxLink = vocals.vocals.fields.file.url;
+    const accompanimentLink =
+      instrumentals.fields.accompaniment.fields.file.url;
+    const voxLink = vocals.fields.vocals.fields.file.url;
 
     if (accompanimentLink && voxLink) {
       const accompanimentURL = "https:" + accompanimentLink;
@@ -59,12 +60,6 @@ const normalizeInputsAndMix = async (instrumentals, vocals) => {
               err
           );
           return;
-        });
-
-        response.data.on("end", () => {
-          console.log(
-            `\nDone in ${(Date.now() - start) / 1000}s\nSaved to ${file.path}.`
-          );
         });
       }
 
@@ -199,4 +194,4 @@ const normalizeInputsAndMix = async (instrumentals, vocals) => {
   }
 };
 
-module.exports = normalizeInputsAndMix;
+module.exports = { normalizeInputsAndMix };

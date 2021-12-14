@@ -5,8 +5,8 @@ const svg64 = require("svg64");
 const svg = fs.readFileSync("./assets/automashup_logo.svg", "utf-8");
 const base64fromSVG = svg64(svg);
 
-const generateSongImage = (instrumentals, vocals) => {
-  nodeHtmlToImage({
+const generateSongImage = async (instrumentals, vocals) => {
+  return await nodeHtmlToImage({
     output: "./image.png",
     html: `<html>
       <head>
@@ -319,7 +319,7 @@ const generateSongImage = (instrumentals, vocals) => {
           </div>
       </body>
     </html>`,
-  }).then(() => console.log("The image was created successfully!"));
+  }).catch((err) => console.error(err));
 };
 
 module.exports = { generateSongImage };
