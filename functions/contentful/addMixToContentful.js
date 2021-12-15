@@ -38,7 +38,20 @@ const addMixToContentful = async (
       const vocalsTitle = vocals.fields.title;
       const vocalsArtist = vocals.fields.artist;
       const vocalsID = vocals.sys.id;
-      const mashupTitle = `MASHUP - "${accompanimentTitle}" by ${accompanimentArtist} x "${vocalsTitle}" by ${vocalsArtist}`;
+
+      const truncateString = (str) => {
+        if (str.length > 50) {
+          return str.slice(0, 51) + "...";
+        } else {
+          return str;
+        }
+      };
+
+      const mashupTitle = `MASHUP - "${truncateString(
+        accompanimentTitle
+      )}" by ${truncateString(accompanimentArtist)} x "${truncateString(
+        vocalsTitle
+      )}" by ${truncateString(vocalsArtist)}`;
 
       const getErrorLogs = (err) => {
         console.error(`Received error during entry creation: ${err}`);
@@ -61,10 +74,15 @@ const addMixToContentful = async (
                   file: {
                     "en-US": {
                       contentType: "audio/mp3",
-                      fileName:
-                        `${accompanimentTitle} ${accompanimentArtist} x ${vocalsTitle} ${vocalsArtist} mashup.mp3`
-                          .toLowerCase()
-                          .replace(/ /g, "_"),
+                      fileName: `${truncateString(
+                        accompanimentTitle
+                      )} ${truncateString(
+                        accompanimentArtist
+                      )} x ${truncateString(vocalsTitle)} ${truncateString(
+                        vocalsArtist
+                      )} mashup.mp3`
+                        .toLowerCase()
+                        .replace(/ /g, "_"),
                       file: fs.readFileSync("trimmed_mix.mp3"),
                     },
                   },

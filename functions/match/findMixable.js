@@ -52,6 +52,19 @@ const findMixable = async (applicableMode) => {
 
           matchArr = getUniqueOnly(matchArr);
 
+          // console.log(matchArr.length);
+
+          const foundMatch = matchArr.filter(
+            (item) => item.accompaniment.title === ""
+          );
+
+          // console.log(foundMatch);
+
+          // normalizeInputsAndMix(
+          //   foundMatch[0].accompaniment,
+          //   foundMatch[0].vocals
+          // );
+
           if (matchArr && matchArr.length > 0) {
             const matchNames = [];
 
@@ -69,65 +82,65 @@ const findMixable = async (applicableMode) => {
               });
             }
 
-            console.log(matchNames.length);
+            // console.log(matchNames.length);
 
             // Access to Contentful Delivery API
-            const client = contentful.createClient({
-              space: process.env.CONTENTFUL_SPACE_ID,
-              accessToken: process.env.CONTENTFUL_ACCESS_TOKEN,
-            });
+            // const client = contentful.createClient({
+            //   space: process.env.CONTENTFUL_SPACE_ID,
+            //   accessToken: process.env.CONTENTFUL_ACCESS_TOKEN,
+            // });
 
-            const capitalizedMode =
-              applicableMode.charAt(0).toUpperCase() + applicableMode.slice(1);
+            // const capitalizedMode =
+            //   applicableMode.charAt(0).toUpperCase() + applicableMode.slice(1);
 
-            await client
-              .getEntries({
-                "fields.title": `${capitalizedMode} Key Mashups`,
-                content_type: "mixList",
-              })
-              .then(async (res) => {
-                if (res) {
-                  if (res.items) {
-                    const mixListID = res.items[0].sys.id;
+            // await client
+            //   .getEntries({
+            //     "fields.title": `${capitalizedMode} Key Mashups`,
+            //     content_type: "mixList",
+            //   })
+            //   .then(async (res) => {
+            //     if (res) {
+            //       if (res.items) {
+            //         const mixListID = res.items[0].sys.id;
 
-                    if (mixListID) {
-                      // Access to Contentful Management API
-                      const managementClient =
-                        contentfulManagement.createClient({
-                          accessToken: process.env.CONTENT_MANAGEMENT_TOKEN,
-                        });
+            //         if (mixListID) {
+            //           // Access to Contentful Management API
+            //           const managementClient =
+            //             contentfulManagement.createClient({
+            //               accessToken: process.env.CONTENT_MANAGEMENT_TOKEN,
+            //             });
 
-                      await managementClient
-                        .getSpace(process.env.CONTENTFUL_SPACE_ID)
-                        .then(async (space) => {
-                          return await space
-                            .getEnvironment("master")
-                            .then(async (environment) => {
-                              await environment
-                                .getEntry(mixListID)
-                                .then(async (entry) => {
-                                  entry.fields.mashups = {
-                                    "en-US": matchNames,
-                                  };
+            //           await managementClient
+            //             .getSpace(process.env.CONTENTFUL_SPACE_ID)
+            //             .then(async (space) => {
+            //               return await space
+            //                 .getEnvironment("master")
+            //                 .then(async (environment) => {
+            //                   await environment
+            //                     .getEntry(mixListID)
+            //                     .then(async (entry) => {
+            //                       entry.fields.mashups = {
+            //                         "en-US": matchNames,
+            //                       };
 
-                                  return await entry.update().then(() => {
-                                    environment
-                                      .getEntry(mixListID)
-                                      .then((updatedEntry) => {
-                                        updatedEntry.publish().then(() => {
-                                          console.log(
-                                            `${capitalizedMode} key mashups mix list has been updated! Total number of mixes: ${matchNames.length}`
-                                          );
-                                        });
-                                      });
-                                  });
-                                });
-                            });
-                        });
-                    }
-                  }
-                }
-              });
+            //                       return await entry.update().then(() => {
+            //                         environment
+            //                           .getEntry(mixListID)
+            //                           .then((updatedEntry) => {
+            //                             updatedEntry.publish().then(() => {
+            //                               console.log(
+            //                                 `${capitalizedMode} key mashups mix list has been updated! Total number of mixes: ${matchNames.length}`
+            //                               );
+            //                             });
+            //                           });
+            //                       });
+            //                     });
+            //                 });
+            //             });
+            //         }
+            //       }
+            //     }
+            //   });
           }
         }
       }

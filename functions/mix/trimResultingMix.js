@@ -71,7 +71,7 @@ const trimResultingMix = async (instrumentals, vocals) => {
             outputs: "intro_0",
           },
           {
-            filter: "loudnorm=tp=-9:i=-31",
+            filter: "loudnorm=tp=-9:i=-33",
             inputs: "intro_0",
             outputs: "intro_norm",
           },
@@ -115,7 +115,7 @@ const trimResultingMix = async (instrumentals, vocals) => {
             outputs: "outro_0",
           },
           {
-            filter: "loudnorm=tp=-9:i=-31",
+            filter: "loudnorm=tp=-9:i=-33",
             inputs: "outro_0",
             outputs: "outro_normalized",
           },
@@ -147,7 +147,7 @@ const trimResultingMix = async (instrumentals, vocals) => {
             outputs: "full_mix",
           },
           {
-            filter: "loudnorm=tp=-9:i=-31",
+            filter: "loudnorm=tp=-9:i=-33",
             inputs: "full_mix",
             outputs: "full_mix_normalized",
           },
@@ -236,17 +236,17 @@ const trimResultingMix = async (instrumentals, vocals) => {
             );
           }
 
-          const mp3Duration = await getAudioDurationInSeconds(
-            "trimmed_mix.mp3"
-          ).catch((e) => console.error(e));
+          // const mp3Duration = await getAudioDurationInSeconds(
+          //   "trimmed_mix.mp3"
+          // ).catch((e) => console.error(e));
 
-          addMixToContentful(
-            instrumentals,
-            vocals,
-            mp3Duration,
-            introDuration,
-            outroDelay / 1000
-          );
+          // addMixToContentful(
+          //   instrumentals,
+          //   vocals,
+          //   mp3Duration,
+          //   introDuration,
+          //   outroDelay / 1000
+          // );
 
           return;
         })

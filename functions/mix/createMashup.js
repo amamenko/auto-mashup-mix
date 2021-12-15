@@ -19,18 +19,24 @@ const createMashup = async () => {
 
   await client
     .getEntries({
-      "fields.loopInProgress": true,
       content_type: "mixList",
     })
     .then(async (res) => {
       if (res) {
-        if (res.items && res.items[0]) {
-          if (res.items[0].fields.mashups) {
-            const currentIndex = res.items[0].fields.currentLoopPosition
-              ? res.items[0].fields.currentLoopPosition
+        if (res.items) {
+          const inProgressChart = res.items.find(
+            (item) => item.fields.loopInProgress === true
+          );
+          if (inProgressChart && inProgressChart.fields.mashups) {
+            const otherChart = res.items.find(
+              (item) => item.sys.id !== inProgressChart.sys.id
+            );
+            const currentIndex = inProgressChart.fields.currentLoopPosition
+              ? inProgressChart.fields.currentLoopPosition
               : 0;
-            const lastMashupListIndex = res.items[0].fields.mashups.length - 1;
-            const mashupListID = res.items[0].sys.id;
+            const lastMashupListIndex =
+              inProgressChart.fields.mashups.length - 1;
+            const mashupListID = inProgressChart.sys.id;
 
             setTimeout(() => {
               if (currentIndex === 0) {
@@ -39,7 +45,21 @@ const createMashup = async () => {
             }, 90000);
 
             if (currentIndex === lastMashupListIndex) {
-              updateMixLoopInProgress(mashupListID, "done");
+              await updateMixLoopInProgress(mashupListID, "done").then(
+                async () => {
+                  // If major mix chart is done, move on to minor mixes
+                  if (
+                    inProgressChart.fields.title.toLowerCase().includes("major")
+                  ) {
+                    if (otherChart) {
+                      await updateMixLoopInProgress(
+                        otherChart.sys.id,
+                        "in progress"
+                      );
+                    }
+                  }
+                }
+              );
             } else {
               if (currentIndex !== 0) {
                 addMashupPositionValue(mashupListID, currentIndex);

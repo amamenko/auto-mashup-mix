@@ -10,16 +10,16 @@ require("dotenv").config();
 
 const port = process.env.PORT || 4000;
 
-// Check for or update current mashup loop progression every 30 minutes
-cron.schedule("0,30 * * * *", () => {
-  checkMashupLoopInProgress();
-});
+// // Check for or update current mashup loop progression every 30 minutes
+// cron.schedule("0,30 * * * *", () => {
+//   checkMashupLoopInProgress();
+// });
 
-// Loop next mashup position of current in-progress mix list (if any) every 5 minutes
-cron.schedule("*/5 * * * *", async () => {
-  createMashup();
-});
+// // Loop next mashup position of current in-progress mix list (if any) every 2 minutes
+// cron.schedule("*/2 * * * *", async () => {
+//   createMashup();
+// });
 
-// findMixable("major");
+findMixable("major");
 
 app.listen(port, () => console.log(`Listening on port ${port}...`));

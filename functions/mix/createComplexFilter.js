@@ -16,9 +16,13 @@ const createComplexFilter = (instrumentals, vox) => {
   const vocalsTempoScale = vox.tempoScaleFactor;
 
   // Apply BPM adjustment matching to original BPM of vocal track
-  vox.fields.beats = vox.fields.beats
-    .split(", ")
-    .map((beat) => (1 / vocalsTempoScale) * Number(beat));
+  if (vox.beats) {
+    vox.beats = vox.beats.map((beat) => (1 / vocalsTempoScale) * beat);
+  } else {
+    vox.fields.beats = vox.fields.beats
+      .split(", ")
+      .map((beat) => (1 / vocalsTempoScale) * Number(beat));
+  }
 
   let instrumentalSections = instrumentals.sections.map(
     getClosestBeatArr,
@@ -33,8 +37,9 @@ const createComplexFilter = (instrumentals, vox) => {
     instrumentalSections = instrumentalSections.slice(0, mixLastSectionIndex);
   }
 
-  const vocalSections = vox.fields.sections.map(getClosestBeatArr, vox);
-  const voxNameSections = vox.fields.sections.map((item) => item.sectionName);
+  const voxSections = vox.sections ? vox.sections : vox.fields.sections;
+  const vocalSections = voxSections.map(getClosestBeatArr, vox);
+  const voxNameSections = voxSections.map((item) => item.sectionName);
 
   let matchedVocalSections = instrumentalSections.map((instrumentalSection) => {
     if (instrumentalSection) {
@@ -132,16 +137,41 @@ const createComplexFilter = (instrumentals, vox) => {
 
     const instrumentalSection = section.instrumentalSection;
     const delay = instrumentalSection.start;
-    const maxDuration = instrumentalSection.duration;
     const startTime = section.start;
 
-    let endTime = nextSection
-      ? nextSection.start
-        ? nextSection.start
-        : vox.fields.duration
-      : vox.fields.duration;
+    let endTime = 0;
 
-    const defaultDuration = endTime - startTime;
+    if (nextSection) {
+      if (nextSection.start) {
+        endTime = nextSection.start;
+      } else {
+        if (vox.duration) {
+          endTime = vox.duration;
+        } else {
+          if (vox.fields) {
+            if (vox.fields.duration) {
+              endTime = vox.fields.duration;
+            }
+          }
+        }
+      }
+    } else {
+      if (vox.duration) {
+        endTime = vox.duration;
+      } else {
+        if (vox.fields) {
+          if (vox.fields.duration) {
+            endTime = vox.fields.duration;
+          }
+        }
+      }
+    }
+
+    const defaultDuration = Math.max(0, endTime - startTime);
+    const maxDuration =
+      Math.abs(instrumentalSection.duration - (endTime - startTime)) <= 5
+        ? Math.min(instrumentalSection.duration, endTime - startTime)
+        : instrumentalSection.duration;
 
     if (defaultDuration > maxDuration) {
       endTime = startTime + maxDuration;
@@ -153,16 +183,19 @@ const createComplexFilter = (instrumentals, vox) => {
 
     const relativeDelay = delay * 1000;
 
-    const duration = endTime - section.start;
+    const duration = endTime - startTime;
 
     const numberOfLoops =
-      maxDuration <= duration ? 0 : Math.round(maxDuration / duration) - 1;
+      maxDuration <= duration
+        ? 0
+        : Math.max(Math.round(maxDuration / duration) - 1, 1);
 
-    const currentBeatsIndex = vox.fields.beats.findIndex(
+    const voxBeats = vox.beats ? vox.beats : vox.fields.beats;
+    const currentBeatsIndex = voxBeats.findIndex(
       (beat) => beat === section.start
     );
-    const eightMeasuresAfterStart = vox.fields.beats[currentBeatsIndex + 32];
-    const fourMeasuresAfterStart = vox.fields.beats[currentBeatsIndex + 16];
+    const eightMeasuresAfterStart = voxBeats[currentBeatsIndex + 32];
+    const fourMeasuresAfterStart = voxBeats[currentBeatsIndex + 16];
 
     let loopTime = 0;
 
@@ -186,7 +219,7 @@ const createComplexFilter = (instrumentals, vox) => {
 
     return [
       {
-        filter: `atrim=start=${section.start}:end=${endTime}`,
+        filter: `atrim=start=${startTime}:end=${endTime}`,
         inputs: `vox:${i + 1}`,
         outputs: ffmpegSectionName,
       },
@@ -197,13 +230,15 @@ const createComplexFilter = (instrumentals, vox) => {
       },
       {
         filter: `${
-          numberOfLoops >= 0
+          numberOfLoops > 0
             ? `afade=enable='between(t,0,2)':t=in:st=0:d=2,afade=enable='between(t,${
-                duration - 2
-              },${duration})':t=out:st=${duration - 2}:d=2,`
+                loopTime <= duration ? loopTime - 2 : duration - 2
+              },${loopTime <= duration ? loopTime : duration})':t=out:st=${
+                loopTime <= duration ? loopTime - 2 : duration - 2
+              }:d=2,`
             : ""
-        }aloop=loop=${numberOfLoops === 0 ? 0 : numberOfLoops}:size=${
-          loopTime * 44100
+        }aloop=loop=${numberOfLoops === 0 ? 0 : 10}:size=${
+          loopTime <= duration ? loopTime * 44100 : duration * 44100
         }:start=0`,
         inputs: `${ffmpegSectionName}_pts`,
         outputs: `loop${i + 1}`,
@@ -232,7 +267,6 @@ const createComplexFilter = (instrumentals, vox) => {
         inputs: `loop${i + 1}_pts_trim_pts`,
         outputs: `${ffmpegSectionName}_fade`,
       },
-
       {
         filter: `afade=t=out:st=${maxDuration - 2}:d=2`,
         inputs: `${ffmpegSectionName}_fade`,
@@ -280,7 +314,7 @@ const createComplexFilter = (instrumentals, vox) => {
   const complexFilter = [
     // Normalize instrumental audio
     {
-      filter: "loudnorm=tp=-9:i=-31",
+      filter: "loudnorm=tp=-9:i=-33",
       inputs: "0:a",
       outputs: "0:a:normalized",
     },
