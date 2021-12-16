@@ -1,7 +1,5 @@
 const contentful = require("contentful");
 const contentfulManagement = require("contentful-management");
-const { generateSongImage } = require("../images/generateSongImage");
-const { normalizeInputsAndMix } = require("../mix/normalizeInputsAndMix");
 const { getUniqueOnly } = require("../utils/getUniqueOnly");
 const { findMatchingSongs } = require("./findMatchingSongs");
 require("dotenv").config();
@@ -52,19 +50,6 @@ const findMixable = async (applicableMode) => {
 
           matchArr = getUniqueOnly(matchArr);
 
-          // console.log(matchArr.length);
-
-          const foundMatch = matchArr.filter(
-            (item) => item.accompaniment.title === ""
-          );
-
-          // console.log(foundMatch);
-
-          // normalizeInputsAndMix(
-          //   foundMatch[0].accompaniment,
-          //   foundMatch[0].vocals
-          // );
-
           if (matchArr && matchArr.length > 0) {
             const matchNames = [];
 
@@ -79,68 +64,69 @@ const findMixable = async (applicableMode) => {
                 vocalsTitle: currentVocals.title,
                 vocalsArtist: currentVocals.artist,
                 vocalsID: currentVocals.id,
+                mixed: false,
               });
             }
 
-            // console.log(matchNames.length);
+            const capitalizedMode =
+              applicableMode.charAt(0).toUpperCase() + applicableMode.slice(1);
 
-            // Access to Contentful Delivery API
-            // const client = contentful.createClient({
-            //   space: process.env.CONTENTFUL_SPACE_ID,
-            //   accessToken: process.env.CONTENTFUL_ACCESS_TOKEN,
-            // });
+            await client
+              .getEntries({
+                "fields.title": `${capitalizedMode} Key Mashups`,
+                content_type: "mixList",
+              })
+              .then(async (res) => {
+                if (res) {
+                  if (res.items) {
+                    const mixListID = res.items[0].sys.id;
 
-            // const capitalizedMode =
-            //   applicableMode.charAt(0).toUpperCase() + applicableMode.slice(1);
+                    if (mixListID) {
+                      // Access to Contentful Management API
+                      const managementClient =
+                        contentfulManagement.createClient({
+                          accessToken: process.env.CONTENT_MANAGEMENT_TOKEN,
+                        });
 
-            // await client
-            //   .getEntries({
-            //     "fields.title": `${capitalizedMode} Key Mashups`,
-            //     content_type: "mixList",
-            //   })
-            //   .then(async (res) => {
-            //     if (res) {
-            //       if (res.items) {
-            //         const mixListID = res.items[0].sys.id;
+                      await managementClient
+                        .getSpace(process.env.CONTENTFUL_SPACE_ID)
+                        .then(async (space) => {
+                          return await space
+                            .getEnvironment("master")
+                            .then(async (environment) => {
+                              await environment
+                                .getEntry(mixListID)
+                                .then(async (entry) => {
+                                  entry.fields.mashups = {
+                                    "en-US": matchNames,
+                                  };
 
-            //         if (mixListID) {
-            //           // Access to Contentful Management API
-            //           const managementClient =
-            //             contentfulManagement.createClient({
-            //               accessToken: process.env.CONTENT_MANAGEMENT_TOKEN,
-            //             });
+                                  entry.fields.loopInProgress = {
+                                    "en-US": false,
+                                  };
 
-            //           await managementClient
-            //             .getSpace(process.env.CONTENTFUL_SPACE_ID)
-            //             .then(async (space) => {
-            //               return await space
-            //                 .getEnvironment("master")
-            //                 .then(async (environment) => {
-            //                   await environment
-            //                     .getEntry(mixListID)
-            //                     .then(async (entry) => {
-            //                       entry.fields.mashups = {
-            //                         "en-US": matchNames,
-            //                       };
+                                  entry.fields.currentLoopPosition = {
+                                    "en-US": 0,
+                                  };
 
-            //                       return await entry.update().then(() => {
-            //                         environment
-            //                           .getEntry(mixListID)
-            //                           .then((updatedEntry) => {
-            //                             updatedEntry.publish().then(() => {
-            //                               console.log(
-            //                                 `${capitalizedMode} key mashups mix list has been updated! Total number of mixes: ${matchNames.length}`
-            //                               );
-            //                             });
-            //                           });
-            //                       });
-            //                     });
-            //                 });
-            //             });
-            //         }
-            //       }
-            //     }
-            //   });
+                                  return await entry.update().then(() => {
+                                    environment
+                                      .getEntry(mixListID)
+                                      .then((updatedEntry) => {
+                                        updatedEntry.publish().then(() => {
+                                          console.log(
+                                            `${capitalizedMode} key mashups mix list has been updated! Total number of mixes: ${matchNames.length}`
+                                          );
+                                        });
+                                      });
+                                  });
+                                });
+                            });
+                        });
+                    }
+                  }
+                }
+              });
           }
         }
       }

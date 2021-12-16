@@ -12,7 +12,11 @@ const findClosestBeat = (seconds, song) => {
   });
   const indexClosest = beats.findIndex((item) => item === closest);
 
-  return beats[indexClosest + 5];
+  if (song.currentSection === "vocals") {
+    return beats[indexClosest + 5];
+  } else {
+    return beats[indexClosest + 1];
+  }
 };
 
 function getClosestBeatArr(section, index, arr) {

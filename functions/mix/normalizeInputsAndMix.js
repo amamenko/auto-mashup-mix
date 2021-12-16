@@ -6,12 +6,12 @@ const { mixTracks } = require("./mixTracks");
 
 const normalizeInputsAndMix = async (instrumentals, vocals) => {
   if (instrumentals && vocals) {
-    const accompanimentLink = instrumentals.accompaniment.fields.file.url
+    const accompanimentLink = instrumentals.accompaniment?.fields?.file?.url
       ? instrumentals.accompaniment.fields.file.url
-      : instrumentals.fields.accompaniment.fields.file.url;
-    const voxLink = vocals.vocals.fields.file.url
+      : instrumentals.fields?.accompaniment?.fields?.file?.url;
+    const voxLink = vocals.vocals?.fields?.file?.url
       ? vocals.vocals.fields.file.url
-      : vocals.fields.vocals.fields.file.url;
+      : vocals.fields?.vocals?.fields?.file?.url;
 
     if (accompanimentLink && voxLink) {
       const accompanimentURL = "https:" + accompanimentLink;

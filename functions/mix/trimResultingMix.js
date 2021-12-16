@@ -11,6 +11,8 @@ const trimResultingMix = async (instrumentals, vocals) => {
 
   if (mp3Exists) {
     if (instrumentals) {
+      instrumentals.currentSection = "accompaniment";
+
       const instrumentalSections = instrumentals.sections
         .map(getClosestBeatArr, instrumentals)
         .filter(
@@ -236,17 +238,17 @@ const trimResultingMix = async (instrumentals, vocals) => {
             );
           }
 
-          // const mp3Duration = await getAudioDurationInSeconds(
-          //   "trimmed_mix.mp3"
-          // ).catch((e) => console.error(e));
+          const mp3Duration = await getAudioDurationInSeconds(
+            "trimmed_mix.mp3"
+          ).catch((e) => console.error(e));
 
-          // addMixToContentful(
-          //   instrumentals,
-          //   vocals,
-          //   mp3Duration,
-          //   introDuration,
-          //   outroDelay / 1000
-          // );
+          addMixToContentful(
+            instrumentals,
+            vocals,
+            mp3Duration,
+            introDuration,
+            outroDelay / 1000
+          );
 
           return;
         })

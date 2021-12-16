@@ -12,9 +12,9 @@ const findMatchingSongs = (allSongs) => {
 
       const foundIndex = keysArr.findIndex((key) => key === song1.fields.key);
 
-      // Potential key can be up to 2 semi-tones up or down
+      // Potential key can be up to 1 semi-tones up or down
       const applicableArr = keysArr
-        .slice(foundIndex - 2, foundIndex + 3)
+        .slice(foundIndex - 1, foundIndex + 2)
         .map((item) => {
           const regex = /(-)|(\+)/gi;
           return item.replace(regex, "");

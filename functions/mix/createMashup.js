@@ -28,21 +28,23 @@ const createMashup = async () => {
             (item) => item.fields.loopInProgress === true
           );
           if (inProgressChart && inProgressChart.fields.mashups) {
+            const notMixedYet = inProgressChart.fields.mashups.filter(
+              (item) => !item.mixed
+            );
             const otherChart = res.items.find(
               (item) => item.sys.id !== inProgressChart.sys.id
             );
             const currentIndex = inProgressChart.fields.currentLoopPosition
               ? inProgressChart.fields.currentLoopPosition
               : 0;
-            const lastMashupListIndex =
-              inProgressChart.fields.mashups.length - 1;
+            const lastMashupListIndex = notMixedYet.length - 1;
             const mashupListID = inProgressChart.sys.id;
 
             setTimeout(() => {
-              if (currentIndex === 0) {
+              if (currentIndex === 0 && currentIndex !== lastMashupListIndex) {
                 addMashupPositionValue(mashupListID, currentIndex);
               }
-            }, 90000);
+            }, 10000);
 
             if (currentIndex === lastMashupListIndex) {
               await updateMixLoopInProgress(mashupListID, "done").then(
@@ -68,9 +70,10 @@ const createMashup = async () => {
 
             await delayExecution(1000);
 
-            const currentSongs = res.items[0].fields.mashups[currentIndex];
-            const currentIDs =
-              currentSongs.accompanimentID + "," + currentSongs.vocalsID;
+            const currentSongs = notMixedYet[currentIndex];
+            const currentIDs = currentSongs
+              ? currentSongs.accompanimentID + "," + currentSongs.vocalsID
+              : "";
 
             await client
               .getEntries({
@@ -79,7 +82,7 @@ const createMashup = async () => {
               })
               .then((songRes) => {
                 if (songRes) {
-                  if (songRes.items) {
+                  if (songRes.items && songRes.items.length > 0) {
                     const matches = findMatchingSongs(songRes.items);
                     let filteredMatches = matches.filter(
                       (item) =>

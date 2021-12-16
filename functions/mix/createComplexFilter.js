@@ -24,6 +24,8 @@ const createComplexFilter = (instrumentals, vox) => {
       .map((beat) => (1 / vocalsTempoScale) * Number(beat));
   }
 
+  instrumentals.currentSection = "accompaniment";
+
   let instrumentalSections = instrumentals.sections.map(
     getClosestBeatArr,
     instrumentals
@@ -36,6 +38,8 @@ const createComplexFilter = (instrumentals, vox) => {
   if (mixLastSectionIndex >= -1) {
     instrumentalSections = instrumentalSections.slice(0, mixLastSectionIndex);
   }
+
+  vox.currentSection = "vocals";
 
   const voxSections = vox.sections ? vox.sections : vox.fields.sections;
   const vocalSections = voxSections.map(getClosestBeatArr, vox);
@@ -273,7 +277,7 @@ const createComplexFilter = (instrumentals, vox) => {
         outputs: `${ffmpegSectionName}_fade_again`,
       },
       {
-        filter: "loudnorm=tp=-7:i=-28",
+        filter: "loudnorm=tp=-7:i=-29",
         inputs: `${ffmpegSectionName}_fade_again`,
         outputs: `${ffmpegSectionName}_normalized`,
       },

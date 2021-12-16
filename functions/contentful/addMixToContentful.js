@@ -32,6 +32,7 @@ const addMixToContentful = async (
 
   if (accompaniment && vocals) {
     if (mixExists) {
+      const songMode = accompaniment.fields.mode;
       const accompanimentTitle = accompaniment.fields.title;
       const accompanimentArtist = accompaniment.fields.artist;
       const accompanimentID = accompaniment.sys.id;
@@ -99,6 +100,9 @@ const addMixToContentful = async (
                       },
                       duration: {
                         "en-US": mp3Duration,
+                      },
+                      mode: {
+                        "en-US": songMode,
                       },
                       accompanimentTitle: {
                         "en-US": accompanimentTitle,

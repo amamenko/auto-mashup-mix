@@ -26,6 +26,7 @@ const checkMashupLoopInProgress = async () => {
             return await client
               .getEntries({
                 content_type: "mixList",
+                order: "fields.title",
               })
               .then(async (res) => {
                 if (res) {

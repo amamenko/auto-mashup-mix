@@ -39,13 +39,13 @@ const updateMixLoopInProgress = async (mixChartID, state) => {
                   environment.getEntry(mixChartID).then((updatedEntry) => {
                     updatedEntry.publish();
 
-                    const successStatement = `Entry update was successful! ${
-                      updatedEntry.fields.title["en-US"]
-                    } loop marked as ${
-                      state === "in progress" ? "in progress." : "done."
-                    }`;
-
-                    console.log(successStatement);
+                    console.log(
+                      `Entry update was successful! ${
+                        updatedEntry.fields.title["en-US"]
+                      } loop marked as ${
+                        state === "in progress" ? "in progress." : "done."
+                      }`
+                    );
 
                     return;
                   });
