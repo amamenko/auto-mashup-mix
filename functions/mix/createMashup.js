@@ -80,9 +80,9 @@ const createMashup = async () => {
                 "sys.id[in]": currentIDs,
                 content_type: "song",
               })
-              .then((songRes) => {
+              .then(async (songRes) => {
                 if (songRes) {
-                  if (songRes.items && songRes.items.length > 0) {
+                  if (songRes.items && songRes.items.length === 2) {
                     const matches = findMatchingSongs(songRes.items);
                     let filteredMatches = matches.filter(
                       (item) =>
@@ -96,18 +96,45 @@ const createMashup = async () => {
                     if (filteredMatches && filteredMatches[0]) {
                       const bothSections = filteredMatches[0];
 
-                      normalizeInputsAndMix(
-                        bothSections.accompaniment,
-                        bothSections.vocals
-                      );
+                      const doesMashupAlreadyExist = await client
+                        .getEntries({
+                          "fields.accompanimentSysId":
+                            currentSongs.accompanimentID,
+                          "fields.vocalsSysId": currentSongs.vocalsID,
+                          select:
+                            "fields.accompanimentSysId,fields.vocalsSysId",
+                          content_type: "mashup",
+                        })
+                        .catch((e) => console.error(e));
+
+                      // Check for existing mashup just in case
+                      if (
+                        doesMashupAlreadyExist &&
+                        doesMashupAlreadyExist.items.length === 0
+                      ) {
+                        normalizeInputsAndMix(
+                          bothSections.accompaniment,
+                          bothSections.vocals
+                        );
+                      } else {
+                        console.log(
+                          `The mashup with accompaniment track "${currentSongs.accompanimentTitle}" by ${currentSongs.accompanimentArtist} mixed with the vocal track "${currentSongs.vocalsTitle}" by ${currentSongs.vocalsArtist} already exists! Moving on to next mashup.`
+                        );
+                      }
                     }
+                  } else {
+                    console.log(
+                      `Can't find one or both song entries when trying to create a mashup with accompaniment track "${currentSongs.accompanimentTitle}" by ${currentSongs.accompanimentArtist} and vocal track "${currentSongs.vocalsTitle}" by ${currentSongs.vocalsArtist}. Moving on to next mashup.`
+                    );
                   }
                 }
-              });
+              })
+              .catch((e) => console.error(e));
           }
         }
       }
-    });
+    })
+    .catch((e) => console.error(e));
 };
 
 module.exports = { createMashup };

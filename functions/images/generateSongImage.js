@@ -256,7 +256,7 @@ const generateSongImage = async (instrumentals, vocals) => {
                   </div>
                   <div class="additional_info">
                   <div class="rankings_list">
-                      <h4>This Week's Rankings</h4>
+                      <h4>This Week's Billboard Rankings</h4>
                       <ul>
                       ${instrumentals.charts
                         .slice(0, 5)
@@ -292,7 +292,7 @@ const generateSongImage = async (instrumentals, vocals) => {
                   </div>
                   <div class="additional_info">
                   <div class="rankings_list vocals">
-                      <h4>This Week's Rankings</h4>
+                      <h4>This Week's Billboard Rankings</h4>
                       <ul>
                       ${vocals.charts.slice(0, 5).map(
                         (chart) =>

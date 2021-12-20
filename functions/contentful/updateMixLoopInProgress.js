@@ -1,5 +1,5 @@
 const contentfulManagement = require("contentful-management");
-const { getUpcomingSaturday } = require("../utils/getUpcomingSaturday");
+const { getMostRecentSaturday } = require("../utils/getMostRecentSaturday");
 require("dotenv").config();
 
 const updateMixLoopInProgress = async (mixChartID, state) => {
@@ -8,7 +8,7 @@ const updateMixLoopInProgress = async (mixChartID, state) => {
     accessToken: process.env.CONTENT_MANAGEMENT_TOKEN,
   });
 
-  const upcomingSaturday = getUpcomingSaturday();
+  const mostRecentSaturday = getMostRecentSaturday();
 
   return await managementClient
     .getSpace(process.env.CONTENTFUL_SPACE_ID)
@@ -29,7 +29,7 @@ const updateMixLoopInProgress = async (mixChartID, state) => {
                 };
               } else {
                 entry.fields.mostRecentLoopWeek = {
-                  "en-US": upcomingSaturday,
+                  "en-US": mostRecentSaturday,
                 };
               }
 

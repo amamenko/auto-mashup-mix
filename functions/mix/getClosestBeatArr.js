@@ -25,7 +25,9 @@ function getClosestBeatArr(section, index, arr) {
   const startTime = findClosestBeat(timeStampToSeconds(section.start), song);
   const nextSectionStartTime = nextSection
     ? findClosestBeat(timeStampToSeconds(nextSection.start), song)
-    : song.duration;
+    : song.duration
+    ? song.duration
+    : song.fields.duration;
 
   return {
     start: startTime,

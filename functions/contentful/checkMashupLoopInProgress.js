@@ -1,5 +1,5 @@
 const contentful = require("contentful");
-const { getUpcomingSaturday } = require("../utils/getUpcomingSaturday");
+const { getMostRecentSaturday } = require("../utils/getMostRecentSaturday");
 const { updateMixLoopInProgress } = require("./updateMixLoopInProgress");
 require("dotenv").config();
 
@@ -10,7 +10,7 @@ const checkMashupLoopInProgress = async () => {
     accessToken: process.env.CONTENTFUL_ACCESS_TOKEN,
   });
 
-  const upcomingSaturday = getUpcomingSaturday();
+  const mostRecentSaturday = getMostRecentSaturday();
 
   // Check if there are any loops in progress
   return await client
@@ -34,7 +34,7 @@ const checkMashupLoopInProgress = async () => {
                     if (res.items.length > 0) {
                       const filteredLists = res.items.filter(
                         (item) =>
-                          item.fields.mostRecentLoopWeek !== upcomingSaturday
+                          item.fields.mostRecentLoopWeek !== mostRecentSaturday
                       );
                       const mixListArr = filteredLists.map(
                         (item) => item.sys.id

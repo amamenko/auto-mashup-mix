@@ -1,5 +1,6 @@
 const contentful = require("contentful");
 const contentfulManagement = require("contentful-management");
+const { normalizeInputsAndMix } = require("../mix/normalizeInputsAndMix");
 const { getUniqueOnly } = require("../utils/getUniqueOnly");
 const { findMatchingSongs } = require("./findMatchingSongs");
 require("dotenv").config();
@@ -58,6 +59,7 @@ const findMixable = async (applicableMode) => {
               const currentVocals = matchArr[i].vocals;
 
               matchNames.push({
+                index: i,
                 accompanimentTitle: currentAccompaniment.title,
                 accompanimentArtist: currentAccompaniment.artist,
                 accompanimentID: currentAccompaniment.id,
@@ -99,6 +101,10 @@ const findMixable = async (applicableMode) => {
                                 .then(async (entry) => {
                                   entry.fields.mashups = {
                                     "en-US": matchNames,
+                                  };
+
+                                  entry.fields.total = {
+                                    "en-US": matchNames.length,
                                   };
 
                                   entry.fields.loopInProgress = {

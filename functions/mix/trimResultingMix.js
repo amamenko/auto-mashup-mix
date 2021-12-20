@@ -14,7 +14,10 @@ const trimResultingMix = async (instrumentals, vocals) => {
       instrumentals.currentSection = "accompaniment";
 
       const instrumentalSections = instrumentals.sections
-        .map(getClosestBeatArr, instrumentals)
+        .map(
+          getClosestBeatArr,
+          instrumentals.duration ? instrumentals : instrumentals.fields
+        )
         .filter(
           (item) =>
             !item.sectionName.includes("intro") &&

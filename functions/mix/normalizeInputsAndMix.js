@@ -21,8 +21,6 @@ const normalizeInputsAndMix = async (instrumentals, vocals) => {
         fs.mkdirSync("./functions/mix/inputs");
       }
 
-      const start = Date.now();
-
       const accompanimentOriginalPath =
         "./functions/mix/inputs/accompaniment_original.mp3";
       const accompanimentModPath =
@@ -148,9 +146,7 @@ const normalizeInputsAndMix = async (instrumentals, vocals) => {
                         .on("end", () => {
                           if (i === streamArr.length - 1) {
                             console.log(
-                              `\nDone in ${
-                                (Date.now() - start) / 1000
-                              }s\nSuccessfully normalized both accompaniment (${newAccompanimentGainChange}) and vocal (${voxGainChange}) audio inputs.`
+                              `Successfully normalized both accompaniment (${newAccompanimentGainChange}) and vocal (${voxGainChange}) audio inputs.`
                             );
 
                             fs.rmSync(accompanimentOriginalPath);

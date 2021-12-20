@@ -98,6 +98,9 @@ const addMixToContentful = async (
                       title: {
                         "en-US": mashupTitle,
                       },
+                      blacklisted: {
+                        "en-US": "pending",
+                      },
                       duration: {
                         "en-US": mp3Duration,
                       },

@@ -28,7 +28,7 @@ const createComplexFilter = (instrumentals, vox) => {
 
   let instrumentalSections = instrumentals.sections.map(
     getClosestBeatArr,
-    instrumentals
+    instrumentals.duration ? instrumentals : instrumentals.fields
   );
   const mixStart = instrumentalSections[0].start;
   const mixLastSectionIndex = instrumentalSections.findIndex(
@@ -42,7 +42,10 @@ const createComplexFilter = (instrumentals, vox) => {
   vox.currentSection = "vocals";
 
   const voxSections = vox.sections ? vox.sections : vox.fields.sections;
-  const vocalSections = voxSections.map(getClosestBeatArr, vox);
+  const vocalSections = voxSections.map(
+    getClosestBeatArr,
+    vox.duration ? vox : vox.fields
+  );
   const voxNameSections = voxSections.map((item) => item.sectionName);
 
   let matchedVocalSections = instrumentalSections.map((instrumentalSection) => {
@@ -277,7 +280,7 @@ const createComplexFilter = (instrumentals, vox) => {
         outputs: `${ffmpegSectionName}_fade_again`,
       },
       {
-        filter: "loudnorm=tp=-7:i=-29",
+        filter: "loudnorm=tp=-7:i=-28",
         inputs: `${ffmpegSectionName}_fade_again`,
         outputs: `${ffmpegSectionName}_normalized`,
       },
