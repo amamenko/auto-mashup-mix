@@ -68,6 +68,7 @@ const getMashupsForVideo = async () => {
           for (let i = 0; i < mashups.length; i++) {
             const currentMashup = mashups[i];
             const lastMashup = mashups[i - 1];
+            const penultimateMashup = mashups[i - 2];
 
             if (
               lastMashup &&
@@ -79,27 +80,49 @@ const getMashupsForVideo = async () => {
             ) {
               continue;
             } else {
-              // Keep going unless 20 mashups selected or total duration is equal to or more than 28 minutes
-              if (finalMashupArr.length < 20 && totalDuration <= 1680) {
-                let pushed = 0;
+              if (
+                penultimateMashup &&
+                (penultimateMashup.fields.accompanimentSysId ===
+                  currentMashup.fields.accompanimentSysId ||
+                  penultimateMashup.fields.vocalsSysId ===
+                    currentMashup.fields.vocalsSysId)
+              ) {
+                continue;
+              } else {
+                if (
+                  !finalMashupArr.some(
+                    (mashup) =>
+                      mashup.fields.accompanimentSysId ===
+                        currentMashup.fields.accompanimentSysId &&
+                      mashup.fields.vocalsSysId ===
+                        currentMashup.fields.vocalsSysId
+                  )
+                ) {
+                  if (finalMashupArr.length < 20 && totalDuration <= 1680) {
+                    // Keep going unless 20 mashups selected or total duration is equal to or more than 28 minutes
+                    let pushed = 0;
 
-                for (let j = 0; j < finalMashupArr.length; j++) {
-                  const elExists = finalMashupArr[j];
+                    for (let j = 0; j < finalMashupArr.length; j++) {
+                      const elExists = finalMashupArr[j];
 
-                  if (!elExists) {
-                    totalDuration += currentMashup.fields.duration;
-                    finalMashupArr[j] = currentMashup;
-                    pushed++;
+                      if (!elExists) {
+                        totalDuration += currentMashup.fields.duration;
+                        finalMashupArr[j] = currentMashup;
+                        pushed++;
+                        break;
+                      }
+                    }
+
+                    if (!pushed) {
+                      totalDuration += currentMashup.fields.duration;
+                      finalMashupArr.push(currentMashup);
+                    }
+                  } else {
                     break;
                   }
+                } else {
+                  continue;
                 }
-
-                if (!pushed) {
-                  totalDuration += currentMashup.fields.duration;
-                  finalMashupArr.push(currentMashup);
-                }
-              } else {
-                break;
               }
             }
           }
