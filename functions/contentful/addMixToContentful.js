@@ -32,13 +32,13 @@ const addMixToContentful = async (
 
   if (accompaniment && vocals) {
     if (mixExists) {
-      const songMode = accompaniment.fields.mode;
-      const accompanimentTitle = accompaniment.fields.title;
-      const accompanimentArtist = accompaniment.fields.artist;
-      const accompanimentID = accompaniment.sys.id;
-      const vocalsTitle = vocals.fields.title;
-      const vocalsArtist = vocals.fields.artist;
-      const vocalsID = vocals.sys.id;
+      const songMode = accompaniment.mode;
+      const accompanimentTitle = accompaniment.title;
+      const accompanimentArtist = accompaniment.artist;
+      const accompanimentID = accompaniment.id;
+      const vocalsTitle = vocals.title;
+      const vocalsArtist = vocals.artist;
+      const vocalsID = vocals.id;
 
       const truncateString = (str) => {
         if (str.length > 50) {

@@ -17,7 +17,13 @@ const createComplexFilter = (instrumentals, vox) => {
 
   // Apply BPM adjustment matching to original BPM of vocal track
   if (vox.beats) {
-    vox.beats = vox.beats.map((beat) => (1 / vocalsTempoScale) * beat);
+    if (typeof vox.beats === "string") {
+      vox.beats = vox.beats
+        .split(", ")
+        .map((beat) => (1 / vocalsTempoScale) * Number(beat));
+    } else {
+      vox.beats = vox.beats.map((beat) => (1 / vocalsTempoScale) * beat);
+    }
   } else {
     vox.fields.beats = vox.fields.beats
       .split(", ")

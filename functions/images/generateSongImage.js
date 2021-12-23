@@ -77,6 +77,22 @@ const generateSongImage = async (instrumentals, vocals, index) => {
   await attemptToResize(instrumentalCover, "instrumentals");
   await attemptToResize(vocalsCover, "vocals");
 
+  const sortingArrayFunction = (arr) => {
+    const highestPriorityArr = ["hot-100", "billboard-global-200"];
+
+    if (arr.length > 0) {
+      return [
+        ...arr.filter((item) => highestPriorityArr.includes(item.chartURL)),
+        ...arr.filter((item) => !highestPriorityArr.includes(item.chartURL)),
+      ];
+    } else {
+      return arr;
+    }
+  };
+
+  const instrumentalCharts = sortingArrayFunction(instrumentals.charts);
+  const vocalsCharts = sortingArrayFunction(vocals.charts);
+
   return await nodeHtmlToImage({
     output: `./video_images/image_${index}.png`,
     html: `<html>
@@ -332,7 +348,7 @@ const generateSongImage = async (instrumentals, vocals, index) => {
                   <div class="rankings_list">
                       <h4>Billboard Rankings (Week of ${recentSaturday})</h4>
                       <ul>
-                      ${instrumentals.charts
+                      ${instrumentalCharts
                         .slice(0, 5)
                         .map(
                           (chart) =>
@@ -368,7 +384,7 @@ const generateSongImage = async (instrumentals, vocals, index) => {
                   <div class="rankings_list vocals">
                       <h4>Billboard Rankings (Week of ${recentSaturday})</h4>
                       <ul>
-                      ${vocals.charts
+                      ${vocalsCharts
                         .slice(0, 5)
                         .map(
                           (chart) =>
@@ -382,11 +398,11 @@ const generateSongImage = async (instrumentals, vocals, index) => {
                   </div>
                   <div class="analyses_container vocals">
                       <div class="audio_analysis vocals">
-                      <h4>Key</h4>
+                      <h4>Original Key</h4>
                       <p>${vocals.key} ${vocals.mode}</p>
                       </div>
                       <div class="audio_analysis vocals">
-                      <h4>Tempo</h4>
+                      <h4>Original Tempo</h4>
                       <p>${Math.round(vocals.tempo)} BPM</p>
                       </div>
                   </div>

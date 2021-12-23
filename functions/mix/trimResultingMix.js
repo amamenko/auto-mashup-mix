@@ -14,10 +14,7 @@ const trimResultingMix = async (instrumentals, vocals) => {
       instrumentals.currentSection = "accompaniment";
 
       const instrumentalSections = instrumentals.sections
-        .map(
-          getClosestBeatArr,
-          instrumentals.duration ? instrumentals : instrumentals.fields
-        )
+        .map(getClosestBeatArr, instrumentals)
         .filter(
           (item) =>
             !item.sectionName.includes("intro") &&
@@ -32,21 +29,16 @@ const trimResultingMix = async (instrumentals, vocals) => {
         ? mixLastSection.start
         : instrumentalSections[instrumentalSections.length - 1].start;
 
-      const accompanimentModPath =
-        "./functions/mix/inputs/accompaniment_mod.mp3";
+      const accompanimentPath = "./functions/mix/inputs/accompaniment.mp3";
 
-      const allBeats = instrumentals.beats
-        ? instrumentals.beats
-        : typeof instrumentals.fields.beats === "string"
-        ? instrumentals.fields.beats.split(", ")
-        : instrumentals.fields.beats;
+      const allBeats =
+        typeof instrumentals.beats === "string"
+          ? instrumentals.beats.split(", ")
+          : instrumentals.beats;
+
       const indexOfFirstBeat = allBeats.findIndex((beat) => beat === mixStart);
       const introStartBeat =
-        indexOfFirstBeat >= 16
-          ? allBeats[indexOfFirstBeat - 16]
-          : allBeats[indexOfFirstBeat];
-      const introEndBeat =
-        indexOfFirstBeat >= 16 ? mixStart : allBeats[indexOfFirstBeat + 16];
+        indexOfFirstBeat >= 16 ? allBeats[indexOfFirstBeat - 16] : 0;
 
       const outroStartIndex = allBeats.findIndex((beat) => beat === mixEnd);
       const outroEnd = allBeats[outroStartIndex + 16]
@@ -55,41 +47,16 @@ const trimResultingMix = async (instrumentals, vocals) => {
 
       const start = Date.now();
 
-      const introDuration = introEndBeat - introStartBeat;
+      const introDuration = mixStart - introStartBeat;
       const mainMixDuration = mixEnd - mixStart;
       const outroDelay = (introDuration + mainMixDuration) * 1000;
 
-      ffmpeg(accompanimentModPath)
-        .input("original_mix.mp3")
-        .input(accompanimentModPath)
+      ffmpeg("original_mix.mp3")
         .output("./trimmed_mix.mp3")
         .complexFilter([
-          // Trim and fade in intro instrumental
           {
-            filter: `atrim=start=${introStartBeat}:end=${introEndBeat}`,
+            filter: `atrim=start=${introStartBeat}:end=${outroEnd}`,
             inputs: "0:a",
-            outputs: "intro_trim",
-          },
-          {
-            filter: "asetpts=PTS-STARTPTS",
-            inputs: "intro_trim",
-            outputs: "intro_0",
-          },
-          {
-            filter: "loudnorm=tp=-9:i=-33",
-            inputs: "intro_0",
-            outputs: "intro_norm",
-          },
-          // Bring down instrumental intro volume a little bit
-          {
-            filter: "volume=0.85",
-            inputs: "intro_norm",
-            outputs: "intro",
-          },
-          // Trim and delay main mix
-          {
-            filter: `atrim=start=${mixStart}:end=${mixEnd}`,
-            inputs: "1:a",
             outputs: "main_trim",
           },
           {
@@ -98,67 +65,23 @@ const trimResultingMix = async (instrumentals, vocals) => {
             outputs: "main_0",
           },
           {
-            filter: `adelay=${introDuration * 1000}|${introDuration * 1000}`,
-            inputs: "main_0",
-            outputs: "main_delay",
-          },
-          // Instrumental/vocal mix comes out quieter than original instrumental
-          {
             filter: "volume=4",
-            inputs: "main_delay",
+            inputs: "main_0",
             outputs: "main",
           },
-          // Trim, fade out, and delay outro instrumental
           {
-            filter: `atrim=start=${mixEnd}:end=${outroEnd}`,
-            inputs: "2:a",
-            outputs: "outro_trim",
-          },
-          {
-            filter: "asetpts=PTS-STARTPTS",
-            inputs: "outro_trim",
-            outputs: "outro_0",
+            filter: `afade=t=out:st=${outroEnd - 10}:d=10`,
+            inputs: "main",
+            outputs: "main_fade_out",
           },
           {
             filter: "loudnorm=tp=-9:i=-33",
-            inputs: "outro_0",
-            outputs: "outro_normalized",
-          },
-          {
-            filter: "volume=2.5",
-            inputs: "outro_normalized",
-            outputs: "outro_volume",
-          },
-          {
-            filter: `afade=t=out:st=0:d=${outroEnd - mixEnd}`,
-            inputs: "outro_volume",
-            outputs: "outro_fade",
-          },
-          {
-            filter: `adelay=${outroDelay}|${outroDelay}`,
-            inputs: "outro_fade",
-            outputs: "outro_delay",
-          },
-          // Bring down instrumental outro volume a little bit
-          {
-            filter: "volume=0.75",
-            inputs: "outro_delay",
-            outputs: "outro",
-          },
-          // Merge all three sections together
-          {
-            filter: "amix=inputs=3",
-            inputs: ["intro", "main", "outro"],
-            outputs: "full_mix",
-          },
-          {
-            filter: "loudnorm=tp=-9:i=-33",
-            inputs: "full_mix",
-            outputs: "full_mix_normalized",
+            inputs: "main_fade_out",
+            outputs: "main_normalized",
           },
           {
             filter: `afade=t=in:st=0:d=${introDuration}`,
-            inputs: "full_mix_normalized",
+            inputs: "main_normalized",
           },
         ])
         .on("error", async (err, stdout, stderr) => {

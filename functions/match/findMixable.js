@@ -66,6 +66,8 @@ const findMixable = async (applicableMode) => {
                 vocalsTitle: currentVocals.title,
                 vocalsArtist: currentVocals.artist,
                 vocalsID: currentVocals.id,
+                vocalsKeyScaleFactor: currentVocals.keyScaleFactor,
+                vocalsTempoScaleFactor: currentVocals.tempoScaleFactor,
                 mixed: false,
               });
             }

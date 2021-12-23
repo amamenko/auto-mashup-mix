@@ -4,14 +4,14 @@ const { createComplexFilter } = require("./createComplexFilter");
 const { checkFileExists } = require("../utils/checkFileExists");
 const { trimResultingMix } = require("./trimResultingMix");
 
-const mixTracks = (instrumentals, vox, accompanimentModPath, voxModPath) => {
+const mixTracks = (instrumentals, vox, accompanimentPath, voxPath) => {
   const start = Date.now();
 
   const command = ffmpeg();
 
   const audioFiles = [
-    accompanimentModPath,
-    ...Array(instrumentals.sections.length).fill(voxModPath),
+    accompanimentPath,
+    ...Array(instrumentals.sections.length).fill(voxPath),
   ];
 
   audioFiles.forEach((fileName) => {
@@ -65,17 +65,9 @@ const mixTracks = (instrumentals, vox, accompanimentModPath, voxModPath) => {
             (Date.now() - start) / 1000
           }s\nSuccessfully mixed the instrumentals of the track "${
             instrumentals.title
-              ? instrumentals.title
-              : instrumentals.fields.title
-          }" by ${
-            instrumentals.artist
-              ? instrumentals.artist
-              : instrumentals.fields.artist
-          } with the vocals of the track "${
-            vox.title ? vox.title : vox.fields.title
-          }" by ${
-            vox.artist ? vox.artist : vox.fields.artist
-          }.\nSaved to original_mix.mp3.`
+          }" by ${instrumentals.artist} with the vocals of the track "${
+            vox.title
+          }" by ${vox.artist}.\nSaved to original_mix.mp3.`
         );
 
         trimResultingMix(instrumentals, vox);

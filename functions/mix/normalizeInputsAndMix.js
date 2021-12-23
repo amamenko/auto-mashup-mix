@@ -1,17 +1,12 @@
 const fs = require("fs");
 const axios = require("axios");
-const ffmpeg = require("fluent-ffmpeg");
-const { PythonShell } = require("python-shell");
 const { mixTracks } = require("./mixTracks");
+const { delayExecution } = require("../utils/delayExecution");
 
 const normalizeInputsAndMix = async (instrumentals, vocals) => {
   if (instrumentals && vocals) {
-    const accompanimentLink = instrumentals.accompaniment?.fields?.file?.url
-      ? instrumentals.accompaniment.fields.file.url
-      : instrumentals.fields?.accompaniment?.fields?.file?.url;
-    const voxLink = vocals.vocals?.fields?.file?.url
-      ? vocals.vocals.fields.file.url
-      : vocals.fields?.vocals?.fields?.file?.url;
+    const accompanimentLink = instrumentals.accompaniment.fields.file.url;
+    const voxLink = vocals.vocals.fields.file.url;
 
     if (accompanimentLink && voxLink) {
       const accompanimentURL = "https:" + accompanimentLink;
@@ -21,26 +16,19 @@ const normalizeInputsAndMix = async (instrumentals, vocals) => {
         fs.mkdirSync("./functions/mix/inputs");
       }
 
-      const accompanimentOriginalPath =
-        "./functions/mix/inputs/accompaniment_original.mp3";
-      const accompanimentModPath =
-        "./functions/mix/inputs/accompaniment_mod.mp3";
-
-      const voxOriginalPath = "./functions/mix/inputs/vox_original.mp3";
-      const voxModPath = "./functions/mix/inputs/vox_mod.mp3";
+      const accompanimentPath = "./functions/mix/inputs/accompaniment.mp3";
+      const voxPath = "./functions/mix/inputs/vox.mp3";
 
       const streamArr = [
         {
           name: "accompaniment",
           url: accompanimentURL,
-          path: accompanimentOriginalPath,
-          mod_path: accompanimentModPath,
+          path: accompanimentPath,
         },
         {
           name: "vox",
           url: voxURL,
-          path: voxOriginalPath,
-          mod_path: voxModPath,
+          path: voxPath,
         },
       ];
 
@@ -64,132 +52,10 @@ const normalizeInputsAndMix = async (instrumentals, vocals) => {
         });
       }
 
-      PythonShell.run(
-        "./python_scripts/install_package.py",
-        { args: ["rgain3"] },
-        (err) => {
-          if (err) {
-            throw err;
-          } else {
-            console.log("Now batch normalizing audio files...");
-            // Split audio into stems and clean up
-            PythonShell.run(
-              "./python_scripts/replaygain.py",
-              {
-                args: [accompanimentOriginalPath, voxOriginalPath],
-              },
-              (err, res) => {
-                if (err) {
-                  throw err;
-                }
+      await delayExecution(10000);
 
-                const gainInfoIndex = res.findIndex((item) =>
-                  item.includes("Calculating Replay Gain")
-                );
-
-                const fullAccompanimentRes =
-                  res[gainInfoIndex + 1].split(".mp3:")[1];
-                const fullVoxRes = res[gainInfoIndex + 2].split(".mp3:")[1];
-
-                const accompanimentGainChange = fullAccompanimentRes
-                  ? Number(
-                      fullAccompanimentRes
-                        .replace(" ", "")
-                        .replace("dB", "")
-                        .trim()
-                    ) -
-                    3 +
-                    "dB"
-                  : null;
-                const voxGainChange = fullVoxRes
-                  ? fullVoxRes.replace(" ", "")
-                  : null;
-
-                if (accompanimentGainChange && voxGainChange) {
-                  for (let i = 0; i < streamArr.length; i++) {
-                    const file = streamArr[i];
-
-                    const accompanimentNum = Number(
-                      accompanimentGainChange.replace("dB", "")
-                    );
-                    const voxNum = Number(voxGainChange.replace("dB", ""));
-
-                    const newAccompanimentGainChange =
-                      accompanimentNum * 10 + "dB";
-
-                    if (fs.existsSync(file.path)) {
-                      ffmpeg(file.path)
-                        .audioFilters(
-                          `volume=${
-                            file.name === "accompaniment"
-                              ? accompanimentNum > 0
-                                ? newAccompanimentGainChange
-                                : accompanimentGainChange
-                              : voxNum + 30 + "dB"
-                          }`
-                        )
-                        .output(file.mod_path)
-                        .on("error", (err, stdout, stderr) => {
-                          console.log(
-                            `FFMPEG received an error when normalizing audio. Terminating process. Output: ` +
-                              err.message
-                          );
-                          console.log("FFMPEG stderr:\n" + stderr);
-
-                          fs.rmSync(accompanimentOriginalPath);
-                          fs.rmSync(voxOriginalPath);
-                          console.log(
-                            "Original accompaniment and vocal MP3 files have been deleted!"
-                          );
-                          return;
-                        })
-                        .on("end", () => {
-                          if (i === streamArr.length - 1) {
-                            console.log(
-                              `Successfully normalized both accompaniment (${newAccompanimentGainChange}) and vocal (${voxGainChange}) audio inputs.`
-                            );
-
-                            fs.rmSync(accompanimentOriginalPath);
-                            fs.rmSync(voxOriginalPath);
-                            console.log(
-                              "Original accompaniment and vocal MP3 files have been deleted!"
-                            );
-
-                            mixTracks(
-                              instrumentals,
-                              vocals,
-                              accompanimentModPath,
-                              voxModPath
-                            );
-                          }
-                        })
-                        .run();
-                    } else {
-                      console.log(
-                        `The file path "${file.path}" doesn't exist!`
-                      );
-                    }
-                  }
-                } else {
-                  console.log(
-                    "Unable to normalize audio inputs. Replay gain change information could not be determined."
-                  );
-                  return;
-                }
-              }
-            );
-          }
-        }
-      );
-    } else {
-      console.log(
-        "Both the accompaniment track URL and the vocal track URL are required!"
-      );
-      return;
+      mixTracks(instrumentals, vocals, accompanimentPath, voxPath);
     }
-  } else {
-    console.log("Both the accompaniment track the vocal track are required!");
-    return;
   }
 };
 

@@ -112,9 +112,17 @@ const createMashup = async () => {
                         doesMashupAlreadyExist &&
                         doesMashupAlreadyExist.items.length === 0
                       ) {
+                        bothSections.accompaniment.fields.id =
+                          currentSongs.accompanimentID;
+                        bothSections.vocals.fields.id = currentSongs.vocalsID;
+                        bothSections.vocals.fields.keyScaleFactor =
+                          currentSongs.vocalsKeyScaleFactor;
+                        bothSections.vocals.fields.tempoScaleFactor =
+                          currentSongs.vocalsTempoScaleFactor;
+
                         normalizeInputsAndMix(
-                          bothSections.accompaniment,
-                          bothSections.vocals
+                          bothSections.accompaniment.fields,
+                          bothSections.vocals.fields
                         );
                       } else {
                         console.log(
