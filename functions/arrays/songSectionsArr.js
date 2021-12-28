@@ -1,7 +1,14 @@
 const introSections = ["intro"];
 const verseSections = ["verse", "verso", "reprise"];
 const refrainSections = ["refrain", "refran", "middle-eight", "hook"];
-const preChorusSections = ["pre-chorus", "pre-coro", "pre-drop", "build"];
+const preChorusSections = [
+  "pre-chorus",
+  "pre-coro",
+  "pre-drop",
+  "build",
+  "pre-verse",
+  "link",
+];
 const chorusSections = ["chorus", "coro", "hook", "estribillo", "drop"];
 const postChorusSections = ["post-chorus", "post-coro"];
 const bridgeSections = [
@@ -13,6 +20,7 @@ const bridgeSections = [
   "breakdown",
   "b-section",
   "instrumental",
+  "classical",
   "solo",
 ];
 const spokenSections = ["spoken", "hablado", "skit"];

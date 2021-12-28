@@ -39,7 +39,6 @@ const createMashup = async () => {
               : 0;
             const lastMashupListIndex = notMixedYet.length - 1;
             const mashupListID = inProgressChart.sys.id;
-
             setTimeout(() => {
               if (currentIndex === 0 && currentIndex !== lastMashupListIndex) {
                 addMashupPositionValue(mashupListID, currentIndex);
@@ -112,8 +111,18 @@ const createMashup = async () => {
                         doesMashupAlreadyExist &&
                         doesMashupAlreadyExist.items.length === 0
                       ) {
+                        const matchedAccompanimentSections =
+                          currentSongs.accompanimentSections.split(", ");
+
                         bothSections.accompaniment.fields.id =
                           currentSongs.accompanimentID;
+                        bothSections.accompaniment.fields.sections =
+                          bothSections.accompaniment.fields.sections.filter(
+                            (item) =>
+                              matchedAccompanimentSections.includes(
+                                item.sectionName
+                              )
+                          );
                         bothSections.vocals.fields.id = currentSongs.vocalsID;
                         bothSections.vocals.fields.keyScaleFactor =
                           currentSongs.vocalsKeyScaleFactor;

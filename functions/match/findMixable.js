@@ -62,6 +62,9 @@ const findMixable = async (applicableMode) => {
                 index: i,
                 accompanimentTitle: currentAccompaniment.title,
                 accompanimentArtist: currentAccompaniment.artist,
+                accompanimentSections: currentAccompaniment.sections
+                  .map((item) => item.sectionName)
+                  .join(", "),
                 accompanimentID: currentAccompaniment.id,
                 vocalsTitle: currentVocals.title,
                 vocalsArtist: currentVocals.artist,

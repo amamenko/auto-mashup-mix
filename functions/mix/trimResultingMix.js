@@ -38,7 +38,9 @@ const trimResultingMix = async (instrumentals, vocals) => {
 
       const indexOfFirstBeat = allBeats.findIndex((beat) => beat === mixStart);
       const introStartBeat =
-        indexOfFirstBeat >= 16 ? allBeats[indexOfFirstBeat - 16] : 0;
+        indexOfFirstBeat >= 16
+          ? allBeats[indexOfFirstBeat - 16]
+          : allBeats[indexOfFirstBeat];
 
       const outroStartIndex = allBeats.findIndex((beat) => beat === mixEnd);
       const outroEnd = allBeats[outroStartIndex + 16]
