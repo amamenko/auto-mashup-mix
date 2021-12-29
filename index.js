@@ -13,10 +13,7 @@ const { format } = require("date-fns");
 const { timeStampToSeconds } = require("./functions/utils/timeStampToSeconds");
 const { isMashupTime } = require("./functions/utils/isMashupTime");
 const { createVideo } = require("./functions/video/createVideo");
-const ffmpeg = require("fluent-ffmpeg");
 const { createSlideshow } = require("./functions/video/createSlideshow");
-const { exec } = require("child_process");
-const fs = require("fs");
 require("dotenv").config();
 
 const port = process.env.PORT || 4000;
@@ -68,16 +65,6 @@ const port = process.env.PORT || 4000;
 // createVideo();
 
 // createSlideshow();
-
-ffmpeg("./intro.avi")
-  .input("./output.avi")
-  .on("error", function (err) {
-    console.log("An error occurred: " + err.message);
-  })
-  .on("end", function () {
-    console.log("Merging finished!");
-  })
-  .mergeToFile(__dirname + "/tmp/output.mp4", __dirname + "/tmp");
 
 // cron.schedule("*/15 * * * *", () => {
 //   checkMashupLoopInProgress();

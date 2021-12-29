@@ -5,7 +5,10 @@ const { exec } = require("child_process");
 const { combineIntroWithMain } = require("./combineIntroWithMain");
 
 const createSlideshow = () => {
-  const download = wget.download(process.env.INTRO_VIDEO_LINK, "intro.avi");
+  const download = wget.download(
+    process.env.INTRO_VIDEO_LINK,
+    "initial_intro.mp4"
+  );
 
   download.on("error", (err) => {
     console.error(err);
@@ -52,7 +55,7 @@ const createSlideshow = () => {
         i === 0
           ? `[0:a][f0]overlay[bg1];`
           : i === arr.length - 1
-          ? `[bg${i}][f${i}]overlay,format=yuv420p[v]" -map "[v]" output.avi`
+          ? `[bg${i}][f${i}]overlay,format=yuv420p[v]" -map "[v]" initial_main.mp4`
           : `[bg${i}][f${i}]overlay[bg${i + 1}];`
       )
       .join("")}`;
@@ -62,7 +65,7 @@ const createSlideshow = () => {
         console.error(`exec error: ${err}`);
         return;
       } else {
-        console.log("DONE");
+        console.log("Successfully created main mix video!");
         combineIntroWithMain();
       }
     });

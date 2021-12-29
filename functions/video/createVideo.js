@@ -6,6 +6,8 @@ const { getMashupsForVideo } = require("./getMashupsForVideo");
 const createVideo = async () => {
   const applicableMashups = await getMashupsForVideo();
 
+  // TODO: Set up mashup audio mix with cross-fades between mashups
+
   const allPromises = [];
 
   for (let i = 0; i < applicableMashups.length; i++) {

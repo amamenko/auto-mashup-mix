@@ -412,7 +412,9 @@ const generateSongImage = async (instrumentals, vocals, index) => {
           </div>
       </body>
     </html>`,
-  }).catch((err) => console.error(err));
+  })
+    .then(() => {})
+    .catch((err) => console.error(err));
 };
 
 module.exports = { generateSongImage };
