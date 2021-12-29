@@ -1,30 +1,33 @@
-const { default: axios } = require("axios");
+const axios = require("axios");
 const wget = require("wget-improved");
 const fs = require("fs");
 const { exec } = require("child_process");
+const { combineIntroWithMain } = require("./combineIntroWithMain");
 
 const createSlideshow = () => {
-  // const download = wget.download(process.env.INTRO_VIDEO_LINK, "intro.mp4");
-  // download.on("error", (err) => {
-  //   console.error(err);
-  //   return;
-  // });
-  // download.on("end", async () => {
-  //   console.log("Done downloading intro video!");
+  const download = wget.download(process.env.INTRO_VIDEO_LINK, "intro.avi");
 
-  let allFiles = fs
-    .readdirSync("video_images")
-    .map((item) => {
-      return {
-        name: item,
-        number: Number(item.split("_")[1].split(".")[0]),
-      };
-    })
-    .sort((a, b) => a.number - b.number);
+  download.on("error", (err) => {
+    console.error(err);
+    return;
+  });
 
-  allFiles = allFiles.map((item) => item.name);
+  download.on("end", async () => {
+    console.log("Done downloading intro video!");
 
-  const command = `ffmpeg \
+    let allFiles = fs
+      .readdirSync("video_images")
+      .map((item) => {
+        return {
+          name: item,
+          number: Number(item.split("_")[1].split(".")[0]),
+        };
+      })
+      .sort((a, b) => a.number - b.number);
+
+    allFiles = allFiles.map((item) => item.name);
+
+    const command = `ffmpeg \
     ${allFiles
       .map((item) => `-loop 1 -t 5 -i ./video_images/${item} \ `)
       .join("")} -filter_complex \
@@ -44,24 +47,25 @@ const createSlideshow = () => {
             }/TB[f${i}]; \ `
       )
       .join("")} ${allFiles
-    .slice(1)
-    .map((item, i, arr) =>
-      i === 0
-        ? `[0:a][f0]overlay[bg1];`
-        : i === arr.length - 1
-        ? `[bg${i}][f${i}]overlay,format=yuv420p[v]" -map "[v]" output.mp4`
-        : `[bg${i}][f${i}]overlay[bg${i + 1}];`
-    )
-    .join("")}`;
+      .slice(1)
+      .map((item, i, arr) =>
+        i === 0
+          ? `[0:a][f0]overlay[bg1];`
+          : i === arr.length - 1
+          ? `[bg${i}][f${i}]overlay,format=yuv420p[v]" -map "[v]" output.avi`
+          : `[bg${i}][f${i}]overlay[bg${i + 1}];`
+      )
+      .join("")}`;
 
-  exec(command, (err, stdout, stderr) => {
-    console.log(stdout);
-    if (err) {
-      console.error(`exec error: ${err}`);
-      return;
-    } else {
-      console.log("DONE");
-    }
+    exec(command, (err, stdout, stderr) => {
+      if (err) {
+        console.error(`exec error: ${err}`);
+        return;
+      } else {
+        console.log("DONE");
+        combineIntroWithMain();
+      }
+    });
   });
 };
 
