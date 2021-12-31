@@ -17,6 +17,7 @@ const { createSlideshow } = require("./functions/video/createSlideshow");
 const {
   createMixOfAllMashups,
 } = require("./functions/mix/createMixOfAllMashups");
+const fs = require("fs");
 require("dotenv").config();
 
 const port = process.env.PORT || 4000;
@@ -65,7 +66,9 @@ const port = process.env.PORT || 4000;
 //   }
 // });
 
-createMixOfAllMashups();
+// createVideo();
+
+// createMixOfAllMashups();
 
 // cron.schedule("*/15 * * * *", () => {
 //   checkMashupLoopInProgress();

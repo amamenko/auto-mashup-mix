@@ -10,6 +10,7 @@
 
 /output
 /pretrained_models
+/video_audio
 /video_images
 YouTubeSubtitles.vtt
 YouTubeSubtitles.json

@@ -52,6 +52,17 @@ const getMashupImagesAndAudio = async (currentMashup, i) => {
               });
 
               download.on("end", async () => {
+                fs.writeFile(
+                  "./video_audio/times.txt",
+                  `audio_${i}\nduration: ${currentMashup.fields.duration}\nmixStart: ${currentMashup.fields.mixStart}\nmixEnd: ${currentMashup.fields.mixEnd}\n\n`,
+                  { flag: "a" },
+                  (err) => {
+                    if (err) {
+                      console.error(err);
+                    }
+                  }
+                );
+
                 let retries = 5;
                 let success = false;
 
@@ -66,6 +77,7 @@ const getMashupImagesAndAudio = async (currentMashup, i) => {
                       console.log(
                         `Successfully generated image for ${currentMashup.fields.title}.`
                       );
+
                       resolve();
                     })
                     .catch((e) => {
