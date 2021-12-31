@@ -14,6 +14,9 @@ const { timeStampToSeconds } = require("./functions/utils/timeStampToSeconds");
 const { isMashupTime } = require("./functions/utils/isMashupTime");
 const { createVideo } = require("./functions/video/createVideo");
 const { createSlideshow } = require("./functions/video/createSlideshow");
+const {
+  createMixOfAllMashups,
+} = require("./functions/mix/createMixOfAllMashups");
 require("dotenv").config();
 
 const port = process.env.PORT || 4000;
@@ -62,9 +65,7 @@ const port = process.env.PORT || 4000;
 //   }
 // });
 
-// createVideo();
-
-// createSlideshow();
+createMixOfAllMashups();
 
 // cron.schedule("*/15 * * * *", () => {
 //   checkMashupLoopInProgress();

@@ -1,4 +1,3 @@
-const axios = require("axios");
 const wget = require("wget-improved");
 const fs = require("fs");
 const { exec } = require("child_process");

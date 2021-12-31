@@ -1,6 +1,4 @@
-const contentful = require("contentful");
-const { getMashupImages } = require("./getMashupImages");
-
+const { getMashupImagesAndAudio } = require("./getMashupImagesAndAudio");
 const { getMashupsForVideo } = require("./getMashupsForVideo");
 
 const createVideo = async () => {
@@ -11,7 +9,7 @@ const createVideo = async () => {
   const allPromises = [];
 
   for (let i = 0; i < applicableMashups.length; i++) {
-    const currentPromise = getMashupImages(applicableMashups[i], i);
+    const currentPromise = getMashupImagesAndAudio(applicableMashups[i], i);
     allPromises.push(currentPromise);
   }
 
