@@ -106,7 +106,10 @@ const getMashupsForVideo = async () => {
                       const elExists = finalMashupArr[j];
 
                       if (!elExists) {
-                        totalDuration += currentMashup.fields.duration;
+                        totalDuration +=
+                          currentMashup.fields.mixEnd -
+                          currentMashup.fields.mixStart -
+                          5;
                         finalMashupArr[j] = currentMashup;
                         pushed++;
                         break;
@@ -114,7 +117,10 @@ const getMashupsForVideo = async () => {
                     }
 
                     if (!pushed) {
-                      totalDuration += currentMashup.fields.duration;
+                      totalDuration +=
+                        currentMashup.fields.mixEnd -
+                        currentMashup.fields.mixStart -
+                        5;
                       finalMashupArr.push(currentMashup);
                     }
                   } else {

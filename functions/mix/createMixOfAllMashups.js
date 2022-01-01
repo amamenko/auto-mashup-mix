@@ -1,7 +1,8 @@
 const fs = require("fs");
 const { exec } = require("child_process");
+const { readStartEndTimes } = require("../utils/readStartEndTimes");
 
-const createMixOfAllMashups = () => {
+const createMixOfAllMashups = async () => {
   const allFiles = fs
     .readdirSync("video_audio")
     .filter((item) => item.includes(".mp3"))
@@ -13,16 +14,7 @@ const createMixOfAllMashups = () => {
     })
     .sort((a, b) => a.number - b.number);
 
-  const data = fs.readFileSync("./video_audio/times.txt", "utf8");
-  const dataArr = data.split("\n\n").filter((item) => item);
-  const startEndArr = dataArr.map((item) => {
-    return {
-      name: item.split("\n")[0],
-      duration: item.split("\n")[1].split(" ")[1],
-      mixStart: item.split("\n")[2].split(" ")[1],
-      mixEnd: item.split("\n")[3].split(" ")[1],
-    };
-  });
+  const startEndArr = await readStartEndTimes();
 
   const command = `ffmpeg ${allFiles
     .map((item) => `-i ${item.name}`)
