@@ -74,9 +74,6 @@ const getMashupImagesAndAudio = async (currentMashup, i) => {
                   )
                     .then(() => {
                       success = true;
-                      console.log(
-                        `Successfully generated image for ${currentMashup.fields.title}.`
-                      );
 
                       resolve();
                     })

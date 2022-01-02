@@ -1,6 +1,5 @@
-const fs = require("fs");
 const { exec } = require("child_process");
-const { checkFileExists } = require("../utils/checkFileExists");
+const { checkExistsAndDelete } = require("../utils/checkExistsAndDelete");
 
 const combineIntroWithMain = () => {
   const reencodeIntro =
@@ -20,18 +19,7 @@ const combineIntroWithMain = () => {
     } else {
       console.log("Successfully re-encoded intro.mp4!");
 
-      const initialIntroExists = await checkFileExists("initial_intro.mp4");
-
-      if (initialIntroExists) {
-        fs.rm(
-          "initial_intro.mp4",
-          {
-            recursive: true,
-            force: true,
-          },
-          () => console.log("initial_intro.mp4 file deleted!")
-        );
-      }
+      await checkExistsAndDelete("initial_intro.mp4");
 
       const startReencode = Date.now();
 
@@ -46,18 +34,7 @@ const combineIntroWithMain = () => {
             } seconds.`
           );
 
-          const initialMainExists = await checkFileExists("initial_main.mp4");
-
-          if (initialMainExists) {
-            fs.rm(
-              "initial_main.mp4",
-              {
-                recursive: true,
-                force: true,
-              },
-              () => console.log("initial_main.mp4 file deleted!")
-            );
-          }
+          await checkExistsAndDelete("initial_main.mp4");
 
           const startCombine = Date.now();
 
@@ -72,18 +49,7 @@ const combineIntroWithMain = () => {
                 } seconds.`
               );
 
-              const mainExists = await checkFileExists("main.mp4");
-
-              if (mainExists) {
-                fs.rm(
-                  "main.mp4",
-                  {
-                    recursive: true,
-                    force: true,
-                  },
-                  () => console.log("main.mp4 file deleted!")
-                );
-              }
+              await checkExistsAndDelete("main.mp4");
 
               exec(concatCommand, async (err, stdout, stderr) => {
                 if (err) {
@@ -94,31 +60,10 @@ const combineIntroWithMain = () => {
                     "Successfully concatenated intro and main mix videos!"
                   );
 
-                  const introExists = await checkFileExists("intro.mp4");
-
-                  if (introExists) {
-                    fs.rm(
-                      "intro.mp4",
-                      {
-                        recursive: true,
-                        force: true,
-                      },
-                      () => console.log("intro.mp4 file deleted!")
-                    );
-                  }
-
-                  const mainMixExists = await checkFileExists("main_mix.mp4");
-
-                  if (mainMixExists) {
-                    fs.rm(
-                      "main_mix.mp4",
-                      {
-                        recursive: true,
-                        force: true,
-                      },
-                      () => console.log("main_mix.mp4 file deleted!")
-                    );
-                  }
+                  await checkExistsAndDelete("intro.mp4");
+                  await checkExistsAndDelete("main_mix.mp4");
+                  await checkExistsAndDelete("video_audio");
+                  await checkExistsAndDelete("video_images");
                 }
               });
             }

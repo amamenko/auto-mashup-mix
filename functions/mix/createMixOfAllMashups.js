@@ -40,15 +40,16 @@ const createMixOfAllMashups = async () => {
     )
     .join(" ")}" full_mashup_mix.mp3`;
 
-  exec(command, (err, stdout, stderr) => {
-    if (err) {
-      console.error(`exec error: ${err}`);
-      return;
-    } else {
-      console.log(
-        "Successfully created full crossfaded mix of all mashup audio files!"
-      );
-    }
+  return new Promise(async (resolve, reject) => {
+    exec(command, (err, stdout, stderr) => {
+      if (err) {
+        console.error(`exec error: ${err}`);
+        reject();
+        return;
+      } else {
+        resolve();
+      }
+    });
   });
 };
 

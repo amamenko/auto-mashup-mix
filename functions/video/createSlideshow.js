@@ -70,7 +70,7 @@ const createSlideshow = () => {
       .map((item, i, arr) =>
         i === arr.length - 1
           ? `[${i + 1}]format=yuva444p,fade=d=5:t=in:alpha=1,fade=st=${
-              startEndTimesArr[i].duration - startEndTimesArr[i].mixStart
+              Number(startEndTimesArr[i].duration) + 5
             }:d=2:t=out,setpts=PTS-STARTPTS+${
               Math.round(totalsArr[i]) - (i * 5 + 5)
             }/TB[f${i}]; \ `
@@ -90,9 +90,6 @@ const createSlideshow = () => {
           : `[bg${i}][f${i}]overlay[bg${i + 1}];`
       )
       .join("")}`;
-
-    console.log(command);
-    console.log(totalsArr);
 
     const start = Date.now();
 

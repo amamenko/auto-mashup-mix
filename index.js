@@ -12,7 +12,7 @@ const {
 const { format } = require("date-fns");
 const { timeStampToSeconds } = require("./functions/utils/timeStampToSeconds");
 const { isMashupTime } = require("./functions/utils/isMashupTime");
-const { createSlideshow } = require("./functions/video/createSlideshow");
+const { createVideo } = require("./functions/video/createVideo");
 require("dotenv").config();
 
 const port = process.env.PORT || 4000;
@@ -61,7 +61,7 @@ const port = process.env.PORT || 4000;
 //   }
 // });
 
-createSlideshow();
+createVideo();
 
 // cron.schedule("*/15 * * * *", () => {
 //   checkMashupLoopInProgress();
