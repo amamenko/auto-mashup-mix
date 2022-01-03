@@ -1,3 +1,4 @@
+const { createVideoThumbnail } = require("../images/createVideoThumbnail");
 const { createMixOfAllMashups } = require("../mix/createMixOfAllMashups");
 const { checkExistsAndDelete } = require("../utils/checkExistsAndDelete");
 const { createSlideshow } = require("./createSlideshow");
@@ -12,6 +13,7 @@ const createVideo = async () => {
   console.log(
     "Got all applicable mashups for this week! Now getting applicable song profile images and mashup audio..."
   );
+
   for (let i = 0; i < applicableMashups.length; i++) {
     const currentPromise = getMashupImagesAndAudio(applicableMashups[i], i);
     allPromises.push(currentPromise);
@@ -20,13 +22,18 @@ const createVideo = async () => {
   Promise.all(allPromises.map((p) => p.catch((error) => null)))
     .then(async () => {
       console.log(
-        "All mashup image/audio promises have been resolved! Creating full mashup audio mix now!"
+        "All mashup image/audio promises have been resolved! Creating video thumbnail photo now!"
       );
-      await createMixOfAllMashups().then(() => {
+      await createVideoThumbnail().then(async () => {
         console.log(
-          "Full mashup audio mix successfully created! Creating slideshow video now!"
+          "Video thumbnail successfully created! Creating full mashup audio mix now!"
         );
-        createSlideshow();
+        await createMixOfAllMashups().then(() => {
+          console.log(
+            "Full mashup audio mix successfully created! Creating slideshow video now!"
+          );
+          createSlideshow();
+        });
       });
     })
     .catch(async (err) => {

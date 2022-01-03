@@ -64,6 +64,7 @@ const combineIntroWithMain = () => {
                   await checkExistsAndDelete("main_mix.mp4");
                   await checkExistsAndDelete("video_audio");
                   await checkExistsAndDelete("video_images");
+                  await checkExistsAndDelete("full_mashup_mix.mp3");
                 }
               });
             }

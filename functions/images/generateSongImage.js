@@ -93,6 +93,17 @@ const generateSongImage = async (instrumentals, vocals, index) => {
   const instrumentalCharts = sortingArrayFunction(instrumentals.charts);
   const vocalsCharts = sortingArrayFunction(vocals.charts);
 
+  fs.writeFile(
+    "thumbnail_photos.txt",
+    `${instrumentalCover}\n${vocalsCover}\n`,
+    { flag: "a" },
+    (err) => {
+      if (err) {
+        console.error(err);
+      }
+    }
+  );
+
   return await nodeHtmlToImage({
     output: `./video_images/image_${index}.png`,
     html: `<html>
@@ -412,9 +423,7 @@ const generateSongImage = async (instrumentals, vocals, index) => {
           </div>
       </body>
     </html>`,
-  })
-    .then(() => {})
-    .catch((err) => console.error(err));
+  }).catch((err) => console.error(err));
 };
 
 module.exports = { generateSongImage };
