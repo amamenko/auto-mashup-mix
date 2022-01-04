@@ -104,9 +104,16 @@ const generateSongImage = async (instrumentals, vocals, index) => {
     }
   );
 
-  return await nodeHtmlToImage({
-    output: `./video_images/image_${index}.png`,
-    html: `<html>
+  const puppeteerArgs = {
+    args: ["--no-sandbox"],
+    headless: true,
+    ignoreHTTPSErrors: true,
+  };
+
+  return await nodeHtmlToImage(
+    {
+      output: `./video_images/image_${index}.png`,
+      html: `<html>
       <head>
         <style>
         @font-face {
@@ -423,7 +430,9 @@ const generateSongImage = async (instrumentals, vocals, index) => {
           </div>
       </body>
     </html>`,
-  }).catch((err) => console.error(err));
+    },
+    puppeteerArgs
+  ).catch((err) => console.error(err));
 };
 
 module.exports = { generateSongImage };

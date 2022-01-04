@@ -21,6 +21,7 @@
     "lodash.samplesize": "^4.2.0",
     "node-cron": "^3.0.0",
     "node-html-to-image": "^3.2.0",
+    "puppeteer": "^13.0.1",
     "python-shell": "^3.0.1",
     "remove-accents": "^0.4.2",
     "svg64": "^1.1.0",

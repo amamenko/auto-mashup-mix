@@ -35,16 +35,43 @@ const createSlideshow = () => {
     let totalsDelay = 0;
     const totalsArr = [];
 
+    const writeToDescription = (totalsDelay, title, intro) => {
+      fs.writeFile(
+        "description.txt",
+        `${intro ? `Timestamps\n0:00 - Intro\n` : ""}${
+          Math.floor(totalsDelay / 60) +
+          ":" +
+          (totalsDelay - Math.floor(totalsDelay / 60) * 60).toLocaleString(
+            "en-US",
+            {
+              minimumIntegerDigits: 2,
+              maximumFractionDigits: 0,
+              useGrouping: false,
+            }
+          )
+        } - ${title}\n`,
+        { flag: "a" },
+        (err) => {
+          if (err) {
+            console.error(err);
+          }
+        }
+      );
+    };
+
     for (let i = 0; i < allFiles.length; i++) {
       if (i === 0) {
+        writeToDescription(5, startEndTimesArr[i].title, true);
         totalsDelay += Number(startEndTimesArr[i].mixEnd);
         totalsArr.push(totalsDelay);
       } else if (i === allFiles.length - 1) {
+        writeToDescription(totalsDelay + 5, startEndTimesArr[i].title);
         totalsDelay += Number(
           startEndTimesArr[i].duration - startEndTimesArr[i].mixStart
         );
         totalsArr.push(totalsDelay);
       } else {
+        writeToDescription(totalsDelay + 5, startEndTimesArr[i].title);
         totalsDelay += Number(
           startEndTimesArr[i].mixEnd - startEndTimesArr[i].mixStart
         );

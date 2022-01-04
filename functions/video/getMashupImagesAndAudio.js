@@ -54,7 +54,11 @@ const getMashupImagesAndAudio = async (currentMashup, i) => {
               download.on("end", async () => {
                 fs.writeFile(
                   "./video_audio/times.txt",
-                  `audio_${i}\nduration: ${currentMashup.fields.duration}\nmixStart: ${currentMashup.fields.mixStart}\nmixEnd: ${currentMashup.fields.mixEnd}\n\n`,
+                  `audio_${i}\nduration: ${
+                    currentMashup.fields.duration
+                  }\nmixStart: ${currentMashup.fields.mixStart}\nmixEnd: ${
+                    currentMashup.fields.mixEnd
+                  }\n${currentMashup.fields.title.split("MASHUP - ")[1]}\n\n`,
                   { flag: "a" },
                   (err) => {
                     if (err) {

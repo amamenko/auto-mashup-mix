@@ -13,6 +13,7 @@ const readStartEndTimes = async () => {
         duration: item.split("\n")[1].split(" ")[1],
         mixStart: item.split("\n")[2].split(" ")[1],
         mixEnd: item.split("\n")[3].split(" ")[1],
+        title: item.split("\n")[4],
       };
     });
 

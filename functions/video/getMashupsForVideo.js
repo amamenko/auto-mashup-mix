@@ -133,7 +133,16 @@ const getMashupsForVideo = async () => {
             }
           }
 
-          return finalMashupArr;
+          return finalMashupArr.filter(
+            (value, index, self) =>
+              index ===
+              self.findIndex(
+                (t) =>
+                  t.fields.accompanimentSysId ===
+                    value.fields.accompanimentSysId &&
+                  t.fields.vocalsSysId === value.fields.vocalsSysId
+              )
+          );
         }
       }
     });

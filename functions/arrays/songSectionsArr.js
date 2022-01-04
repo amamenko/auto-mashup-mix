@@ -23,7 +23,7 @@ const bridgeSections = [
   "classical",
   "solo",
 ];
-const spokenSections = ["spoken", "hablado", "skit"];
+const spokenSections = ["spoken", "hablado", "skit", "adlibs", "ad libs"];
 const outroSections = ["outro"];
 
 module.exports = {
