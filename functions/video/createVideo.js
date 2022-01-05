@@ -28,6 +28,7 @@ const createVideo = async () => {
         console.log(
           "Video thumbnail successfully created! Creating full mashup audio mix now!"
         );
+        await checkExistsAndDelete("thumbnail_photos.txt");
         await createMixOfAllMashups().then(() => {
           console.log(
             "Full mashup audio mix successfully created! Creating slideshow video now!"

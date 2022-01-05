@@ -16,6 +16,7 @@ const { createVideo } = require("./functions/video/createVideo");
 const {
   createVideoThumbnail,
 } = require("./functions/images/createVideoThumbnail");
+const fs = require("fs");
 require("dotenv").config();
 
 const port = process.env.PORT || 4000;

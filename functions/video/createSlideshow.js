@@ -65,13 +65,13 @@ const createSlideshow = () => {
         totalsDelay += Number(startEndTimesArr[i].mixEnd);
         totalsArr.push(totalsDelay);
       } else if (i === allFiles.length - 1) {
-        writeToDescription(totalsDelay + 5, startEndTimesArr[i].title);
+        writeToDescription(totalsDelay + 10, startEndTimesArr[i].title);
         totalsDelay += Number(
           startEndTimesArr[i].duration - startEndTimesArr[i].mixStart
         );
         totalsArr.push(totalsDelay);
       } else {
-        writeToDescription(totalsDelay + 5, startEndTimesArr[i].title);
+        writeToDescription(totalsDelay + 10, startEndTimesArr[i].title);
         totalsDelay += Number(
           startEndTimesArr[i].mixEnd - startEndTimesArr[i].mixStart
         );
