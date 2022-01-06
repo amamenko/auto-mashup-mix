@@ -25,7 +25,7 @@ const createVideoThumbnail = async () => {
     thumbnailPhotos = thumbnailPhotos.split("\n");
     thumbnailPhotos = [...new Set(thumbnailPhotos)];
     thumbnailPhotos = thumbnailPhotos.filter(
-      (item) => item && !item.includes("53x53")
+      (item) => item && !item.includes("53x53") && !item.includes("ctfassets")
     );
     const eightThumbnails = sampleSize(thumbnailPhotos, 8);
 
@@ -108,6 +108,16 @@ const createVideoThumbnail = async () => {
               justify-content: center;
               width: 100%;
               height: 100%;
+            }
+            .background_images::before {
+              position: absolute;
+              top: 0;
+              left: 0; 
+              content: '';
+              display: block;
+              width: 100%;
+              height: 100%;
+              background: rgba(0, 0, 0, 0.4);
             }
             .background_images img {
               padding: 0;

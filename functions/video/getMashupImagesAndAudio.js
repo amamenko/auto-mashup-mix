@@ -67,6 +67,17 @@ const getMashupImagesAndAudio = async (currentMashup, i) => {
                   }
                 );
 
+                fs.writeFile(
+                  "allArtists.txt",
+                  `${currentMashup.fields.accompanimentArtist}\n${currentMashup.fields.vocalsArtist}\n`,
+                  { flag: "a" },
+                  (err) => {
+                    if (err) {
+                      console.error(err);
+                    }
+                  }
+                );
+
                 let retries = 5;
                 let success = false;
 

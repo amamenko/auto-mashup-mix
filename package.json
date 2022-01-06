@@ -25,6 +25,7 @@
     "python-shell": "^3.0.1",
     "remove-accents": "^0.4.2",
     "svg64": "^1.1.0",
-    "wget-improved": "^3.2.1"
+    "wget-improved": "^3.2.1",
+    "youtube-api": "^3.0.1"
   }
 }

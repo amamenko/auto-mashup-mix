@@ -244,13 +244,13 @@ const createComplexFilter = (instrumentals, vox) => {
       {
         filter: `${
           numberOfLoops > 0
-            ? `afade=enable='between(t,0,2)':t=in:st=0:d=2,afade=enable='between(t,${Math.min(
+            ? `afade=enable='between(t,0,2)':t=in:st=0:d=2,afade=enable='between(t,${Math.max(
                 loopTime <= duration ? loopTime - 2 : duration - 2,
                 0
-              )},${Math.min(
+              )},${Math.max(
                 loopTime <= duration ? loopTime : duration,
                 0
-              )})':t=out:st=${Math.min(
+              )})':t=out:st=${Math.max(
                 loopTime <= duration ? loopTime - 2 : duration - 2,
                 0
               )}:d=2,`

@@ -13,13 +13,10 @@ const { format } = require("date-fns");
 const { timeStampToSeconds } = require("./functions/utils/timeStampToSeconds");
 const { isMashupTime } = require("./functions/utils/isMashupTime");
 const { createVideo } = require("./functions/video/createVideo");
-const {
-  createVideoThumbnail,
-} = require("./functions/images/createVideoThumbnail");
-const fs = require("fs");
+const { uploadToYouTube } = require("./functions/video/uploadToYouTube");
 require("dotenv").config();
 
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 4002;
 
 // // Get all mixable mashups in major key
 // // Runs at 1 AM on Sundays
