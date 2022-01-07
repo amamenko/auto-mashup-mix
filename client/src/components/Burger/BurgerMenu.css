@@ -1,0 +1,153 @@
+/* Position and sizing of burger button */
+.bm-burger-button {
+  position: fixed;
+  width: 36px;
+  height: 30px;
+  left: 36px;
+  top: 36px;
+  color: #000;
+  fill: #000;
+}
+
+.react-burger-menu-btn {
+  color: #000;
+  fill: #000;
+}
+
+/* Color/shape of burger icon bars */
+.bm-burger-bars {
+  background: #000;
+}
+
+/* Color/shape of burger icon bars on hover*/
+.bm-burger-bars-hover {
+  background: #a90000;
+}
+
+/* Position and sizing of clickable cross button */
+.bm-cross-button {
+  height: 24px;
+  width: 24px;
+}
+
+/* Color/shape of close button cross */
+.bm-cross {
+  background: #bdc3c7;
+}
+
+/*
+  Sidebar wrapper styles
+  Note: Beware of modifying this element as it can break the animations - you should not need to touch it in most cases
+  */
+.bm-menu-wrap {
+  position: fixed;
+  top: 0;
+  height: 100%;
+}
+
+/* General sidebar styles */
+.bm-menu {
+  background: #000;
+  padding: 2.5em 1.5em 0;
+  font-size: 1.15em;
+  overflow: hidden !important;
+}
+
+/* Morph shape necessary with bubble or elastic */
+.bm-morph-shape {
+  fill: #000;
+}
+
+/* Wrapper for item list */
+.bm-item-list {
+  color: #b8b7ad;
+  padding: 0.8em;
+}
+
+.bm-item-list a {
+  color: #fff;
+  text-decoration: none;
+  margin: 3rem 0;
+  font-size: 1.3rem;
+}
+
+/* Individual item */
+.bm-item {
+  display: inline-block;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+/* Styling of overlay */
+.bm-overlay {
+  background: rgba(0, 0, 0, 0.3);
+  top: 0;
+}
+
+svg.bm-item {
+  height: 70px;
+  text-align: center;
+  width: 100%;
+  outline: none;
+}
+
+.bottom_menu_logos {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+}
+
+.bm-item a {
+  margin: 0;
+  padding: 0;
+}
+
+.bm-item a svg {
+  width: 55px;
+  height: 25px;
+}
+
+.bm-item a:nth-child(2) svg {
+  height: 30px;
+  margin-bottom: -3px;
+}
+
+.bottom_copyright {
+  position: absolute;
+  bottom: 2rem;
+  text-align: center;
+  left: 0;
+  right: 0;
+}
+
+@media only screen and (max-width: 600px) {
+  .bm-burger-button {
+    position: fixed;
+    width: 26px;
+    height: 20px;
+    left: 36px;
+    top: 15px;
+  }
+}
+
+@media only screen and (max-width: 375px) {
+  .bm-burger-button {
+    top: 20px;
+  }
+}
+
+@media only screen and (min-width: 601px) and (max-width: 800px) {
+  .bm-burger-button {
+    top: 20px;
+  }
+}
+
+@media only screen and (max-width: 850px) and (max-height: 450px) {
+  .bm-burger-button {
+    top: 15px;
+  }
+}

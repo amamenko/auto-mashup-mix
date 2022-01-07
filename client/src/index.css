@@ -1,0 +1,53 @@
+@font-face {
+  font-family: neue-haas-grotesk-display;
+  src: url(https://use.typekit.net/af/9395af/00000000000000003b9b2046/27/l?subset_id=2&fvd=n4&v=3)
+      format("woff2"),
+    url(https://use.typekit.net/af/9395af/00000000000000003b9b2046/27/d?subset_id=2&fvd=n4&v=3)
+      format("woff"),
+    url(https://use.typekit.net/af/9395af/00000000000000003b9b2046/27/a?subset_id=2&fvd=n4&v=3)
+      format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: auto;
+}
+
+@font-face {
+  font-family: neue-haas-grotesk-display;
+  src: url(https://use.typekit.net/af/28f000/00000000000000003b9b2048/27/l?subset_id=2&fvd=n5&v=3)
+      format("woff2"),
+    url(https://use.typekit.net/af/28f000/00000000000000003b9b2048/27/d?subset_id=2&fvd=n5&v=3)
+      format("woff"),
+    url(https://use.typekit.net/af/28f000/00000000000000003b9b2048/27/a?subset_id=2&fvd=n5&v=3)
+      format("opentype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: auto;
+}
+
+@font-face {
+  font-family: neue-haas-grotesk-display;
+  src: url(https://use.typekit.net/af/d562ce/00000000000000003b9b204c/27/l?subset_id=2&fvd=n7&v=3)
+      format("woff2"),
+    url(https://use.typekit.net/af/d562ce/00000000000000003b9b204c/27/d?subset_id=2&fvd=n7&v=3)
+      format("woff"),
+    url(https://use.typekit.net/af/d562ce/00000000000000003b9b204c/27/a?subset_id=2&fvd=n7&v=3)
+      format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: auto;
+}
+
+html {
+  overflow-x: hidden;
+  width: 100vw;
+}
+
+body {
+  position: relative;
+  font-family: "neue-haas-grotesk-display";
+  margin: 0;
+  padding: 0;
+  background: #dedede;
+  overflow-x: hidden;
+  width: 100vw;
+}
