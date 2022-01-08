@@ -1,10 +1,11 @@
+import { Link } from "react-router-dom";
 import "../Privacy/Privacy.css";
 
 const Terms = () => {
   return (
     <div className="policy_main_container">
       <h1>
-        <strong>Terms and Conditions</strong>
+        <strong>Terms of Use</strong>
       </h1>
       <p>
         <i>Last updated: January 1st, {new Date().getFullYear()}</i>
@@ -77,18 +78,7 @@ const Terms = () => {
         <li>Redistribute content from Auto Mashup</li>
       </ul>
 
-      <p>
-        This Agreement shall begin on the date hereof. Our Terms and Conditions
-        were created with the help of the{" "}
-        <a href="https://www.termsandconditionsgenerator.com">
-          Terms And Conditions Generator
-        </a>{" "}
-        and the{" "}
-        <a href="https://www.generateprivacypolicy.com">
-          Privacy Policy Generator
-        </a>
-        .
-      </p>
+      <p>This Agreement shall begin on the date hereof.</p>
 
       <p>
         Parts of this website offer an opportunity for users to post and
@@ -254,7 +244,9 @@ const Terms = () => {
         <strong>Your Privacy</strong>
       </h2>
 
-      <p>Please read Privacy Policy</p>
+      <p>
+        Please read <Link to="/privacy">Privacy Policy</Link>
+      </p>
 
       <h2>
         <strong>Reservation of Rights</strong>
