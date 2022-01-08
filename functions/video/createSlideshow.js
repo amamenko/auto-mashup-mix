@@ -36,19 +36,19 @@ const createSlideshow = () => {
     const totalsArr = [];
 
     const writeToDescription = (totalsDelay, title, intro) => {
+      const minutesField = Math.floor(totalsDelay / 60);
+      const secondsField = totalsDelay - Math.floor(totalsDelay / 60) * 60;
+
       fs.writeFile(
         "description.txt",
         `${intro ? `Timestamps\n0:00 - Intro\n` : ""}${
-          Math.floor(totalsDelay / 60) +
+          (secondsField === 60 ? minutesField + 1 : minutesField) +
           ":" +
-          (totalsDelay - Math.floor(totalsDelay / 60) * 60).toLocaleString(
-            "en-US",
-            {
-              minimumIntegerDigits: 2,
-              maximumFractionDigits: 0,
-              useGrouping: false,
-            }
-          )
+          (secondsField === 60 ? 0 : secondsField).toLocaleString("en-US", {
+            minimumIntegerDigits: 2,
+            maximumFractionDigits: 0,
+            useGrouping: false,
+          })
         } - ${title}\n`,
         { flag: "a" },
         (err) => {

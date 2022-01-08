@@ -1,5 +1,6 @@
 const { exec } = require("child_process");
 const { checkExistsAndDelete } = require("../utils/checkExistsAndDelete");
+const { uploadToYouTube } = require("./uploadToYouTube");
 
 const combineIntroWithMain = () => {
   const reencodeIntro =
@@ -65,6 +66,8 @@ const combineIntroWithMain = () => {
                   await checkExistsAndDelete("video_audio");
                   await checkExistsAndDelete("video_images");
                   await checkExistsAndDelete("full_mashup_mix.mp3");
+
+                  uploadToYouTube();
                 }
               });
             }

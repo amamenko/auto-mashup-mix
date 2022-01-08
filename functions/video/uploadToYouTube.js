@@ -1,22 +1,15 @@
-const Youtube = require("youtube-api");
+const { upload } = require("youtube-videos-uploader");
 const { checkFileExists } = require("../utils/checkFileExists");
 const { getVideoDescription } = require("./getVideoDescription");
 const { getVideoTitle } = require("./getVideoTitle");
-const fs = require("fs");
 require("dotenv").config();
 
 const uploadToYouTube = async () => {
-  let oauth = Youtube.authenticate({
-    type: "oauth",
-    client_id: process.env.YOUTUBE_CLIENT_ID,
-    client_secret: process.env.YOUTUBE_CLIENT_SECRET,
-    redirect_url: process.env.YOUTUBE_REDIRECT_URL,
-  });
-
-  oauth.setCredentials({
-    access_token: process.env.YOUTUBE_API_ACCESS_TOKEN,
-    refresh_token: process.env.YOUTUBE_API_REFRESH_TOKEN,
-  });
+  const credentials = {
+    email: process.env.YOUTUBE_EMAIL,
+    pass: process.env.YOUTUBE_PASSWORD,
+    recoveryemail: process.env.YOUTUBE_RECOVERY_EMAIL,
+  };
 
   const videoTitle = await getVideoTitle();
   const videoDescription = await getVideoDescription();
@@ -28,55 +21,36 @@ const uploadToYouTube = async () => {
     if (thumbnailExists) {
       if (videoTitle) {
         if (videoDescription) {
-          console.log("Uploading video now...");
+          const onVideoUploadSuccess = () =>
+            console.log(
+              "Successfully uploaded video and associated thumbnail photo!"
+            );
 
-          Youtube.videos.insert(
-            {
-              resource: {
-                snippet: {
-                  title: videoTitle,
-                  description: videoDescription,
-                  defaultLanguage: "en",
-                },
-                status: {
-                  privacyStatus: "public",
-                },
-              },
-              part: "snippet,status",
-              media: {
-                body: fs.createReadStream("merged.mp4"),
-              },
-            },
-            (err, res) => {
-              if (err) {
-                console.error(err);
-              } else {
-                console.log(
-                  "Video has successfully been uploaded to YouTube! Uploading the thumbnail now."
-                );
-              }
+          const video = {
+            path: "merged.mp4",
+            title: videoTitle,
+            description: videoDescription,
+            thumbnail: "thumbnail.png",
+            language: "english",
+            tags: [
+              "mashup",
+              "mash-up",
+              "automated",
+              "billboard",
+              "music",
+              "songs",
+              "node.js",
+              "contentful",
+            ],
+            onSuccess: onVideoUploadSuccess,
+            skipProcessingWait: true,
+          };
 
-              Youtube.thumbnails.set(
-                {
-                  videoId: res.data.id,
-                  media: {
-                    body: fs.createReadStream("thumbnail.png"),
-                  },
-                },
-                (err, res) => {
-                  if (err) {
-                    console.log(
-                      "The API returned an error when attempting to upload thumbnail: " +
-                        err
-                    );
-                    return;
-                  }
-
-                  console.log("Successfully uploaded thumbnail photo!");
-                }
-              );
-            }
-          );
+          try {
+            await upload(credentials, [video]).then(console.log);
+          } catch (e) {
+            console.error(e);
+          }
         } else {
           console.log("Video description does not exist. Can't upload video!");
           return;
