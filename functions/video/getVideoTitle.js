@@ -1,5 +1,5 @@
-const { format, startOfWeek } = require("date-fns");
 const fs = require("fs");
+const { format, startOfWeek } = require("date-fns");
 const sampleSize = require("lodash.samplesize");
 const { checkFileExists } = require("../utils/checkFileExists");
 
@@ -20,7 +20,7 @@ const getVideoTitle = async () => {
       "MM/dd/yy"
     );
 
-    const fullTitle = `Billboard Automated Mashups - ${mostRecentSaturday} - ${highlightedArtists.join(
+    const fullTitle = `Billboard Automated Mashups - Week of ${mostRecentSaturday} - ${highlightedArtists.join(
       ", "
     )}`;
 

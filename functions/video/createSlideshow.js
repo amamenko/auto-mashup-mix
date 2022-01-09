@@ -1,8 +1,10 @@
-const wget = require("wget-improved");
 const fs = require("fs");
+const wget = require("wget-improved");
 const { exec } = require("child_process");
 const { combineIntroWithMain } = require("./combineIntroWithMain");
 const { readStartEndTimes } = require("../utils/readStartEndTimes");
+const { logger } = require("../logger/initializeLogger");
+require("dotenv").config();
 
 const createSlideshow = () => {
   const download = wget.download(
@@ -11,12 +13,28 @@ const createSlideshow = () => {
   );
 
   download.on("error", (err) => {
-    console.error(err);
+    if (process.env.NODE_ENV === "production") {
+      logger.error("Received error when attempting to download intro video", {
+        indexMeta: true,
+        meta: {
+          message: err,
+        },
+      });
+    } else {
+      console.error(err);
+    }
+
     return;
   });
 
   download.on("end", async () => {
-    console.log("Done downloading intro video!");
+    const doneStatement = "Done downloading intro video!";
+
+    if (process.env.NODE_ENV === "production") {
+      logger.log(doneStatement);
+    } else {
+      console.log(doneStatement);
+    }
 
     let allFiles = fs
       .readdirSync("video_images")
@@ -53,7 +71,19 @@ const createSlideshow = () => {
         { flag: "a" },
         (err) => {
           if (err) {
-            console.error(err);
+            if (process.env.NODE_ENV === "production") {
+              logger.error(
+                "Received error when attempting to write to description.txt",
+                {
+                  indexMeta: true,
+                  meta: {
+                    message: err,
+                  },
+                }
+              );
+            } else {
+              console.error(err);
+            }
           }
         }
       );
@@ -128,14 +158,32 @@ const createSlideshow = () => {
 
     exec(command, (err, stdout, stderr) => {
       if (err) {
-        console.error(`exec error: ${err}`);
+        if (process.env.NODE_ENV === "production") {
+          logger.error(
+            "Received exec error when attempting to create video slideshow with FFMPEG",
+            {
+              indexMeta: true,
+              meta: {
+                message: err,
+              },
+            }
+          );
+        } else {
+          console.error(`exec error: ${err}`);
+        }
+
         return;
       } else {
-        console.log(
-          `Successfully created main mix video! The process took ${
-            (Date.now() - start) / 1000
-          } seconds.`
-        );
+        const successStatement = `Successfully created main mix video! The process took ${
+          (Date.now() - start) / 1000
+        } seconds.`;
+
+        if (process.env.NODE_ENV === "production") {
+          logger.log(successStatement);
+        } else {
+          console.log(successStatement);
+        }
+
         combineIntroWithMain();
       }
     });

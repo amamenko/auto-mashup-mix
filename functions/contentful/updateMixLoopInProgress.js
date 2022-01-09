@@ -1,4 +1,5 @@
 const contentfulManagement = require("contentful-management");
+const { logger } = require("../logger/initializeLogger");
 const { getMostRecentSaturday } = require("../utils/getMostRecentSaturday");
 require("dotenv").config();
 
@@ -9,6 +10,22 @@ const updateMixLoopInProgress = async (mixChartID, state) => {
   });
 
   const mostRecentSaturday = getMostRecentSaturday();
+
+  const errorLog = (err) => {
+    if (process.env.NODE_ENV === "production") {
+      logger.error(
+        "Received error when attempting to update mix loop in progress",
+        {
+          indexMeta: true,
+          meta: {
+            message: err,
+          },
+        }
+      );
+    } else {
+      console.error(err);
+    }
+  };
 
   return await managementClient
     .getSpace(process.env.CONTENTFUL_SPACE_ID)
@@ -39,24 +56,28 @@ const updateMixLoopInProgress = async (mixChartID, state) => {
                   environment.getEntry(mixChartID).then((updatedEntry) => {
                     updatedEntry.publish();
 
-                    console.log(
-                      `Entry update was successful! ${
-                        updatedEntry.fields.title["en-US"]
-                      } loop marked as ${
-                        state === "in progress" ? "in progress." : "done."
-                      }`
-                    );
+                    const successStatement = `Entry update was successful! ${
+                      updatedEntry.fields.title["en-US"]
+                    } loop marked as ${
+                      state === "in progress" ? "in progress." : "done."
+                    }`;
+
+                    if (process.env.NODE_ENV === "production") {
+                      logger.log(successStatement);
+                    } else {
+                      console.log(successStatement);
+                    }
 
                     return;
                   });
                 })
-                .catch((e) => console.error(e));
+                .catch((e) => errorLog(e));
             })
-            .catch((e) => console.error(e));
+            .catch((e) => errorLog(e));
         })
-        .catch((e) => console.error(e));
+        .catch((e) => errorLog(e));
     })
-    .catch((e) => console.error(e));
+    .catch((e) => errorLog(e));
 };
 
 module.exports = { updateMixLoopInProgress };

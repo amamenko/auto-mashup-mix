@@ -4,6 +4,7 @@ const svg64 = require("svg64");
 const { checkFileExists } = require("../utils/checkFileExists");
 const { format, startOfWeek } = require("date-fns");
 const sampleSize = require("lodash.samplesize");
+const { logger } = require("../logger/initializeLogger");
 require("dotenv").config();
 
 const svg = fs.readFileSync("./assets/automashup_logo.svg", "utf-8");
@@ -164,11 +165,31 @@ const createVideoThumbnail = async () => {
         </html>`,
       },
       puppeteerArgs
-    ).catch((err) => console.error(err));
+    ).catch((err) => {
+      if (process.env.NODE_ENV === "production") {
+        logger.error(
+          "Received error when attempting to create video thumbnail",
+          {
+            indexMeta: true,
+            meta: {
+              message: err,
+            },
+          }
+        );
+      } else {
+        console.error(err);
+      }
+    });
   } else {
-    console.log(
-      "No thumbnail_photos.txt file was provided! Can't create thumbnail photo!"
-    );
+    const noTxtFileStatement =
+      "No thumbnail_photos.txt file was provided! Can't create thumbnail photo!";
+
+    if (process.env.NODE_ENV === "production") {
+      logger.log(noTxtFileStatement);
+    } else {
+      console.log(noTxtFileStatement);
+    }
+
     return;
   }
 };

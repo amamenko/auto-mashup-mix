@@ -1,6 +1,7 @@
 const contentfulManagement = require("contentful-management");
 const contentful = require("contentful");
 const { delayExecution } = require("../utils/delayExecution");
+const { logger } = require("../logger/initializeLogger");
 require("dotenv").config();
 
 const updateActiveMixes = async (applicableMode, currentIndex) => {
@@ -74,9 +75,13 @@ const updateActiveMixes = async (applicableMode, currentIndex) => {
                               .then((updatedEntry) => {
                                 updatedEntry.publish();
 
-                                console.log(
-                                  `The associated mix list object for the mashup "${currentMashupTitle}" has been successfully updated to show that it was already mixed.`
-                                );
+                                const updateSuccessStatement = `The associated mix list object for the mashup "${currentMashupTitle}" has been successfully updated to show that it was already mixed.`;
+
+                                if (process.env.NODE_ENV === "production") {
+                                  logger.log(updateSuccessStatement);
+                                } else {
+                                  console.log(updateSuccessStatement);
+                                }
                               });
                           });
                         });
@@ -92,18 +97,26 @@ const updateActiveMixes = async (applicableMode, currentIndex) => {
                           entry
                             .unpublish()
                             .then(async (unpublishedEntry) => {
-                              console.log(
-                                `Entry for mashup "${currentMashupTitle}" has been unpublished. Deleting now...`
-                              );
+                              const deletingStatement = `Entry for mashup "${currentMashupTitle}" has been unpublished. Deleting now...`;
+
+                              if (process.env.NODE_ENV === "production") {
+                                logger.log(deletingStatement);
+                              } else {
+                                console.log(deletingStatement);
+                              }
 
                               await delayExecution(1500);
 
                               unpublishedEntry.delete();
                             })
                             .then(async () => {
-                              console.log(
-                                `Entry for mashup "${currentMashupTitle}" has been deleted.`
-                              );
+                              const deletedStatement = `Entry for mashup "${currentMashupTitle}" has been deleted.`;
+
+                              if (process.env.NODE_ENV === "production") {
+                                logger.log(deletedStatement);
+                              } else {
+                                console.log(deletedStatement);
+                              }
 
                               await delayExecution(1500);
 
@@ -113,18 +126,30 @@ const updateActiveMixes = async (applicableMode, currentIndex) => {
                                   mixAsset
                                     .unpublish()
                                     .then(async (unpublishedMixAsset) => {
-                                      console.log(
-                                        `MP3 asset for mashup "${currentMashupTitle}" has been unpublished. Deleting now...`
-                                      );
+                                      const unpublishedStatement = `MP3 asset for mashup "${currentMashupTitle}" has been unpublished. Deleting now...`;
+
+                                      if (
+                                        process.env.NODE_ENV === "production"
+                                      ) {
+                                        logger.log(unpublishedStatement);
+                                      } else {
+                                        console.log(unpublishedStatement);
+                                      }
 
                                       await delayExecution(1500);
 
                                       unpublishedMixAsset.delete();
                                     })
                                     .then(async () => {
-                                      console.log(
-                                        `MP3 asset for mashup "${currentMashupTitle}" has been deleted.`
-                                      );
+                                      const deletedStatement = `MP3 asset for mashup "${currentMashupTitle}" has been deleted.`;
+
+                                      if (
+                                        process.env.NODE_ENV === "production"
+                                      ) {
+                                        logger.log(deletedStatement);
+                                      } else {
+                                        console.log(deletedStatement);
+                                      }
                                     });
                                 });
                               }

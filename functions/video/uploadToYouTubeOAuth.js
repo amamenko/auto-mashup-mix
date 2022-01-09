@@ -1,8 +1,9 @@
+const fs = require("fs");
 const Youtube = require("youtube-api");
 const { checkFileExists } = require("../utils/checkFileExists");
 const { getVideoDescription } = require("./getVideoDescription");
 const { getVideoTitle } = require("./getVideoTitle");
-const fs = require("fs");
+const { logger } = require("../logger/initializeLogger");
 require("dotenv").config();
 
 const uploadToYouTubeOAuth = async () => {
@@ -24,11 +25,19 @@ const uploadToYouTubeOAuth = async () => {
   const videoExists = await checkFileExists("merged.mp4");
   const thumbnailExists = await checkFileExists("thumbnail.png");
 
+  const loggerLog = (statement) => {
+    if (process.env.NODE_ENV === "production") {
+      logger.log(statement);
+    } else {
+      console.log(statement);
+    }
+  };
+
   if (videoExists) {
     if (thumbnailExists) {
       if (videoTitle) {
         if (videoDescription) {
-          console.log("Uploading video now...");
+          loggerLog("Uploading video now...");
 
           Youtube.videos.insert(
             {
@@ -49,9 +58,21 @@ const uploadToYouTubeOAuth = async () => {
             },
             (err, res) => {
               if (err) {
-                console.error(err);
+                if (process.env.NODE_ENV === "production") {
+                  logger.error(
+                    "Received an error when attempt to upload video to YouTube via videos.insert method",
+                    {
+                      indexMeta: true,
+                      meta: {
+                        message: err,
+                      },
+                    }
+                  );
+                } else {
+                  console.error(err);
+                }
               } else {
-                console.log(
+                loggerLog(
                   "Video has successfully been uploaded to YouTube! Uploading the thumbnail now."
                 );
               }
@@ -65,32 +86,42 @@ const uploadToYouTubeOAuth = async () => {
                 },
                 (err, res) => {
                   if (err) {
-                    console.log(
-                      "The API returned an error when attempting to upload thumbnail: " +
-                        err
-                    );
+                    const apiErrorStatement =
+                      "The API returned an error when attempting to upload thumbnail: ";
+
+                    if (process.env.NODE_ENV === "production") {
+                      logger.error(apiErrorStatement, {
+                        indexMeta: true,
+                        meta: {
+                          message: err,
+                        },
+                      });
+                    } else {
+                      console.error(apiErrorStatement + err);
+                    }
+
                     return;
                   }
 
-                  console.log("Successfully uploaded thumbnail photo!");
+                  loggerLog("Successfully uploaded thumbnail photo!");
                 }
               );
             }
           );
         } else {
-          console.log("Video description does not exist. Can't upload video!");
+          loggerLog("Video description does not exist. Can't upload video!");
           return;
         }
       } else {
-        console.log("Video title does not exist. Can't upload video!");
+        loggerLog("Video title does not exist. Can't upload video!");
         return;
       }
     } else {
-      console.log("Thumbnail png file does not exist. Can't upload video!");
+      loggerLog("Thumbnail png file does not exist. Can't upload video!");
       return;
     }
   } else {
-    console.log("Video mp4 file does not exist. Can't upload video!");
+    loggerLog("Video mp4 file does not exist. Can't upload video!");
     return;
   }
 };

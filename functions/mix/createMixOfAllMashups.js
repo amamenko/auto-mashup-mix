@@ -1,6 +1,8 @@
 const fs = require("fs");
 const { exec } = require("child_process");
 const { readStartEndTimes } = require("../utils/readStartEndTimes");
+const { logger } = require("../logger/initializeLogger");
+require("dotenv").config();
 
 const createMixOfAllMashups = async () => {
   const allFiles = fs
@@ -43,7 +45,20 @@ const createMixOfAllMashups = async () => {
   return new Promise(async (resolve, reject) => {
     exec(command, (err, stdout, stderr) => {
       if (err) {
-        console.error(`exec error: ${err}`);
+        if (process.env.NODE_ENV === "production") {
+          logger.error(
+            "Received exec error when attempting to create mix of all mashups with FFMPEG",
+            {
+              indexMeta: true,
+              meta: {
+                message: err,
+              },
+            }
+          );
+        } else {
+          console.error(`exec error: ${err}`);
+        }
+
         reject();
         return;
       } else {

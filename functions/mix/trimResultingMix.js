@@ -1,10 +1,11 @@
-const fs = require("fs");
 const ffmpeg = require("fluent-ffmpeg");
 const { checkFileExists } = require("../utils/checkFileExists");
 const { getClosestBeatArr } = require("./getClosestBeatArr");
 const { getAudioDurationInSeconds } = require("get-audio-duration");
-const { generateSongImage } = require("../images/generateSongImage");
 const { addMixToContentful } = require("../contentful/addMixToContentful");
+const { checkExistsAndDelete } = require("../utils/checkExistsAndDelete");
+const { logger } = require("../logger/initializeLogger");
+require("dotenv").config();
 
 const trimResultingMix = async (instrumentals, vocals) => {
   const mp3Exists = await checkFileExists("original_mix.mp3");
@@ -87,88 +88,60 @@ const trimResultingMix = async (instrumentals, vocals) => {
           },
         ])
         .on("error", async (err, stdout, stderr) => {
-          console.log(
-            `FFMPEG received an error. Terminating process. Output: ` +
-              err.message
-          );
+          const errorMessageStatement = `FFMPEG received an error. Terminating process. Output: `;
+          const stdErrStatement = "FFMPEG stderr:\n" + stderr;
 
-          console.log("FFMPEG stderr:\n" + stderr);
-
-          const inputsExists = await checkFileExists("./functions/mix/inputs");
-
-          if (inputsExists) {
-            fs.rmdirSync("./functions/mix/inputs", {
-              recursive: true,
-              force: true,
+          if (process.env.NODE_ENV === "production") {
+            logger.error(errorMessageStatement, {
+              indexMeta: true,
+              meta: {
+                message: err.message,
+              },
             });
-            console.log("Audio MP3 inputs directory deleted!");
+
+            logger.log(stdErrStatement);
+          } else {
+            console.error(`${errorMessageStatement} ${err.message}`);
+            console.log(stdErrStatement);
           }
 
-          const originalOutputExists = await checkFileExists(
-            "original_mix.mp3"
-          );
-
-          if (originalOutputExists) {
-            fs.rm(
-              "original_mix.mp3",
-              {
-                recursive: true,
-                force: true,
-              },
-              () => console.log("Original original_mix.mp3 file deleted!")
-            );
-          }
-
-          const leftoverOutputExists = await checkFileExists("trimmed_mix.mp3");
-
-          if (leftoverOutputExists) {
-            fs.rm(
-              "trimmed_mix.mp3",
-              {
-                recursive: true,
-                force: true,
-              },
-              () => console.log("Leftover trimmed_mix.mp3 file deleted!")
-            );
-          }
+          await checkExistsAndDelete("./functions/mix/inputs");
+          await checkExistsAndDelete("original_mix.mp3");
+          await checkExistsAndDelete("trimmed_mix.mp3");
 
           return;
         })
         .on("end", async () => {
-          console.log(
-            `\nDone in ${
-              (Date.now() - start) / 1000
-            }s\nSuccessfully trimmed original MP3 file.\nSaved to trimmed_mix.mp3.`
-          );
+          const successStatement = `\nDone in ${
+            (Date.now() - start) / 1000
+          }s\nSuccessfully trimmed original MP3 file.\nSaved to trimmed_mix.mp3.`;
 
-          const inputsExists = await checkFileExists("./functions/mix/inputs");
-
-          if (inputsExists) {
-            fs.rmdirSync("./functions/mix/inputs", {
-              recursive: true,
-              force: true,
-            });
-            console.log("Audio MP3 inputs directory deleted!");
+          if (process.env.NODE_ENV === "production") {
+            logger.log(successStatement);
+          } else {
+            console.log(successStatement);
           }
 
-          const originalOutputExists = await checkFileExists(
-            "original_mix.mp3"
-          );
-
-          if (originalOutputExists) {
-            fs.rm(
-              "original_mix.mp3",
-              {
-                recursive: true,
-                force: true,
-              },
-              () => console.log("Original original_mix.mp3 file deleted!")
-            );
-          }
+          await checkExistsAndDelete("./functions/mix/inputs");
+          await checkExistsAndDelete("original_mix.mp3");
 
           const mp3Duration = await getAudioDurationInSeconds(
             "trimmed_mix.mp3"
-          ).catch((e) => console.error(e));
+          ).catch((err) => {
+            if (process.env.NODE_ENV === "production") {
+              logger.error(
+                "Received error when attempting to get audio duration of trimmed_mix.mp3 in seconds",
+                {
+                  indexMeta: true,
+                  meta: {
+                    message: err,
+                  },
+                }
+              );
+            } else {
+              console.error(err);
+            }
+          });
 
           addMixToContentful(
             instrumentals,
@@ -182,11 +155,27 @@ const trimResultingMix = async (instrumentals, vocals) => {
         })
         .run();
     } else {
-      console.log("No instrumental sections available!");
+      const noSectionsAvailableStatement =
+        "No instrumental sections available!";
+
+      if (process.env.NODE_ENV === "production") {
+        logger.log(noSectionsAvailableStatement);
+      } else {
+        console.log(noSectionsAvailableStatement);
+      }
+
       return;
     }
   } else {
-    console.log("No original_mix.mp3 file available to trim!");
+    const noFileAvailableStatement =
+      "No original_mix.mp3 file available to trim!";
+
+    if (process.env.NODE_ENV === "production") {
+      logger.log(noFileAvailableStatement);
+    } else {
+      console.log(noFileAvailableStatement);
+    }
+
     return;
   }
 };

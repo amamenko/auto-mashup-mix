@@ -1,6 +1,8 @@
-const { exec } = require("child_process");
 const { checkExistsAndDelete } = require("../utils/checkExistsAndDelete");
 const { uploadToYouTube } = require("./uploadToYouTube");
+const { exec } = require("child_process");
+const { logger } = require("../logger/initializeLogger");
+require("dotenv").config();
 
 const combineIntroWithMain = () => {
   const reencodeIntro =
@@ -12,13 +14,37 @@ const combineIntroWithMain = () => {
   const concatCommand =
     "ffmpeg -f concat -safe 0 -i inputs.txt -c copy merged.mp4";
 
+  const loggerLog = (statement) => {
+    if (process.env.NODE_ENV === "production") {
+      logger.log(statement);
+    } else {
+      console.log(statement);
+    }
+  };
+
+  const errorLog = (err) => {
+    if (process.env.NODE_ENV === "production") {
+      logger.error(
+        "Received exec error when attempting to combine intro with main mix slideshow video",
+        {
+          indexMeta: true,
+          meta: {
+            message: err,
+          },
+        }
+      );
+    } else {
+      console.error(`exec error: ${err}`);
+    }
+  };
+
   // In order for FFMPEG's concat method to work, both videos must be re-encoded to the same exact resolution and codec
   exec(reencodeIntro, async (err, stdout, stderr) => {
     if (err) {
-      console.error(`exec error: ${err}`);
+      errorLog(err);
       return;
     } else {
-      console.log("Successfully re-encoded intro.mp4!");
+      loggerLog("Successfully re-encoded intro.mp4!");
 
       await checkExistsAndDelete("initial_intro.mp4");
 
@@ -26,10 +52,10 @@ const combineIntroWithMain = () => {
 
       exec(reencodeMain, async (err, stdout, stderr) => {
         if (err) {
-          console.error(`exec error: ${err}`);
+          errorLog(err);
           return;
         } else {
-          console.log(
+          loggerLog(
             `Successfully re-encoded main.mp4! The process took ${
               (Date.now() - startReencode) / 1000
             } seconds.`
@@ -41,10 +67,10 @@ const combineIntroWithMain = () => {
 
           exec(combineAudioWithMain, async (err, stdout, stderr) => {
             if (err) {
-              console.error(`exec error: ${err}`);
+              errorLog(err);
               return;
             } else {
-              console.log(
+              loggerLog(
                 `Successfully added audio to main mix slide show! The process took ${
                   (Date.now() - startCombine) / 1000
                 } seconds.`
@@ -54,10 +80,10 @@ const combineIntroWithMain = () => {
 
               exec(concatCommand, async (err, stdout, stderr) => {
                 if (err) {
-                  console.error(`exec error: ${err}`);
+                  errorLog(err);
                   return;
                 } else {
-                  console.log(
+                  loggerLog(
                     "Successfully concatenated intro and main mix videos!"
                   );
 

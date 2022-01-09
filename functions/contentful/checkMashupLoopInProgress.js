@@ -1,4 +1,5 @@
 const contentful = require("contentful");
+const { logger } = require("../logger/initializeLogger");
 const { getMostRecentSaturday } = require("../utils/getMostRecentSaturday");
 const { updateMixLoopInProgress } = require("./updateMixLoopInProgress");
 require("dotenv").config();
@@ -11,6 +12,19 @@ const checkMashupLoopInProgress = async () => {
   });
 
   const mostRecentSaturday = getMostRecentSaturday();
+
+  const mixListErrorLog = (err) => {
+    if (process.env.NODE_ENV === "production") {
+      logger.error("Received error when attempting to get mixList entry", {
+        indexMeta: true,
+        meta: {
+          message: err,
+        },
+      });
+    } else {
+      console.error(err);
+    }
+  };
 
   // Check if there are any loops in progress
   return await client
@@ -44,18 +58,32 @@ const checkMashupLoopInProgress = async () => {
                         await updateMixLoopInProgress(
                           mixListArr[0],
                           "in progress"
-                        ).catch((err) => console.error(err));
+                        ).catch((err) => {
+                          if (process.env.NODE_ENV === "production") {
+                            logger.error(
+                              "Received error when attempting to update mix loop to 'in progress'",
+                              {
+                                indexMeta: true,
+                                meta: {
+                                  message: err,
+                                },
+                              }
+                            );
+                          } else {
+                            console.error(err);
+                          }
+                        });
                       }
                     }
                   }
                 }
               })
-              .catch((err) => console.error(err));
+              .catch((err) => mixListErrorLog(err));
           }
         }
       }
     })
-    .catch((err) => console.error(err));
+    .catch((err) => mixListErrorLog(err));
 };
 
 module.exports = { checkMashupLoopInProgress };

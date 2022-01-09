@@ -9,6 +9,8 @@ const {
 const {
   updateMixLoopInProgress,
 } = require("../contentful/updateMixLoopInProgress");
+const { logger } = require("../logger/initializeLogger");
+require("dotenv").config();
 
 const createMashup = async () => {
   // Access to Contentful Delivery API
@@ -16,6 +18,22 @@ const createMashup = async () => {
     space: process.env.CONTENTFUL_SPACE_ID,
     accessToken: process.env.CONTENTFUL_ACCESS_TOKEN,
   });
+
+  const errorLog = (err) => {
+    if (process.env.NODE_ENV === "production") {
+      logger.error(
+        "Received error when attempting to get individual song entries to create a new mashup entry",
+        {
+          indexMeta: true,
+          meta: {
+            message: err,
+          },
+        }
+      );
+    } else {
+      console.error(err);
+    }
+  };
 
   await client
     .getEntries({
@@ -104,7 +122,7 @@ const createMashup = async () => {
                             "fields.accompanimentSysId,fields.vocalsSysId",
                           content_type: "mashup",
                         })
-                        .catch((e) => console.error(e));
+                        .catch((e) => errorLog(e));
 
                       // Check for existing mashup just in case
                       if (
@@ -134,24 +152,32 @@ const createMashup = async () => {
                           bothSections.vocals.fields
                         );
                       } else {
-                        console.log(
-                          `The mashup with accompaniment track "${currentSongs.accompanimentTitle}" by ${currentSongs.accompanimentArtist} mixed with the vocal track "${currentSongs.vocalsTitle}" by ${currentSongs.vocalsArtist} already exists! Moving on to next mashup.`
-                        );
+                        const alreadyExistsStatement = `The mashup with accompaniment track "${currentSongs.accompanimentTitle}" by ${currentSongs.accompanimentArtist} mixed with the vocal track "${currentSongs.vocalsTitle}" by ${currentSongs.vocalsArtist} already exists! Moving on to next mashup.`;
+
+                        if (process.env.NODE_ENV === "production") {
+                          logger.log(alreadyExistsStatement);
+                        } else {
+                          console.log(alreadyExistsStatement);
+                        }
                       }
                     }
                   } else {
-                    console.log(
-                      `Can't find one or both song entries when trying to create a mashup with accompaniment track "${currentSongs.accompanimentTitle}" by ${currentSongs.accompanimentArtist} and vocal track "${currentSongs.vocalsTitle}" by ${currentSongs.vocalsArtist}. Moving on to next mashup.`
-                    );
+                    const missingEntryStatement = `Can't find one or both song entries when trying to create a mashup with accompaniment track "${currentSongs.accompanimentTitle}" by ${currentSongs.accompanimentArtist} and vocal track "${currentSongs.vocalsTitle}" by ${currentSongs.vocalsArtist}. Moving on to next mashup.`;
+
+                    if (process.env.NODE_ENV === "production") {
+                      logger.log(missingEntryStatement);
+                    } else {
+                      console.log(missingEntryStatement);
+                    }
                   }
                 }
               })
-              .catch((e) => console.error(e));
+              .catch((e) => errorLog(e));
           }
         }
       }
     })
-    .catch((e) => console.error(e));
+    .catch((e) => errorLog(e));
 };
 
 module.exports = { createMashup };

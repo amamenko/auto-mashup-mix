@@ -1,9 +1,11 @@
+const fs = require("fs");
+const wget = require("wget-improved");
 const contentful = require("contentful");
 const { generateSongImage } = require("../images/generateSongImage");
 const { delayExecution } = require("../utils/delayExecution");
-const wget = require("wget-improved");
-const fs = require("fs");
 const { checkFileExists } = require("../utils/checkFileExists");
+const { logger } = require("../logger/initializeLogger");
+require("dotenv").config();
 
 const getMashupImagesAndAudio = async (currentMashup, i) => {
   // Access to Contentful Delivery API
@@ -47,7 +49,22 @@ const getMashupImagesAndAudio = async (currentMashup, i) => {
               );
 
               download.on("error", (err) => {
-                console.error(err);
+                if (process.env.NODE_ENV === "production") {
+                  logger.error(
+                    `Received error when attempting to download audio from ${
+                      "https:" + currentMashup.fields.mix.fields.file.url
+                    }`,
+                    {
+                      indexMeta: true,
+                      meta: {
+                        message: err,
+                      },
+                    }
+                  );
+                } else {
+                  console.error(err);
+                }
+
                 return;
               });
 
@@ -62,7 +79,19 @@ const getMashupImagesAndAudio = async (currentMashup, i) => {
                   { flag: "a" },
                   (err) => {
                     if (err) {
-                      console.error(err);
+                      if (process.env.NODE_ENV === "production") {
+                        logger.error(
+                          "Received error when attempting to write to ./video_audio/times.txt",
+                          {
+                            indexMeta: true,
+                            meta: {
+                              message: err,
+                            },
+                          }
+                        );
+                      } else {
+                        console.error(err);
+                      }
                     }
                   }
                 );
@@ -73,7 +102,19 @@ const getMashupImagesAndAudio = async (currentMashup, i) => {
                   { flag: "a" },
                   (err) => {
                     if (err) {
-                      console.error(err);
+                      if (process.env.NODE_ENV === "production") {
+                        logger.error(
+                          "Received error when attempting to write to allArtists.txt",
+                          {
+                            indexMeta: true,
+                            meta: {
+                              message: err,
+                            },
+                          }
+                        );
+                      } else {
+                        console.error(err);
+                      }
                     }
                   }
                 );
@@ -92,9 +133,21 @@ const getMashupImagesAndAudio = async (currentMashup, i) => {
 
                       resolve();
                     })
-                    .catch((e) => {
+                    .catch((err) => {
                       retries--;
-                      console.error(e);
+                      if (process.env.NODE_ENV === "production") {
+                        logger.error(
+                          "Received error when attempting to generate song image",
+                          {
+                            indexMeta: true,
+                            meta: {
+                              message: err,
+                            },
+                          }
+                        );
+                      } else {
+                        console.error(err);
+                      }
                     });
                 }
 

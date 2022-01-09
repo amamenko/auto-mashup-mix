@@ -30,7 +30,7 @@ const getVideoDescription = async () => {
     );
 
     const introductionText = `Auto Mashup presents the automated mashups for the week of ${mostRecentSaturday}.\n\nThese mashups consist of the most popular songs reported by Billboard across various weekly charts including the Hot 100, Billboard 200, Radio Songs, etc., as well as various Billboard GOAT (Greatest of All Time) charts including GOAT Hot 100 Songs, GOAT Songs of the '90s, GOAT Songs of the Summer, etc.\n\nThe video itself and every mashup featured in it were automatically generated using Node.js, Contentful, and FFMPEG.`;
-    const projectDetailsText = `Auto Mashup was created in early 2022 by Avi Mamenko.\n\nThe GitHub repo for Auto Mashup can be found at https://github.com/amamenko/auto-mashup.`;
+    const projectDetailsText = `You can visit the Auto Mashup website at https://automashup.ml\nThe GitHub repo for Auto Mashup can be found at https://github.com/amamenko/auto-mashup\n\nAuto Mashup was created in early 2022 by Avi Mamenko.\n\nYou can visit Avi's official coding channel at https://www.youtube.com/channel/UCmt250HYkdBT0H34Y3FG37w\nAvi's GitHub profile can be found at https://github.com/amamenko\nAvi's web development portfolio can be found at https://amamenko.github.io`;
 
     return `${introductionText}\n\n${sortedArray.join(
       "\n"

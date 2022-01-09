@@ -4,6 +4,7 @@ const svg64 = require("svg64");
 const { checkFileExists } = require("../utils/checkFileExists");
 const { format, startOfWeek } = require("date-fns");
 const axios = require("axios");
+const { logger } = require("../logger/initializeLogger");
 require("dotenv").config();
 
 const svg = fs.readFileSync("./assets/automashup_logo.svg", "utf-8");
@@ -99,7 +100,19 @@ const generateSongImage = async (instrumentals, vocals, index) => {
     { flag: "a" },
     (err) => {
       if (err) {
-        console.error(err);
+        if (process.env.NODE_ENV === "production") {
+          logger.error(
+            "Received error when attempting to write to thumbnail_photos.txt",
+            {
+              indexMeta: true,
+              meta: {
+                message: err,
+              },
+            }
+          );
+        } else {
+          console.error(err);
+        }
       }
     }
   );
@@ -432,7 +445,21 @@ const generateSongImage = async (instrumentals, vocals, index) => {
     </html>`,
     },
     puppeteerArgs
-  ).catch((err) => console.error(err));
+  ).catch((err) => {
+    if (process.env.NODE_ENV === "production") {
+      logger.error(
+        "Received error when attempting to write to generate a song image",
+        {
+          indexMeta: true,
+          meta: {
+            message: err,
+          },
+        }
+      );
+    } else {
+      console.error(err);
+    }
+  });
 };
 
 module.exports = { generateSongImage };

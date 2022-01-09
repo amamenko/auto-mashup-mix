@@ -2,6 +2,8 @@ const fs = require("fs");
 const axios = require("axios");
 const { mixTracks } = require("./mixTracks");
 const { delayExecution } = require("../utils/delayExecution");
+const { logger } = require("../logger/initializeLogger");
+require("dotenv").config();
 
 const normalizeInputsAndMix = async (instrumentals, vocals) => {
   if (instrumentals && vocals) {
@@ -44,10 +46,20 @@ const normalizeInputsAndMix = async (instrumentals, vocals) => {
         response.data.pipe(writer);
 
         response.data.on("error", (err) => {
-          console.log(
-            "Received an error when attempting to download YouTube video audio. Terminating process. Output: " +
-              err
-          );
+          const errorStatement =
+            "Received an error when attempting to download YouTube video audio. Terminating process. Output: ";
+
+          if (process.env.NODE_ENV === "production") {
+            logger.error(errorStatement, {
+              indexMeta: true,
+              meta: {
+                message: err,
+              },
+            });
+          } else {
+            console.error(errorStatement + err);
+          }
+
           return;
         });
       }

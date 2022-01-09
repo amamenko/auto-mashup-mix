@@ -1,6 +1,6 @@
 const contentful = require("contentful");
 const contentfulManagement = require("contentful-management");
-const { normalizeInputsAndMix } = require("../mix/normalizeInputsAndMix");
+const { logger } = require("../logger/initializeLogger");
 const { getUniqueOnly } = require("../utils/getUniqueOnly");
 const { findMatchingSongs } = require("./findMatchingSongs");
 require("dotenv").config();
@@ -125,9 +125,18 @@ const findMixable = async (applicableMode) => {
                                       .getEntry(mixListID)
                                       .then((updatedEntry) => {
                                         updatedEntry.publish().then(() => {
-                                          console.log(
-                                            `${capitalizedMode} key mashups mix list has been updated! Total number of mixes: ${matchNames.length}`
-                                          );
+                                          const updatedMixListStatement = `${capitalizedMode} key mashups mix list has been updated! Total number of mixes: ${matchNames.length}`;
+
+                                          if (
+                                            process.env.NODE_ENV ===
+                                            "production"
+                                          ) {
+                                            logger.log(updatedMixListStatement);
+                                          } else {
+                                            console.log(
+                                              updatedMixListStatement
+                                            );
+                                          }
                                         });
                                       });
                                   });
