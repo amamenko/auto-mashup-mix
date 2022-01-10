@@ -3,8 +3,11 @@ const { checkExistsAndDelete } = require("../utils/checkExistsAndDelete");
 const { checkFileExists } = require("../utils/checkFileExists");
 const { getVideoDescription } = require("./getVideoDescription");
 const { getVideoTitle } = require("./getVideoTitle");
-const { exec } = require("child_process");
 const { logger } = require("../logger/initializeLogger");
+const { createInstagramPost } = require("./createInstagramPost");
+const {
+  cleanUpRemainingFilesAfterVideo,
+} = require("../utils/cleanUpRemainingFilesAfterVideo");
 require("dotenv").config();
 
 const uploadToYouTube = async () => {
@@ -19,16 +22,6 @@ const uploadToYouTube = async () => {
 
   const videoExists = await checkFileExists("merged.mp4");
   const thumbnailExists = await checkFileExists("thumbnail.png");
-
-  const cleanUpRemainingFiles = async () => {
-    await checkExistsAndDelete("merged.mp4");
-    await checkExistsAndDelete("thumbnail.png");
-    await checkExistsAndDelete("allArtists.txt");
-    await checkExistsAndDelete("description.txt");
-
-    // Kill all leftover Puppeteer processes
-    exec("pkill -9 -f puppeteer");
-  };
 
   const doesntExistStatementLog = (statement) => {
     if (process.env.NODE_ENV === "production") {
@@ -65,13 +58,13 @@ const uploadToYouTube = async () => {
 
           try {
             await upload(credentials, [video]).then(async (data) => {
-              await cleanUpRemainingFiles();
-
               const ytLink = data[0];
 
               if (ytLink) {
                 await updateLatestVideoURL(ytLink);
               }
+
+              await createInstagramPost(videoTitle);
             });
           } catch (err) {
             if (process.env.NODE_ENV === "production") {
@@ -88,34 +81,34 @@ const uploadToYouTube = async () => {
               console.error(err);
             }
 
-            cleanUpRemainingFiles();
+            cleanUpRemainingFilesAfterVideo();
           }
         } else {
           doesntExistStatementLog(
             "Video description does not exist. Can't upload video!"
           );
-          cleanUpRemainingFiles();
+          cleanUpRemainingFilesAfterVideo();
           return;
         }
       } else {
         doesntExistStatementLog(
           "Video title does not exist. Can't upload video!"
         );
-        cleanUpRemainingFiles();
+        cleanUpRemainingFilesAfterVideo();
         return;
       }
     } else {
       doesntExistStatementLog(
         "Thumbnail png file does not exist. Can't upload video!"
       );
-      cleanUpRemainingFiles();
+      cleanUpRemainingFilesAfterVideo();
       return;
     }
   } else {
     doesntExistStatementLog(
       "Video mp4 file does not exist. Can't upload video!"
     );
-    cleanUpRemainingFiles();
+    cleanUpRemainingFilesAfterVideo();
     return;
   }
 };

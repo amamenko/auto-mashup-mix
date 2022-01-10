@@ -1,8 +1,11 @@
 const contentful = require("contentful");
 const contentfulManagement = require("contentful-management");
-const { logger } = require("../logger/initializeLogger");
+const {
+  cleanUpRemainingFilesAfterVideo,
+} = require("../utils/cleanUpRemainingFilesAfterVideo");
 const { getUniqueOnly } = require("../utils/getUniqueOnly");
 const { findMatchingSongs } = require("./findMatchingSongs");
+const { logger } = require("../logger/initializeLogger");
 require("dotenv").config();
 
 const findMixable = async (applicableMode) => {
@@ -11,6 +14,9 @@ const findMixable = async (applicableMode) => {
     space: process.env.CONTENTFUL_SPACE_ID,
     accessToken: process.env.CONTENTFUL_ACCESS_TOKEN,
   });
+
+  // Make sure no extraneous video files are left over
+  cleanUpRemainingFilesAfterVideo();
 
   await client
     .getEntries({
