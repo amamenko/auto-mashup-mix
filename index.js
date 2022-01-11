@@ -14,6 +14,7 @@ const { timeStampToSeconds } = require("./functions/utils/timeStampToSeconds");
 const { isMashupTime } = require("./functions/utils/isMashupTime");
 const { createVideo } = require("./functions/video/createVideo");
 const { onLoggerShutdown } = require("./functions/logger/onLoggerShutdown");
+const { logger } = require("./functions/logger/initializeLogger");
 require("dotenv").config();
 
 const port = process.env.PORT || 4000;
@@ -69,4 +70,12 @@ cron.schedule("0 12 * * 1", async () => {
   createVideo();
 });
 
-app.listen(port, () => console.log(`Listening on port ${port}...`));
+app.listen(port, () => {
+  const portStatement = `Listening on port ${port}...`;
+
+  if (process.env.NODE_ENV === "production") {
+    logger.log(portStatement);
+  } else {
+    console.log(portStatement);
+  }
+});

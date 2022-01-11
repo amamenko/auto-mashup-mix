@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "@logdna/logger": "^2.6.0",
+    "@tcortega/node-html-to-image": "^3.2.2",
     "axios": "^0.24.0",
     "contentful": "^9.1.5",
     "contentful-management": "^7.45.7",
@@ -22,8 +23,6 @@
     "instagram-web-api": "^2.2.2",
     "lodash.samplesize": "^4.2.0",
     "node-cron": "^3.0.0",
-    "node-html-to-image": "^3.2.0",
-    "puppeteer": "^13.0.1",
     "remove-accents": "^0.4.2",
     "svg64": "^1.1.0",
     "tough-cookie-filestore2": "^1.0.0",

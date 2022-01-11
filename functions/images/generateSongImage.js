@@ -1,4 +1,5 @@
-const nodeHtmlToImage = require("node-html-to-image");
+// This fork temporarily patches issue with sending args to puppeteer instance
+const nodeHtmlToImage = require("@tcortega/node-html-to-image");
 const fs = require("fs");
 const svg64 = require("svg64");
 const { checkFileExists } = require("../utils/checkFileExists");
@@ -117,11 +118,7 @@ const generateSongImage = async (instrumentals, vocals, index) => {
     }
   );
 
-  const puppeteerArgs = {
-    args: ["--no-sandbox"],
-    headless: true,
-    ignoreHTTPSErrors: true,
-  };
+  const puppeteerArgs = { args: ["--no-sandbox"] };
 
   return await nodeHtmlToImage(
     {
@@ -445,21 +442,7 @@ const generateSongImage = async (instrumentals, vocals, index) => {
     </html>`,
     },
     puppeteerArgs
-  ).catch((err) => {
-    if (process.env.NODE_ENV === "production") {
-      logger.error(
-        "Received error when attempting to write to generate a song image",
-        {
-          indexMeta: true,
-          meta: {
-            message: err,
-          },
-        }
-      );
-    } else {
-      console.error(err);
-    }
-  });
+  );
 };
 
 module.exports = { generateSongImage };

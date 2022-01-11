@@ -127,28 +127,11 @@ const getMashupImagesAndAudio = async (currentMashup, i) => {
                     accompanimentEntry.fields,
                     vocalsEntry.fields,
                     i
-                  )
-                    .then(() => {
-                      success = true;
+                  ).then(() => {
+                    success = true;
 
-                      resolve();
-                    })
-                    .catch((err) => {
-                      retries--;
-                      if (process.env.NODE_ENV === "production") {
-                        logger.error(
-                          "Received error when attempting to generate song image",
-                          {
-                            indexMeta: true,
-                            meta: {
-                              message: err,
-                            },
-                          }
-                        );
-                      } else {
-                        console.error(err);
-                      }
-                    });
+                    resolve();
+                  });
                 }
 
                 if (retries === 0) {
