@@ -33,10 +33,9 @@ const createVideoThumbnail = async () => {
 
     const puppeteerArgs = { args: ["--no-sandbox"] };
 
-    return await nodeHtmlToImage(
-      {
-        output: "thumbnail.png",
-        html: `<html>
+    return await nodeHtmlToImage({
+      output: "thumbnail.png",
+      html: `<html>
           <head>
             <style>
             @font-face {
@@ -160,9 +159,8 @@ const createVideoThumbnail = async () => {
             </div>
           </body>
         </html>`,
-      },
-      puppeteerArgs
-    );
+      puppeteerArgs,
+    });
   } else {
     const noTxtFileStatement =
       "No thumbnail_photos.txt file was provided! Can't create thumbnail photo!";
