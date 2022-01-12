@@ -165,6 +165,7 @@ const createSlideshow = () => {
               indexMeta: true,
               meta: {
                 message: err,
+                stderr,
               },
             }
           );
