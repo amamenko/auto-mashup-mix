@@ -164,8 +164,8 @@ const generateSongImage = async (instrumentals, vocals, index) => {
         body {
           background: rgb(204, 204, 204);
           font-family: "neue-haas-grotesk-display";
-          width: 1280px;
-          height: 720px;
+          width: 854px;
+          height: 480px;
           margin: 0;
           padding: 0;
         }
@@ -179,21 +179,21 @@ const generateSongImage = async (instrumentals, vocals, index) => {
           color: #fff;
           text-transform: uppercase;
           width: 100%;
-          height: 5rem;
+          height: 3rem;
           line-height: 1.1;
           display: flex;
           justify-content: space-between;
         }
         .top_banner img {
-          width: 50px;
+          width: 30px;
           height: auto;
-          margin-right: 4.75rem;
+          margin-right: 2rem;
         }
         .top_banner_text {
           display: flex;
           justify-content: flex-end;
           align-items: center;
-          font-size: 1.5rem;
+          font-size: 1rem;
           display: flex;
           padding: 0 2.7rem;
         }
@@ -223,11 +223,12 @@ const generateSongImage = async (instrumentals, vocals, index) => {
           display: flex;
           justify-content: flex-start;
           margin: 2.75rem;
-          margin-bottom: 1rem;
+          margin-bottom: 0.5rem;
+          margin-top: 1.5rem;
         }
         .primary_song_details img {
-          width: 100px;
-          height: 100px;
+          width: 75px;
+          height: 75px;
         }
         .song_details_container {
           display: flex;
@@ -247,9 +248,9 @@ const generateSongImage = async (instrumentals, vocals, index) => {
           margin: 0;
           line-height: 1.25;
           letter-spacing: 0.028rem;
-          font-size: 1.75rem;
+          font-size: 1.1rem;
           font-weight: 900;
-          width: 350px;
+          width: 165px;
           overflow: hidden;
           text-overflow: ellipsis;
           display: -webkit-box;
@@ -261,10 +262,14 @@ const generateSongImage = async (instrumentals, vocals, index) => {
           text-overflow: ellipsis;
           letter-spacing: 0.021rem;
           font-weight: 500;
-          font-size: 1.25rem;
+          font-size: 0.8rem;
+          text-overflow: ellipsis;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
         }
         .additional_info {
-          padding-top: 2rem;
+          padding-top: 1.5rem;
         }
         .rankings_list,
         .audio_analysis {
@@ -280,12 +285,12 @@ const generateSongImage = async (instrumentals, vocals, index) => {
         .rankings_list h4,
         .audio_analysis h4,
         .audio_analysis p {
-          font-size: 1.35rem;
+          font-size: 0.9rem;
           font-weight: 700;
           text-align: left;
           margin: 0;
           width: 100%;
-          margin-left: 6rem;
+          margin-left: 5.25rem;
         }
         .rankings_list h4 {
           margin-bottom: 0.5rem;
@@ -296,12 +301,11 @@ const generateSongImage = async (instrumentals, vocals, index) => {
           justify-content: center;
           text-align: left;
           margin-right: 9.5rem;
-          margin-top: 0.5rem;
+          margin-top: 0rem;
         }
         .analyses_container.vocals {
-          text-align: right;
-          margin-right: 0;
-          margin-right: 2.75rem;
+          text-align: right; 
+          margin-right: 2.4rem;
         }
         .audio_analysis {
           text-align: left;
@@ -316,6 +320,7 @@ const generateSongImage = async (instrumentals, vocals, index) => {
         .audio_analysis p {
           font-weight: 500;
           padding: 1rem;
+          padding-top: 0.5rem;
         }
         .audio_analysis.vocals p {
           text-align: right;
@@ -323,33 +328,33 @@ const generateSongImage = async (instrumentals, vocals, index) => {
         .rankings_list.vocals h4 {
           text-align: right;
           margin-left: 0;
-          margin-right: 6rem;
+          margin-right: 4.5rem;
         }
         .rankings_list ul {
           list-style-type: none;
           margin-right: 8rem;
-          padding-left: 6rem;
+          padding-left: 5.25rem;
           margin: 0;
           text-align: left;
-          font-size: 1.35rem;
+          font-size: 0.9rem;
           width: 100%;
-          line-height: 0.4;
+          line-height: 0.3;
         }
         .rankings_list.vocals ul {
           margin-right: 0;
           padding-left: 0;
-          margin-left: -5.7rem;
+          margin-left: -5.75rem;
           text-align: right;
         }
         .rankings_list ul li {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          width: 375px;
+          width: 250px;
         }
         .rankings_list.vocals ul li {
-          margin-left: 185px;
-        }          
+          margin-left: 112px;
+        }                               
         </style>
       </head>
       <body>
