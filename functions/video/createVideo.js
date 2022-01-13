@@ -25,7 +25,11 @@ const createVideo = async () => {
   );
 
   for (let i = 0; i < applicableMashups.length; i++) {
-    const currentPromise = getMashupImagesAndAudio(applicableMashups[i], i);
+    const currentPromise = getMashupImagesAndAudio(
+      applicableMashups[i],
+      i,
+      applicableMashups.length - 1
+    );
     allPromises.push(currentPromise);
   }
 

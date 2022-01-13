@@ -7,7 +7,7 @@ const { checkFileExists } = require("../utils/checkFileExists");
 const { logger } = require("../logger/initializeLogger");
 require("dotenv").config();
 
-const getMashupImagesAndAudio = async (currentMashup, i) => {
+const getMashupImagesAndAudio = async (currentMashup, i, lastIndex) => {
   // Access to Contentful Delivery API
   const client = contentful.createClient({
     space: process.env.CONTENTFUL_SPACE_ID,
@@ -129,6 +129,14 @@ const getMashupImagesAndAudio = async (currentMashup, i) => {
                     i
                   ).then(() => {
                     success = true;
+
+                    const successStatement = `Successfully generated image ${i} of ${lastIndex} - ${currentMashup.fields.title}`;
+
+                    if (process.env.NODE_ENV === "production") {
+                      logger.log(successStatement);
+                    } else {
+                      console.log(successStatement);
+                    }
 
                     resolve();
                   });
