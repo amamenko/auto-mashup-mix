@@ -185,7 +185,7 @@ const generateSongImage = async (instrumentals, vocals, index) => {
           justify-content: space-between;
         }
         .top_banner img {
-          width: 50px;
+          width: 65px;
           height: auto;
           margin-right: 4.75rem;
         }

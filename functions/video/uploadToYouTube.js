@@ -21,7 +21,7 @@ const uploadToYouTube = async () => {
   const videoDescription = await getVideoDescription();
 
   const videoExists = await checkFileExists("merged.mp4");
-  const thumbnailExists = await checkFileExists("thumbnail.png");
+  const thumbnailExists = await checkFileExists("thumbnail.jpg");
 
   const doesntExistStatementLog = (statement) => {
     if (process.env.NODE_ENV === "production") {
@@ -50,7 +50,7 @@ const uploadToYouTube = async () => {
             path: "merged.mp4",
             title: videoTitle,
             description: videoDescription,
-            thumbnail: "thumbnail.png",
+            thumbnail: "thumbnail.jpg",
             language: "english",
             onSuccess: onVideoUploadSuccess,
             skipProcessingWait: true,

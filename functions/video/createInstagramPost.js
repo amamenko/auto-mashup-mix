@@ -7,11 +7,12 @@ const { checkFileExists } = require("../utils/checkFileExists");
 const {
   cleanUpRemainingFilesAfterVideo,
 } = require("../utils/cleanUpRemainingFilesAfterVideo");
+const removeAccents = require("remove-accents");
 const { logger } = require("../logger/initializeLogger");
 require("dotenv").config();
 
 const createInstagramPost = async (videoTitle) => {
-  const thumbnailExists = await checkFileExists("thumbnail.png");
+  const thumbnailExists = await checkFileExists("thumbnail.jpg");
 
   const loggerLog = (statement) => {
     if (process.env.NODE_ENV === "production") {
@@ -61,12 +62,12 @@ const createInstagramPost = async (videoTitle) => {
                     allArtists.split(", ")[2]
                   }.`
                 : ""
-            }\nCheck out the channel link in the bio!`;
+            }\n\nYouTube channel link in bio!`;
 
             if (currentClient) {
               return await currentClient
                 .uploadPhoto({
-                  photo: "thumbnail.png",
+                  photo: "thumbnail.jpg",
                   caption: newCaption,
                   post: "feed",
                 })
@@ -84,11 +85,11 @@ const createInstagramPost = async (videoTitle) => {
                     const formattedArtists = artistsArr.map(
                       (item) =>
                         "#" +
-                        item
+                        removeAccents(item)
                           .toLowerCase()
                           .split(" ")
                           .join("")
-                          .replace(/_|'|-/gim, "")
+                          .replace(/[\W_]+/gim, "")
                     );
                     firstThreeHashtags = formattedArtists.join(" ");
                   }
@@ -172,7 +173,7 @@ const createInstagramPost = async (videoTitle) => {
     loggerLog(
       "Video title was not provided to the Instagram post function! Can't post to Instagram."
     );
-    await checkExistsAndDelete("thumbnail.png");
+    await checkExistsAndDelete("thumbnail.jpg");
     return;
   }
 };

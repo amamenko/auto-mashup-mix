@@ -23,7 +23,7 @@ const uploadToYouTubeOAuth = async () => {
   const videoDescription = await getVideoDescription();
 
   const videoExists = await checkFileExists("merged.mp4");
-  const thumbnailExists = await checkFileExists("thumbnail.png");
+  const thumbnailExists = await checkFileExists("thumbnail.jpg");
 
   const loggerLog = (statement) => {
     if (process.env.NODE_ENV === "production") {
@@ -81,7 +81,7 @@ const uploadToYouTubeOAuth = async () => {
                 {
                   videoId: res.data.id,
                   media: {
-                    body: fs.createReadStream("thumbnail.png"),
+                    body: fs.createReadStream("thumbnail.jpg"),
                   },
                 },
                 (err, res) => {

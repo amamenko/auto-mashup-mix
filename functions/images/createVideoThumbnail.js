@@ -34,7 +34,7 @@ const createVideoThumbnail = async () => {
     const puppeteerArgs = { args: ["--no-sandbox"] };
 
     return await nodeHtmlToImage({
-      output: "thumbnail.png",
+      output: "thumbnail.jpg",
       html: `<html>
           <head>
             <style>
