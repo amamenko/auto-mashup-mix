@@ -3,10 +3,11 @@ const { checkFileExists } = require("../utils/checkFileExists");
 const { getVideoDescription } = require("./getVideoDescription");
 const { getVideoTitle } = require("./getVideoTitle");
 const { logger } = require("../logger/initializeLogger");
-const { createInstagramPost } = require("./createInstagramPost");
 const {
   cleanUpRemainingFilesAfterVideo,
 } = require("../utils/cleanUpRemainingFilesAfterVideo");
+const { updateLatestVideoURL } = require("../contentful/updateLatestVideoURL");
+const { createInstagramPost } = require("./createInstagramPost");
 require("dotenv").config();
 
 const uploadToYouTube = async () => {
