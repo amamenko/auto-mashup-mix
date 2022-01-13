@@ -1,5 +1,4 @@
 const { upload } = require("youtube-videos-uploader");
-const { checkExistsAndDelete } = require("../utils/checkExistsAndDelete");
 const { checkFileExists } = require("../utils/checkFileExists");
 const { getVideoDescription } = require("./getVideoDescription");
 const { getVideoTitle } = require("./getVideoTitle");
@@ -57,15 +56,17 @@ const uploadToYouTube = async () => {
           };
 
           try {
-            await upload(credentials, [video]).then(async (data) => {
-              const ytLink = data[0];
+            await upload(credentials, [video], { args: ["--no-sandbox"] }).then(
+              async (data) => {
+                const ytLink = data[0];
 
-              if (ytLink) {
-                await updateLatestVideoURL(ytLink);
+                if (ytLink) {
+                  await updateLatestVideoURL(ytLink);
+                }
+
+                await createInstagramPost(videoTitle);
               }
-
-              await createInstagramPost(videoTitle);
-            });
+            );
           } catch (err) {
             if (process.env.NODE_ENV === "production") {
               logger.error(
