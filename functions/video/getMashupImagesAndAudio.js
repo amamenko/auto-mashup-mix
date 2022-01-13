@@ -65,6 +65,7 @@ const getMashupImagesAndAudio = async (currentMashup, i, lastIndex) => {
                   console.error(err);
                 }
 
+                reject();
                 return;
               });
 
@@ -92,6 +93,8 @@ const getMashupImagesAndAudio = async (currentMashup, i, lastIndex) => {
                       } else {
                         console.error(err);
                       }
+
+                      reject();
                     }
                   }
                 );
@@ -115,6 +118,8 @@ const getMashupImagesAndAudio = async (currentMashup, i, lastIndex) => {
                       } else {
                         console.error(err);
                       }
+
+                      reject();
                     }
                   }
                 );
@@ -148,8 +153,14 @@ const getMashupImagesAndAudio = async (currentMashup, i, lastIndex) => {
                   reject();
                 }
               });
+            } else {
+              reject();
             }
+          } else {
+            reject();
           }
+        } else {
+          reject();
         }
       });
   });
