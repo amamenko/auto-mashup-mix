@@ -55,18 +55,21 @@ const createSlideshow = () => {
 
     const writeToDescription = (totalsDelay, title, intro) => {
       const minutesField = Math.floor(totalsDelay / 60);
-      const secondsField = totalsDelay - Math.floor(totalsDelay / 60) * 60;
+      const secondsField = (
+        totalsDelay -
+        Math.floor(totalsDelay / 60) * 60
+      ).toLocaleString("en-US", {
+        minimumIntegerDigits: 2,
+        maximumFractionDigits: 0,
+        useGrouping: false,
+      });
 
       fs.writeFile(
         "description.txt",
         `${intro ? `Timestamps\n0:00 - Intro\n` : ""}${
-          (secondsField === 60 ? minutesField + 1 : minutesField) +
+          (secondsField.toString() === "60" ? minutesField + 1 : minutesField) +
           ":" +
-          (secondsField === 60 ? 0 : secondsField).toLocaleString("en-US", {
-            minimumIntegerDigits: 2,
-            maximumFractionDigits: 0,
-            useGrouping: false,
-          })
+          (secondsField.toString() === "60" ? "00" : secondsField)
         } - ${title}\n`,
         { flag: "a" },
         (err) => {
