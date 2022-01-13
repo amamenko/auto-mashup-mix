@@ -130,7 +130,9 @@ const getMashupImagesAndAudio = async (currentMashup, i, lastIndex) => {
                   ).then(() => {
                     success = true;
 
-                    const successStatement = `Successfully generated image ${i} of ${lastIndex} - ${currentMashup.fields.title}`;
+                    const successStatement = `Successfully generated image ${
+                      i + 1
+                    } of ${lastIndex + 1} - ${currentMashup.fields.title}`;
 
                     if (process.env.NODE_ENV === "production") {
                       logger.log(successStatement);
