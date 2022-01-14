@@ -348,7 +348,7 @@ const generateSongImage = async (instrumentals, vocals, index) => {
           width: 375px;
         }
         .rankings_list.vocals ul li {
-          margin-left: 185px;
+          margin-left: 188px;
         }                
         </style>
       </head>

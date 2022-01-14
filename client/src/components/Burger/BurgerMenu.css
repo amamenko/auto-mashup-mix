@@ -1,10 +1,5 @@
 /* Position and sizing of burger button */
 .bm-burger-button {
-  position: fixed;
-  width: 36px;
-  height: 30px;
-  left: 36px;
-  top: 36px;
   color: #000;
   fill: #000;
 }
@@ -86,6 +81,13 @@
   top: 0;
 }
 
+.header > div > div:nth-child(2) {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  margin-left: 2rem;
+}
+
 svg.bm-item {
   height: 70px;
   text-align: center;
@@ -109,11 +111,28 @@ svg.bm-item {
 .bm-item a svg {
   width: 55px;
   height: 25px;
+  fill: #fff;
 }
 
-.bm-item a:nth-child(2) svg {
+.bm-item a:nth-child(3) svg {
   height: 30px;
   margin-bottom: -3px;
+}
+
+.bm-item a:last-child svg {
+  transform: scale(4);
+}
+
+.coffee_button_side_menu {
+  background: rgb(255, 221, 0);
+  width: 200px;
+  height: 45px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2rem;
+  margin-left: 0.5rem;
 }
 
 .bottom_copyright {
@@ -125,29 +144,8 @@ svg.bm-item {
 }
 
 @media only screen and (max-width: 600px) {
-  .bm-burger-button {
-    position: fixed;
+  .header > div > div:nth-child(2) {
     width: 26px;
     height: 20px;
-    left: 36px;
-    top: 15px;
-  }
-}
-
-@media only screen and (max-width: 375px) {
-  .bm-burger-button {
-    top: 20px;
-  }
-}
-
-@media only screen and (min-width: 601px) and (max-width: 800px) {
-  .bm-burger-button {
-    top: 20px;
-  }
-}
-
-@media only screen and (max-width: 850px) and (max-height: 450px) {
-  .bm-burger-button {
-    top: 15px;
   }
 }

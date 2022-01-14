@@ -1,8 +1,13 @@
-import "./Home.css";
+import ReactPlayer from "react-player";
 import { ReactComponent as GitHubLogo } from "../../assets/github_logo.svg";
+import { ReactComponent as InstagramLogo } from "../../assets/instagram_logo.svg";
 import { ReactComponent as YouTubeLogo } from "../../assets/youtube_logo.svg";
+import { ReactComponent as CoffeeLogo } from "../../assets/coffee_logo.svg";
+import "./Home.css";
 
-const Home = () => {
+const Home = (props) => {
+  const { latestYouTubeVideo } = props;
+
   return (
     <div className="home_container">
       <h1>This is Auto Mashup</h1>
@@ -81,19 +86,49 @@ const Home = () => {
           </a>
           .
         </p>
+        <h2>Check out the latest YouTube video from Auto Mashup:</h2>
       </div>
-      <div class="bottom_homepage_logos">
+      <div className="player-wrapper">
+        <ReactPlayer
+          className="react-player"
+          controls
+          url={latestYouTubeVideo}
+        />
+      </div>
+      <div className="bottom_homepage_prompt">
+        <h2>Follow, subscribe to, or support the project!</h2>
+      </div>
+      <div className="bottom_homepage_logos">
         <a
           href="https://github.com/amamenko/auto-mashup"
           rel="noopener noreferrer"
+          target="_blank"
         >
           <GitHubLogo />
         </a>
         <a
+          href="https://www.instagram.com/automaticmashup/"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          <InstagramLogo />
+        </a>
+        <a
           href="https://www.youtube.com/channel/UCbjaDBiyXCqWGT4inY8LCmQ"
           rel="noopener noreferrer"
+          target="_blank"
         >
           <YouTubeLogo />
+        </a>
+        <br />
+        <a
+          href="https://www.buymeacoffee.com/automashup"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          <div className="coffee_button">
+            <CoffeeLogo />
+          </div>
         </a>
       </div>
     </div>
