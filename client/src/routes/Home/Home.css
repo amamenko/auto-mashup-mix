@@ -165,6 +165,12 @@ p.homepage_word {
   left: 0;
 }
 
+.css-1xdhyk6 {
+  margin-top: 15.7rem;
+  margin-bottom: 15.7rem;
+  transform: scale(5);
+}
+
 @media only screen and (max-width: 600px) {
   .react-player {
     width: 100% !important;
@@ -221,6 +227,12 @@ p.homepage_word {
     height: 60px;
     margin-bottom: -3px;
   }
+
+  .css-1xdhyk6 {
+    margin-top: 7rem;
+    margin-bottom: 6rem;
+    transform: scale(3);
+  }
 }
 
 @media only screen and (max-width: 800px) {
@@ -274,5 +286,10 @@ p.homepage_word {
 
   .bottom_homepage_logos a {
     overflow: hidden;
+  }
+
+  .css-1xdhyk6 {
+    margin-top: 25rem;
+    margin-bottom: 25rem;
   }
 }

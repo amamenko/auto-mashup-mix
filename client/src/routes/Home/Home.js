@@ -3,6 +3,7 @@ import { ReactComponent as GitHubLogo } from "../../assets/github_logo.svg";
 import { ReactComponent as InstagramLogo } from "../../assets/instagram_logo.svg";
 import { ReactComponent as YouTubeLogo } from "../../assets/youtube_logo.svg";
 import { ReactComponent as CoffeeLogo } from "../../assets/coffee_logo.svg";
+import ScaleLoader from "react-spinners/ScaleLoader";
 import "./Home.css";
 
 const Home = (props) => {
@@ -16,6 +17,7 @@ const Home = (props) => {
           href="https://www.merriam-webster.com/dictionary/mash-up"
           rel="noopener noreferrer"
           className="word_def_link"
+          target="_blank"
         >
           <p className="homepage_word">mash-up</p>
         </a>
@@ -33,15 +35,11 @@ const Home = (props) => {
             className="external_link"
             href="https://www.billboard.com/"
             rel="noopener noreferrer"
+            target="_blank"
           >
             Billboard
           </a>{" "}
           charts.
-        </p>
-        <p>
-          Popular charts include the weekly Hot 100 and Billboard 200, as well
-          as Billboard's GOAT (Greatest of All Time) charts such as GOAT Hot 100
-          Songs and GOAT Songs of the '90s.
         </p>
         <p>
           Created in early 2022 by{" "}
@@ -49,6 +47,7 @@ const Home = (props) => {
             className="external_link"
             href="https://github.com/amamenko"
             rel="noopener noreferrer"
+            target="_blank"
           >
             Avi Mamenko
           </a>
@@ -57,6 +56,7 @@ const Home = (props) => {
             className="external_link"
             href="https://www.spotify.com/us/"
             rel="noopener noreferrer"
+            target="_blank"
           >
             Spotify
           </a>
@@ -65,6 +65,7 @@ const Home = (props) => {
             className="external_link"
             href="https://genius.com/"
             rel="noopener noreferrer"
+            target="_blank"
           >
             Genius
           </a>
@@ -73,6 +74,7 @@ const Home = (props) => {
             className="external_link"
             href="https://www.youtube.com/"
             rel="noopener noreferrer"
+            target="_blank"
           >
             YouTube
           </a>
@@ -86,15 +88,44 @@ const Home = (props) => {
           </a>
           .
         </p>
+        <p>
+          Auto Mashup creates weekly videos with data related to the week's
+          mashups and automatically uploads them to its{" "}
+          <a
+            className="external_link"
+            href="https://www.youtube.com/channel/UCbjaDBiyXCqWGT4inY8LCmQ"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            YouTube channel
+          </a>
+          .
+        </p>
+        <p>
+          Weekly posts to Auto Mashup's{" "}
+          <a
+            className="external_link"
+            href="https://www.instagram.com/automaticmashup/"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            Instagram page
+          </a>{" "}
+          are also completely automated.
+        </p>
         <h2>Check out the latest YouTube video from Auto Mashup:</h2>
       </div>
-      <div className="player-wrapper">
-        <ReactPlayer
-          className="react-player"
-          controls
-          url={latestYouTubeVideo}
-        />
-      </div>
+      {latestYouTubeVideo ? (
+        <div className="player-wrapper">
+          <ReactPlayer
+            className="react-player"
+            controls
+            url={latestYouTubeVideo}
+          />
+        </div>
+      ) : (
+        <ScaleLoader color="#000" />
+      )}
       <div className="bottom_homepage_prompt">
         <h2>Follow, subscribe to, or support the project!</h2>
       </div>
