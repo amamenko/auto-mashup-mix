@@ -74,7 +74,7 @@ The basic functionality of this repository's code logic is:
 * The mixed MP3 mashup audio asset and entry containing data about the instrumental and vocal songs is stored in Contentful's CMS using the [Content Management API](https://www.npmjs.com/package/contentful-management). Additional information about the mix - such as vocal track mix start, mix end, and [total duration](https://www.npmjs.com/package/get-audio-duration) - is also noted for use when mixing multiple mashups together.
 
 <strong>Create Weekly Mix and Video of Selected Mashups:</strong>
-* Randomly selects either 20 mashups or at least 28 minutes total worth of continuous mashup mixes without any repeats.
+* Randomly selects either 20 vetted mashups or at least 28 minutes total worth of continuous vetted mashup mixes without any repeats.
 * In [December](https://en.wikipedia.org/wiki/Christmas_and_holiday_season), at least 5 holiday songs (instrumental,  accompaniment, or both), if available, are included throughout the mashup mix.
 * Downloads each mashup's audio MP3 asset and each included song's cover photo from Contentful for use in both thumbnail creation and slideshow inclusion.
 * Creates a full audio MP3 mix with [FFMPEG](https://ffmpeg.org/) of all the selected mashups with a [crossfade](https://ffmpeg.org/ffmpeg-filters.html#acrossfade) to transition between each mashup mix.
