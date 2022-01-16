@@ -119,6 +119,7 @@ Project Link: [https://github.com/amamenko/auto-mashup-mix](https://github.com/a
 * [node-cron](https://www.npmjs.com/package/node-cron)
 * [FFMPEG](https://ffmpeg.org/)
 * [fluent-ffmpeg](https://www.npmjs.com/package/fluent-ffmpeg)
+* [node-html-to-image](https://www.npmjs.com/package/node-html-to-image)
 * [Best-README-Template](https://github.com/othneildrew/Best-README-Template)
 
 
