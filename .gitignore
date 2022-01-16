@@ -13,6 +13,8 @@
 /video_audio
 /video_images
 /yt-auth
+client_oauth_token.json
+client_secret.json
 YouTubeSubtitles.vtt
 YouTubeSubtitles.json
 cookies.json

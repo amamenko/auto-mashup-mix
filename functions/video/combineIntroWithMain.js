@@ -1,7 +1,7 @@
 const { checkExistsAndDelete } = require("../utils/checkExistsAndDelete");
-const { uploadToYouTube } = require("./uploadToYouTube");
 const { exec } = require("child_process");
 const { logger } = require("../logger/initializeLogger");
+const { uploadToYouTubeOAuth } = require("./uploadToYouTubeOAuth");
 require("dotenv").config();
 
 const combineIntroWithMain = () => {
@@ -93,7 +93,7 @@ const combineIntroWithMain = () => {
                   await checkExistsAndDelete("video_images");
                   await checkExistsAndDelete("full_mashup_mix.mp3");
 
-                  uploadToYouTube();
+                  uploadToYouTubeOAuth();
                 }
               });
             }
