@@ -47,7 +47,7 @@ const normalizeInputsAndMix = async (instrumentals, vocals) => {
 
         response.data.on("error", (err) => {
           const errorStatement =
-            "Received an error when attempting to download YouTube video audio. Terminating process. Output: ";
+            "Received an error when attempting to download song entry audio. Terminating process. Output: ";
 
           if (process.env.NODE_ENV === "production") {
             logger.error(errorStatement, {
