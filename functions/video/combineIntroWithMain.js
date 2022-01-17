@@ -8,7 +8,7 @@ const combineIntroWithMain = () => {
   const reencodeIntro =
     "ffmpeg -i initial_intro.mp4 -vcodec libx264 -s 1280x720 -r 60 -strict experimental intro.mp4";
   const reencodeMain =
-    "ffmpeg -i initial_main.mp4 -vcodec libx264 -s 1280x720 -r 60 -strict experimental main.mp4";
+    "ffmpeg -i initial_main_green.mp4 -vcodec libx264 -s 1280x720 -r 60 -strict experimental main.mp4";
   const combineAudioWithMain =
     "ffmpeg -i main.mp4 -i full_mashup_mix.mp3 -c:v copy -c:a aac main_mix.mp4";
   const concatCommand =
@@ -61,7 +61,7 @@ const combineIntroWithMain = () => {
             } seconds.`
           );
 
-          await checkExistsAndDelete("initial_main.mp4");
+          await checkExistsAndDelete("initial_main_green.mp4");
 
           const startCombine = Date.now();
 

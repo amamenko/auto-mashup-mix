@@ -11,6 +11,19 @@ const updateActiveMixes = async (applicableMode, currentIndex) => {
     accessToken: process.env.CONTENTFUL_ACCESS_TOKEN,
   });
 
+  const errorLog = (err) => {
+    if (process.env.NODE_ENV === "production") {
+      logger.error("Received error when attempting to update active mixes", {
+        indexMeta: true,
+        meta: {
+          message: err,
+        },
+      });
+    } else {
+      console.error(err);
+    }
+  };
+
   return await client
     .getEntries({
       "fields.mode": applicableMode,
@@ -41,10 +54,13 @@ const updateActiveMixes = async (applicableMode, currentIndex) => {
                 content_type: "mixList",
               });
 
-              if (currentMixList[0]) {
-                currentMixList = currentMixList[0];
+              const mashupListID = currentMixList.items[0].sys.id;
+              const allMashups = currentMixList.items[0].fields.mashups;
 
-                let foundMatchIndex = currentMixList.fields.mashups.findIndex(
+              if (allMashups.length > 0) {
+                currentMixList = allMashups;
+
+                let foundMatchIndex = currentMixList.findIndex(
                   (item) =>
                     item.accompanimentID === currentAccompanimentID &&
                     item.vocalsID === currentVocalsID
@@ -56,114 +72,130 @@ const updateActiveMixes = async (applicableMode, currentIndex) => {
                 });
 
                 if (foundMatchIndex > -1) {
-                  const allMashupsList = currentMixList.fields.mashups;
-
                   managementClient
                     .getSpace(process.env.CONTENTFUL_SPACE_ID)
                     .then((space) => {
                       space.getEnvironment("master").then((environment) => {
-                        environment.getEntry(entryID).then((entry) => {
-                          allMashupsList[foundMatchIndex].mixed = true;
+                        environment
+                          .getEntry(mashupListID)
+                          .then((entry) => {
+                            currentMixList[foundMatchIndex].mixed = true;
 
-                          entry.fields.mashups = {
-                            "en-US": allMashupsList,
-                          };
+                            entry.fields.mashups = {
+                              "en-US": currentMixList,
+                            };
 
-                          entry.update().then(() => {
-                            environment
-                              .getEntry(entryID)
-                              .then((updatedEntry) => {
-                                updatedEntry.publish();
+                            entry
+                              .update()
+                              .then(() => {
+                                environment
+                                  .getEntry(mashupListID)
+                                  .then((updatedEntry) => {
+                                    updatedEntry.publish();
 
-                                const updateSuccessStatement = `The associated mix list object for the mashup "${currentMashupTitle}" has been successfully updated to show that it was already mixed.`;
+                                    const updateSuccessStatement = `The associated mix list object for the mashup "${currentMashupTitle}" has been successfully updated to show that it was already mixed.`;
 
-                                if (process.env.NODE_ENV === "production") {
-                                  logger.log(updateSuccessStatement);
-                                } else {
-                                  console.log(updateSuccessStatement);
-                                }
-                              });
-                          });
-                        });
+                                    if (process.env.NODE_ENV === "production") {
+                                      logger.log(updateSuccessStatement);
+                                    } else {
+                                      console.log(updateSuccessStatement);
+                                    }
+                                  })
+                                  .catch((e) => errorLog(e));
+                              })
+                              .catch((e) => errorLog(e));
+                          })
+                          .catch((e) => errorLog(e));
                       });
-                    });
+                    })
+                    .catch((e) => errorLog(e));
                 } else {
                   managementClient
                     .getSpace(process.env.CONTENTFUL_SPACE_ID)
                     .then((space) => {
                       space.getEnvironment("master").then((environment) => {
-                        environment.getEntry(entryID).then((entry) => {
-                          // Unpublish and delete entry itself
-                          entry
-                            .unpublish()
-                            .then(async (unpublishedEntry) => {
-                              const deletingStatement = `Entry for mashup "${currentMashupTitle}" has been unpublished. Deleting now...`;
+                        environment
+                          .getEntry(entryID)
+                          .then((entry) => {
+                            // Unpublish and delete entry itself
+                            entry
+                              .unpublish()
+                              .then(async (unpublishedEntry) => {
+                                const deletingStatement = `Entry for mashup "${currentMashupTitle}" has been unpublished. Deleting now...`;
 
-                              if (process.env.NODE_ENV === "production") {
-                                logger.log(deletingStatement);
-                              } else {
-                                console.log(deletingStatement);
-                              }
+                                if (process.env.NODE_ENV === "production") {
+                                  logger.log(deletingStatement);
+                                } else {
+                                  console.log(deletingStatement);
+                                }
 
-                              await delayExecution(1500);
+                                await delayExecution(1500);
 
-                              unpublishedEntry.delete();
-                            })
-                            .then(async () => {
-                              const deletedStatement = `Entry for mashup "${currentMashupTitle}" has been deleted.`;
+                                unpublishedEntry.delete();
+                              })
+                              .then(async () => {
+                                const deletedStatement = `Entry for mashup "${currentMashupTitle}" has been deleted.`;
 
-                              if (process.env.NODE_ENV === "production") {
-                                logger.log(deletedStatement);
-                              } else {
-                                console.log(deletedStatement);
-                              }
+                                if (process.env.NODE_ENV === "production") {
+                                  logger.log(deletedStatement);
+                                } else {
+                                  console.log(deletedStatement);
+                                }
 
-                              await delayExecution(1500);
+                                await delayExecution(1500);
 
-                              // Delete mashup MP3 audio asset
-                              if (mixID) {
-                                environment.getAsset(mixID).then((mixAsset) => {
-                                  mixAsset
-                                    .unpublish()
-                                    .then(async (unpublishedMixAsset) => {
-                                      const unpublishedStatement = `MP3 asset for mashup "${currentMashupTitle}" has been unpublished. Deleting now...`;
+                                // Delete mashup MP3 audio asset
+                                if (mixID) {
+                                  environment
+                                    .getAsset(mixID)
+                                    .then((mixAsset) => {
+                                      mixAsset
+                                        .unpublish()
+                                        .then(async (unpublishedMixAsset) => {
+                                          const unpublishedStatement = `MP3 asset for mashup "${currentMashupTitle}" has been unpublished. Deleting now...`;
 
-                                      if (
-                                        process.env.NODE_ENV === "production"
-                                      ) {
-                                        logger.log(unpublishedStatement);
-                                      } else {
-                                        console.log(unpublishedStatement);
-                                      }
+                                          if (
+                                            process.env.NODE_ENV ===
+                                            "production"
+                                          ) {
+                                            logger.log(unpublishedStatement);
+                                          } else {
+                                            console.log(unpublishedStatement);
+                                          }
 
-                                      await delayExecution(1500);
+                                          await delayExecution(1500);
 
-                                      unpublishedMixAsset.delete();
-                                    })
-                                    .then(async () => {
-                                      const deletedStatement = `MP3 asset for mashup "${currentMashupTitle}" has been deleted.`;
+                                          unpublishedMixAsset.delete();
+                                        })
+                                        .then(async () => {
+                                          const deletedStatement = `MP3 asset for mashup "${currentMashupTitle}" has been deleted.`;
 
-                                      if (
-                                        process.env.NODE_ENV === "production"
-                                      ) {
-                                        logger.log(deletedStatement);
-                                      } else {
-                                        console.log(deletedStatement);
-                                      }
+                                          if (
+                                            process.env.NODE_ENV ===
+                                            "production"
+                                          ) {
+                                            logger.log(deletedStatement);
+                                          } else {
+                                            console.log(deletedStatement);
+                                          }
+                                        });
                                     });
-                                });
-                              }
-                            });
-                        });
+                                }
+                              })
+                              .catch((e) => errorLog(e));
+                          })
+                          .catch((e) => errorLog(e));
                       });
-                    });
+                    })
+                    .catch((e) => errorLog(e));
                 }
               }
             }
           }
         }
       }
-    });
+    })
+    .catch((e) => errorLog(e));
 };
 
 module.exports = { updateActiveMixes };

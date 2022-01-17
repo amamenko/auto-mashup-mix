@@ -4,6 +4,7 @@ const { exec } = require("child_process");
 const { combineIntroWithMain } = require("./combineIntroWithMain");
 const { readStartEndTimes } = require("../utils/readStartEndTimes");
 const { logger } = require("../logger/initializeLogger");
+const { addGreenScreenBanners } = require("./addGreenScreenBanners");
 require("dotenv").config();
 
 const createSlideshow = () => {
@@ -92,6 +93,8 @@ const createSlideshow = () => {
       );
     };
 
+    let delayEndThanks = 0;
+
     for (let i = 0; i < allFiles.length; i++) {
       if (i === 0) {
         writeToDescription(5, startEndTimesArr[i].title, true);
@@ -102,6 +105,7 @@ const createSlideshow = () => {
           totalsDelay - (i - 1) * 5,
           startEndTimesArr[i].title
         );
+        delayEndThanks = totalsDelay - (i - 1) * 5;
         totalsDelay += Number(
           startEndTimesArr[i].duration - startEndTimesArr[i].mixStart
         );
@@ -188,7 +192,7 @@ const createSlideshow = () => {
           console.log(successStatement);
         }
 
-        combineIntroWithMain();
+        addGreenScreenBanners(delayEndThanks + 50);
       }
     });
   });

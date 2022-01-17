@@ -27,7 +27,11 @@ const createVideoThumbnail = async () => {
     thumbnailPhotos = thumbnailPhotos.split("\n");
     thumbnailPhotos = [...new Set(thumbnailPhotos)];
     thumbnailPhotos = thumbnailPhotos.filter(
-      (item) => item && !item.includes("53x53") && !item.includes("ctfassets")
+      (item) =>
+        item &&
+        item.includes("180x180") &&
+        !item.includes("53x53") &&
+        !item.includes("ctfassets")
     );
     const eightThumbnails = sampleSize(thumbnailPhotos, 8);
 

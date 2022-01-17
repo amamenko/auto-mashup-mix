@@ -17,14 +17,37 @@ const getMashupsForVideo = async () => {
       content_type: "mashup",
       limit: 1000,
     })
-    .then((res) => {
+    .then(async (res) => {
       if (res) {
         if (res.items && res.items.length > 0) {
           let totalDuration = 0;
           const finalMashupArr = [];
 
-          // Get random 40 approved mashups
-          let mashups = sampleSize(res.items, 40);
+          // Get random 80 approved mashups
+          let mashups = sampleSize(res.items, 80);
+
+          const mixListEntries = await client.getEntries({
+            content_type: "mixList",
+          });
+
+          const mixLists = mixListEntries.items
+            .map((item) => item.fields.mashups)
+            .flat();
+
+          const mixListIDs = mixLists.map((item) => {
+            return {
+              vocalsID: item.vocalsID,
+              accompanimentID: item.accompanimentID,
+            };
+          });
+
+          mashups = mashups.filter((mashup) =>
+            mixListIDs.find(
+              (ids) =>
+                mashup.fields.vocalsSysId === ids.vocalsID &&
+                mashup.fields.accompanimentSysId === ids.accompanimentID
+            )
+          );
 
           const currentMonth = getMonth(new Date());
 
