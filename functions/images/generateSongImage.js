@@ -345,11 +345,11 @@ const generateSongImage = async (instrumentals, vocals, index) => {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          width: 375px;
+          width: 370px;
         }
         .rankings_list.vocals ul li {
-          margin-left: 188px;
-        }                
+          margin-left: 194px;
+        }             
         </style>
       </head>
       <body>
