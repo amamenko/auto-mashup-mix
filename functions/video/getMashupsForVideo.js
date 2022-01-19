@@ -88,6 +88,9 @@ const getMashupsForVideo = async () => {
             }
           }
 
+          const vocalsArr = [];
+          const instrumentalsArr = [];
+
           for (let i = 0; i < mashups.length; i++) {
             const currentMashup = mashups[i];
             const lastMashup = mashups[i - 1];
@@ -140,11 +143,32 @@ const getMashupsForVideo = async () => {
                     }
 
                     if (!pushed) {
-                      totalDuration +=
-                        currentMashup.fields.mixEnd -
-                        currentMashup.fields.mixStart -
-                        5;
-                      finalMashupArr.push(currentMashup);
+                      const vocalsTitleArtist =
+                        currentMashup.fields.vocalsTitle +
+                        " " +
+                        currentMashup.fields.vocalsArtist;
+                      const accompanimentTitleArtist =
+                        currentMashup.fields.accompanimentTitle +
+                        " " +
+                        currentMashup.fields.accompanimentArtist;
+
+                      if (
+                        !vocalsArr.find((item) => item === vocalsTitleArtist) &&
+                        !instrumentalsArr.find(
+                          (item) => item === accompanimentTitleArtist
+                        )
+                      ) {
+                        totalDuration +=
+                          currentMashup.fields.mixEnd -
+                          currentMashup.fields.mixStart -
+                          5;
+
+                        vocalsArr.push(vocalsTitleArtist);
+
+                        instrumentalsArr.push(accompanimentTitleArtist);
+
+                        finalMashupArr.push(currentMashup);
+                      }
                     }
                   } else {
                     break;
