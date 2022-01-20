@@ -1,11 +1,12 @@
 const express = require("express");
 const app = express();
+const cron = require("node-cron");
+const { logger } = require("./functions/logger/initializeLogger");
 const {
   checkMashupLoopInProgress,
 } = require("./functions/contentful/checkMashupLoopInProgress");
 const { findMixable } = require("./functions/match/findMixable");
 const { createMashup } = require("./functions/mix/createMashup");
-const cron = require("node-cron");
 const {
   updateActiveMixes,
 } = require("./functions/contentful/updateActiveMixes");
@@ -14,7 +15,6 @@ const { timeStampToSeconds } = require("./functions/utils/timeStampToSeconds");
 const { isMashupTime } = require("./functions/utils/isMashupTime");
 const { createVideo } = require("./functions/video/createVideo");
 const { onLoggerShutdown } = require("./functions/logger/onLoggerShutdown");
-const { logger } = require("./functions/logger/initializeLogger");
 require("dotenv").config();
 
 const port = process.env.PORT || 4000;

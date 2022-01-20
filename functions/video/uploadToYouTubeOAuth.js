@@ -9,7 +9,7 @@ const { updateLatestVideoURL } = require("../contentful/updateLatestVideoURL");
 const { createInstagramPost } = require("./createInstagramPost");
 require("dotenv").config();
 
-const uploadToYouTubeOAuth = async () => {
+const uploadToYouTubeOAuth = async (voxAccompanimentNames) => {
   let oauth = Youtube.authenticate({
     type: "oauth",
     client_id: process.env.YOUTUBE_CLIENT_ID,
@@ -137,7 +137,7 @@ const uploadToYouTubeOAuth = async () => {
 
                     const ytLink = "https://youtu.be/" + res.data.id;
 
-                    await updateLatestVideoURL(ytLink);
+                    await updateLatestVideoURL(ytLink, voxAccompanimentNames);
 
                     await createInstagramPost(videoTitle);
                   }

@@ -49,6 +49,39 @@ const getMashupsForVideo = async () => {
             )
           );
 
+          const lastVideoEntry = await client.getEntries({
+            content_type: "video",
+          });
+
+          const latestVideoFields = lastVideoEntry.items[0].fields;
+
+          if (latestVideoFields) {
+            const latestVideoMashups = latestVideoFields.latestMashups;
+            if (latestVideoMashups) {
+              const allVox = latestVideoMashups.map((item) =>
+                item ? item.vocalsTitle + " " + item.vocalsArtist : ""
+              );
+
+              const allAccompaniments = latestVideoMashups.map((item) =>
+                item
+                  ? item.accompanimentTitle + " " + item.accompanimentArtist
+                  : ""
+              );
+
+              mashups = mashups.filter(
+                (mashup) =>
+                  !allVox.includes(
+                    mashup.fields.vocalsTitle + " " + mashup.fields.vocalsArtist
+                  ) &&
+                  !allAccompaniments.includes(
+                    mashup.fields.accompanimentTitle +
+                      " " +
+                      mashup.fields.accompanimentArtist
+                  )
+              );
+            }
+          }
+
           const currentMonth = getMonth(new Date());
 
           // If month is December, make sure at least 5 holiday songs are included, if available

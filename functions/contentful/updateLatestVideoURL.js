@@ -3,7 +3,7 @@ const contentful = require("contentful");
 const { logger } = require("../logger/initializeLogger");
 require("dotenv").config();
 
-const updateLatestVideoURL = async (url) => {
+const updateLatestVideoURL = async (url, voxAccompanimentNames) => {
   // Access to Contentful Delivery API
   const client = contentful.createClient({
     space: process.env.CONTENTFUL_SPACE_ID,
@@ -55,6 +55,12 @@ const updateLatestVideoURL = async (url) => {
                           entry.fields.latestUrl = {
                             "en-US": url,
                           };
+
+                          if (voxAccompanimentNames) {
+                            entry.fields.latestMashups = {
+                              "en-US": voxAccompanimentNames,
+                            };
+                          }
 
                           return await entry
                             .update()

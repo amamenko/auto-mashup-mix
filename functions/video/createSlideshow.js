@@ -1,13 +1,12 @@
 const fs = require("fs");
 const wget = require("wget-improved");
-const { exec } = require("child_process");
-const { combineIntroWithMain } = require("./combineIntroWithMain");
-const { readStartEndTimes } = require("../utils/readStartEndTimes");
 const { logger } = require("../logger/initializeLogger");
+const { exec } = require("child_process");
+const { readStartEndTimes } = require("../utils/readStartEndTimes");
 const { addGreenScreenBanners } = require("./addGreenScreenBanners");
 require("dotenv").config();
 
-const createSlideshow = () => {
+const createSlideshow = (voxAccompanimentNames) => {
   const download = wget.download(
     process.env.INTRO_VIDEO_LINK,
     "initial_intro.mp4"
@@ -192,7 +191,7 @@ const createSlideshow = () => {
           console.log(successStatement);
         }
 
-        addGreenScreenBanners(delayEndThanks + 50);
+        addGreenScreenBanners(delayEndThanks + 50, voxAccompanimentNames);
       }
     });
   });

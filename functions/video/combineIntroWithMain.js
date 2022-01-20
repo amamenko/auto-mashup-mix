@@ -4,7 +4,7 @@ const { logger } = require("../logger/initializeLogger");
 const { uploadToYouTubeOAuth } = require("./uploadToYouTubeOAuth");
 require("dotenv").config();
 
-const combineIntroWithMain = () => {
+const combineIntroWithMain = (voxAccompanimentNames) => {
   const reencodeIntro =
     "ffmpeg -i initial_intro.mp4 -vcodec libx264 -s 1280x720 -r 60 -strict experimental intro.mp4";
   const reencodeMain =
@@ -93,7 +93,7 @@ const combineIntroWithMain = () => {
                   await checkExistsAndDelete("video_images");
                   await checkExistsAndDelete("full_mashup_mix.mp3");
 
-                  uploadToYouTubeOAuth();
+                  uploadToYouTubeOAuth(voxAccompanimentNames);
                 }
               });
             }

@@ -10,6 +10,15 @@ require("dotenv").config();
 const createVideo = async () => {
   const applicableMashups = await getMashupsForVideo();
 
+  const voxAccompanimentNames = applicableMashups.map((mashup) => {
+    return {
+      vocalsTitle: mashup.fields.vocalsTitle,
+      vocalsArtist: mashup.fields.vocalsArtist,
+      accompanimentTitle: mashup.fields.accompanimentTitle,
+      accompanimentArtist: mashup.fields.accompanimentArtist,
+    };
+  });
+
   const allPromises = [];
 
   const loggerLog = (statement) => {
@@ -47,7 +56,7 @@ const createVideo = async () => {
           loggerLog(
             "Full mashup audio mix successfully created! Creating slideshow video now!"
           );
-          createSlideshow();
+          createSlideshow(voxAccompanimentNames);
         });
       });
     })

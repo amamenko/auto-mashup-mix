@@ -5,7 +5,7 @@ const { checkExistsAndDelete } = require("../utils/checkExistsAndDelete");
 const { combineIntroWithMain } = require("./combineIntroWithMain");
 require("dotenv").config();
 
-const addGreenScreenBanners = async (thanksDelay) => {
+const addGreenScreenBanners = async (thanksDelay, voxAccompanimentNames) => {
   const loggerLog = (statement) => {
     if (process.env.NODE_ENV === "production") {
       logger.log(statement);
@@ -188,7 +188,7 @@ const addGreenScreenBanners = async (thanksDelay) => {
                           await checkExistsAndDelete("thanks.mp4");
                           await checkExistsAndDelete("main_sub.mp4");
 
-                          combineIntroWithMain();
+                          combineIntroWithMain(voxAccompanimentNames);
                         }
                       });
                     }
