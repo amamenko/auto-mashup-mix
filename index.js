@@ -10,8 +10,6 @@ const { createMashup } = require("./functions/mix/createMashup");
 const {
   updateActiveMixes,
 } = require("./functions/contentful/updateActiveMixes");
-const { format } = require("date-fns");
-const { timeStampToSeconds } = require("./functions/utils/timeStampToSeconds");
 const { isMashupTime } = require("./functions/utils/isMashupTime");
 const { createVideo } = require("./functions/video/createVideo");
 const { onLoggerShutdown } = require("./functions/logger/onLoggerShutdown");
@@ -33,22 +31,14 @@ cron.schedule("5 1 * * 0", () => {
   findMixable("minor");
 });
 
-// CLEAN UP: Major key mashup mixes
-// Runs every 10 seconds on Sundays starting at 2 AM and ending at 5 AM
-cron.schedule("*/10 * 2-4 * * 0", () => {
-  const currentTime = format(new Date(), "HH:mm:ss");
-  const currentIndex =
-    (timeStampToSeconds(currentTime) - timeStampToSeconds("02:00:00")) / 10;
-  updateActiveMixes("major", currentIndex);
+// Cleans up major key mashups every 10 seconds on Sundays starting at 2 AM
+cron.schedule("0 2 * * 0", () => {
+  updateActiveMixes("major");
 });
 
-// CLEAN UP: Minor key mashup mixes
-// Runs every 10 seconds on Sundays starting at 5 AM and ending at 8 AM
-cron.schedule("*/10 * 5-7 * * 0", () => {
-  const currentTime = format(new Date(), "HH:mm:ss");
-  const currentIndex =
-    (timeStampToSeconds(currentTime) - timeStampToSeconds("05:00:00")) / 10;
-  updateActiveMixes("minor", currentIndex);
+// Cleans up minor key mashups every 10 seconds on Sundays starting at 5 AM
+cron.schedule("0 5 * * 0", () => {
+  updateActiveMixes("minor");
 });
 
 // Check for or update current mashup loop progression every 15 minutes from 8 AM Sunday to 12 PM Monday
