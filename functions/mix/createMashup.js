@@ -115,11 +115,12 @@ const createMashup = async () => {
 
                       const doesMashupAlreadyExist = await client
                         .getEntries({
-                          "fields.accompanimentSysId":
-                            currentSongs.accompanimentID,
-                          "fields.vocalsSysId": currentSongs.vocalsID,
-                          select:
-                            "fields.accompanimentSysId,fields.vocalsSysId",
+                          "fields.vocalsTitle": currentSongs.vocalsTitle,
+                          "fields.vocalsArtist": currentSongs.vocalsArtist,
+                          "fields.accompanimentTitle":
+                            currentSongs.accompanimentTitle,
+                          "fields.accompanimentArtist":
+                            currentSongs.accompanimentArtist,
                           content_type: "mashup",
                         })
                         .catch((e) => errorLog(e));
