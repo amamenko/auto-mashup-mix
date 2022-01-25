@@ -52,12 +52,25 @@ const createVideo = async () => {
           "Video thumbnail successfully created! Creating full mashup audio mix now!"
         );
         await checkExistsAndDelete("thumbnail_photos.txt");
-        await createMixOfAllMashups().then(() => {
-          loggerLog(
-            "Full mashup audio mix successfully created! Creating slideshow video now!"
-          );
-          createSlideshow(voxAccompanimentNames);
-        });
+        await createMixOfAllMashups()
+          .then(() => {
+            loggerLog(
+              "Full mashup audio mix successfully created! Creating slideshow video now!"
+            );
+            createSlideshow(voxAccompanimentNames);
+          })
+          .catch((err) => {
+            if (process.env.NODE_ENV === "production") {
+              logger.error(`Received error when creating full mashup mix`, {
+                indexMeta: true,
+                meta: {
+                  message: err,
+                },
+              });
+            } else {
+              console.error(err);
+            }
+          });
       });
     })
     .catch(async (err) => {

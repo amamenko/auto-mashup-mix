@@ -1,7 +1,7 @@
 const fs = require("fs");
 const wget = require("wget-improved");
 const { logger } = require("../logger/initializeLogger");
-const { exec } = require("child_process");
+const spawnCommand = require("../utils/spawnCommand");
 const { readStartEndTimes } = require("../utils/readStartEndTimes");
 const { addGreenScreenBanners } = require("./addGreenScreenBanners");
 require("dotenv").config();
@@ -121,8 +121,7 @@ const createSlideshow = (voxAccompanimentNames) => {
       }
     }
 
-    const command = `ffmpeg \
-    ${allFiles
+    const command = `${allFiles
       .map(
         (item, i, arr) =>
           `-loop 1 -t ${
@@ -131,10 +130,9 @@ const createSlideshow = (voxAccompanimentNames) => {
               : i === arr.length - 1
               ? startEndTimesArr[i].duration - startEndTimesArr[i].mixStart
               : startEndTimesArr[i].mixEnd - startEndTimesArr[i].mixStart
-          } -i ./video_images/${item} \ `
+          } -i ./video_images/${item}`
       )
-      .join("")} -filter_complex \
-    "[0]fade=t=in:st=0:d=2[0:a]; \ ${allFiles
+      .join(" ")} -filter_complex [0]fade=t=in:st=0:d=2[0:a];${allFiles
       .slice(1)
       .map((item, i, arr) =>
         i === arr.length - 1
@@ -142,45 +140,42 @@ const createSlideshow = (voxAccompanimentNames) => {
               i + 1
             }]format=yuva444p,fade=d=5:t=in:alpha=1,setpts=PTS-STARTPTS+${
               Math.round(totalsArr[i]) - (i * 5 + 5)
-            }/TB[f${i}]; \ `
+            }/TB[f${i}];`
           : `[${
               i + 1
             }]format=yuva444p,fade=d=5:t=in:alpha=1,setpts=PTS-STARTPTS+${
               Math.round(totalsArr[i]) - (i * 5 + 5)
-            }/TB[f${i}]; \ `
+            }/TB[f${i}];`
       )
-      .join("")} ${allFiles
+      .join("")}${allFiles
       .slice(1)
       .map((item, i, arr) =>
         i === 0
           ? `[0:a][f0]overlay[bg1];`
           : i === arr.length - 1
-          ? `[bg${i}][f${i}]overlay,format=yuv420p[v]" -map "[v]" initial_main.mp4`
+          ? `[bg${i}][f${i}]overlay,format=yuv420p[v] -map [v] initial_main.mp4`
           : `[bg${i}][f${i}]overlay[bg${i + 1}];`
       )
       .join("")}`;
 
     const start = Date.now();
 
-    exec(command, (err, stdout, stderr) => {
-      if (err) {
-        if (process.env.NODE_ENV === "production") {
-          logger.error(
-            "Received exec error when attempting to create video slideshow with FFMPEG",
-            {
-              indexMeta: true,
-              meta: {
-                message: err,
-                stderr,
-              },
-            }
-          );
-        } else {
-          console.error(`exec error: ${err}`);
-        }
+    console.log(
+      command
+        .split(" ")
+        .map((item) => item.trim())
+        .filter((item) => item)
+    );
 
-        return;
-      } else {
+    spawnCommand(
+      "ffmpeg",
+      command,
+      // On error
+      async () => {
+        await checkExistsAndDelete("initial_main.mp4");
+      },
+      // On finish
+      async () => {
         const successStatement = `Successfully created main mix video! The process took ${
           (Date.now() - start) / 1000
         } seconds.`;
@@ -193,7 +188,7 @@ const createSlideshow = (voxAccompanimentNames) => {
 
         addGreenScreenBanners(delayEndThanks + 50, voxAccompanimentNames);
       }
-    });
+    );
   });
 };
 

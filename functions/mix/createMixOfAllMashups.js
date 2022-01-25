@@ -1,7 +1,6 @@
 const fs = require("fs");
-const { exec } = require("child_process");
 const { readStartEndTimes } = require("../utils/readStartEndTimes");
-const { logger } = require("../logger/initializeLogger");
+const spawnCommand = require("../utils/spawnCommand");
 require("dotenv").config();
 
 const createMixOfAllMashups = async () => {
@@ -18,9 +17,9 @@ const createMixOfAllMashups = async () => {
 
   const startEndArr = await readStartEndTimes();
 
-  const command = `ffmpeg ${allFiles
+  const command = `${allFiles
     .map((item) => `-i ${item.name}`)
-    .join(" ")} -vn -filter_complex "${allFiles
+    .join(" ")} -vn -filter_complex ${allFiles
     .map((item, i, arr) =>
       i === 0
         ? `[${i}]atrim=end=${startEndArr[i].mixEnd},asetpts=PTS-STARTPTS[${i}t];`
@@ -30,7 +29,7 @@ const createMixOfAllMashups = async () => {
           }[${i}t];`
         : `[${i}]atrim=start=${startEndArr[i].mixStart}:end=${startEndArr[i].mixEnd},asetpts=PTS-STARTPTS[${i}t];`
     )
-    .join(" ")}${allFiles
+    .join("")}${allFiles
     .map((item, i, arr) =>
       i === 0
         ? `[${i}t][${
@@ -40,31 +39,17 @@ const createMixOfAllMashups = async () => {
         ? `[a${i}]anull`
         : `[a${i}][${i + 1}t]acrossfade=d=5:c1=tri:c2=tri[a${i + 1}];`
     )
-    .join(" ")}" full_mashup_mix.mp3`;
+    .join("")} full_mashup_mix.mp3`;
 
   return new Promise(async (resolve, reject) => {
-    exec(command, (err, stdout, stderr) => {
-      if (err) {
-        if (process.env.NODE_ENV === "production") {
-          logger.error(
-            "Received exec error when attempting to create mix of all mashups with FFMPEG",
-            {
-              indexMeta: true,
-              meta: {
-                message: err,
-              },
-            }
-          );
-        } else {
-          console.error(`exec error: ${err}`);
-        }
-
-        reject();
-        return;
-      } else {
-        resolve();
-      }
-    });
+    spawnCommand(
+      "ffmpeg",
+      command,
+      // On error
+      () => reject(),
+      // On finish
+      () => resolve()
+    );
   });
 };
 
