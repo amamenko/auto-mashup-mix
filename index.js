@@ -10,7 +10,6 @@ const { createMashup } = require("./functions/mix/createMashup");
 const {
   updateActiveMixes,
 } = require("./functions/contentful/updateActiveMixes");
-const { isMashupTime } = require("./functions/utils/isMashupTime");
 const { createVideo } = require("./functions/video/createVideo");
 const { onLoggerShutdown } = require("./functions/logger/onLoggerShutdown");
 require("dotenv").config();
@@ -42,21 +41,17 @@ cron.schedule("0 5 * * 0", () => {
 });
 
 // Check for or update current mashup loop progression every 15 minutes from 8 AM Sunday to 12 PM Monday
-cron.schedule("*/15 * * * 0,1", () => {
-  if (isMashupTime()) {
-    checkMashupLoopInProgress();
-  }
+cron.schedule("*/15 8 * * 0", () => {
+  checkMashupLoopInProgress();
 });
 
-// Loop next mashup position of current in-progress mix list (if any) every 2 minutes from 8 AM Sunday to 12 PM Monday
-cron.schedule("*/2 * * * 0,1", async () => {
-  if (isMashupTime()) {
-    createMashup();
-  }
+// Loop next mashup position of current in-progress mix list (if any) every 2 minutes from 8 AM Sunday to 12 AM Monday
+cron.schedule("*/2 8 * * 0", async () => {
+  createMashup();
 });
 
-// Create and upload slideshow video to YouTube every Monday at noon
-cron.schedule("0 12 * * 1", async () => {
+// Create and upload slideshow video to YouTube every Monday beginning at midnight
+cron.schedule("0 0 * * 1", async () => {
   createVideo();
 });
 

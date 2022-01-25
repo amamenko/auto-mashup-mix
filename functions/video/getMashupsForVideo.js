@@ -70,6 +70,8 @@ const getMashupsForVideo = async () => {
 
               mashups = mashups.filter(
                 (mashup) =>
+                  // WMG blocks YouTube videos with "Wonderwall" vox
+                  mashup.fields.vocalsTitle !== "Wonderwall" &&
                   !allVox.includes(
                     mashup.fields.vocalsTitle + " " + mashup.fields.vocalsArtist
                   ) &&
