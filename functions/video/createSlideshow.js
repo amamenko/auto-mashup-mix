@@ -160,13 +160,6 @@ const createSlideshow = (voxAccompanimentNames) => {
 
     const start = Date.now();
 
-    console.log(
-      command
-        .split(" ")
-        .map((item) => item.trim())
-        .filter((item) => item)
-    );
-
     spawnCommand(
       "ffmpeg",
       command,
