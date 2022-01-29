@@ -1,5 +1,5 @@
 const introSections = ["intro"];
-const verseSections = ["verse", "verso", "reprise"];
+const verseSections = ["verse", "verso", "reprise", "couplet"];
 const refrainSections = ["refrain", "refran", "middle-eight", "hook"];
 const preChorusSections = [
   "pre-chorus",
