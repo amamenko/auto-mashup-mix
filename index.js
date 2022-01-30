@@ -40,13 +40,13 @@ cron.schedule("0 5 * * 0", () => {
   updateActiveMixes("minor");
 });
 
-// Check for or update current mashup loop progression every 15 minutes from 8 AM Sunday to 12 PM Monday
-cron.schedule("*/15 8 * * 0", () => {
+// Check for or update current mashup loop progression every 15 minutes from 8 AM Sunday to 12 AM Monday
+cron.schedule("*/15 8-23 * * 0", () => {
   checkMashupLoopInProgress();
 });
 
 // Loop next mashup position of current in-progress mix list (if any) every 2 minutes from 8 AM Sunday to 12 AM Monday
-cron.schedule("*/2 8 * * 0", async () => {
+cron.schedule("*/2 8-23 * * 0", async () => {
   createMashup();
 });
 
