@@ -24,6 +24,8 @@ cron.schedule("0 1 * * 0", () => {
   findMixable("major");
 });
 
+findMixable("major");
+
 // Get all mixable mashups in minor key
 // Runs at 01:05 AM on Sundays
 cron.schedule("5 1 * * 0", () => {
@@ -50,8 +52,8 @@ cron.schedule("*/2 8-23 * * 0", async () => {
   createMashup();
 });
 
-// Create and upload slideshow video to YouTube every Monday beginning at midnight
-cron.schedule("0 0 * * 1", async () => {
+// Create and upload slideshow video to YouTube every Monday beginning at 8 AM
+cron.schedule("0 8 * * 1", async () => {
   createVideo();
 });
 
