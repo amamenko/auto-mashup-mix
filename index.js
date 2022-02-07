@@ -24,8 +24,6 @@ cron.schedule("0 1 * * 0", () => {
   findMixable("major");
 });
 
-findMixable("major");
-
 // Get all mixable mashups in minor key
 // Runs at 01:05 AM on Sundays
 cron.schedule("5 1 * * 0", () => {
