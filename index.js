@@ -12,6 +12,7 @@ const {
 } = require("./functions/contentful/updateActiveMixes");
 const { createVideo } = require("./functions/video/createVideo");
 const { onLoggerShutdown } = require("./functions/logger/onLoggerShutdown");
+const { delayExecution } = require("./functions/utils/delayExecution");
 require("dotenv").config();
 
 const port = process.env.PORT || 4000;
@@ -48,6 +49,21 @@ cron.schedule("*/15 8-23 * * 0", () => {
 // Loop next mashup position of current in-progress mix list (if any) every 2 minutes from 8 AM Sunday to 12 AM Monday
 cron.schedule("*/2 8-23 * * 0", async () => {
   createMashup();
+});
+
+// Restart server at 7 AM on Mondays
+cron.schedule("0 7 * * 1", async () => {
+  const restartingStatement = "Restarting server on purpose!";
+
+  if (process.env.NODE_ENV === "production") {
+    logger.log(restartingStatement);
+  } else {
+    console.log(restartingStatement);
+  }
+
+  await delayExecution(5000);
+
+  process.exit(1);
 });
 
 // Create and upload slideshow video to YouTube every Monday beginning at 8 AM
