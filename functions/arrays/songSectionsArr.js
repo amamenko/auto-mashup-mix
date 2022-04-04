@@ -5,12 +5,13 @@ const preChorusSections = [
   "pre-chorus",
   "pre-coro",
   "pre-drop",
+  "pre-estribillo",
   "build",
   "pre-verse",
   "link",
 ];
 const chorusSections = ["chorus", "coro", "hook", "estribillo", "drop"];
-const postChorusSections = ["post-chorus", "post-coro"];
+const postChorusSections = ["post-chorus", "post-coro", "post-estribillo"];
 const bridgeSections = [
   "bridge",
   "puente",
