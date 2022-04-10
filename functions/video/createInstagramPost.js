@@ -1,6 +1,4 @@
-const fs = require("fs");
 const Instagram = require("instagram-web-api");
-const FileCookieStore = require("tough-cookie-filestore2");
 const { format, startOfWeek } = require("date-fns");
 const { checkExistsAndDelete } = require("../utils/checkExistsAndDelete");
 const { checkFileExists } = require("../utils/checkFileExists");
@@ -24,14 +22,10 @@ const createInstagramPost = async (videoTitle) => {
 
   if (videoTitle) {
     if (thumbnailExists) {
-      // Persist cookies after Instagram client log in
-      const cookieStore = new FileCookieStore("./cookies.json");
-
       const client = new Instagram(
         {
           username: process.env.INSTAGRAM_USERNAME,
           password: process.env.INSTAGRAM_PASSWORD,
-          cookieStore,
         },
         {
           language: "en-US",
@@ -125,17 +119,12 @@ const createInstagramPost = async (videoTitle) => {
             loggerLog("Login failed!");
             loggerLog(err);
 
-            loggerLog(
-              "Deleting cookies, waiting 2 minutes, then logging in again and setting new cookie store"
-            );
-            fs.unlinkSync("./cookies.json");
-            const newCookieStore = new FileCookieStore("./cookies.json");
+            loggerLog("Waiting 2 minutes, then logging in again...");
 
             const newClient = new Instagram(
               {
                 username: process.env.INSTAGRAM_USERNAME,
                 password: process.env.INSTAGRAM_PASSWORD,
-                cookieStore: newCookieStore,
               },
               {
                 language: "en-US",
