@@ -7,6 +7,10 @@ const {
 } = require("../utils/cleanUpRemainingFilesAfterVideo");
 const removeAccents = require("remove-accents");
 const { logger } = require("../logger/initializeLogger");
+const imaps = require("imap-simple");
+const _ = require("lodash");
+const simpleParser = require("mailparser").simpleParser;
+
 require("dotenv").config();
 
 const createInstagramPost = async (videoTitle) => {
@@ -119,21 +123,18 @@ const createInstagramPost = async (videoTitle) => {
             loggerLog("Login failed!");
             loggerLog(err);
 
-            loggerLog("Waiting 2 minutes, then logging in again...");
-
-            const newClient = new Instagram(
-              {
-                username: process.env.INSTAGRAM_USERNAME,
-                password: process.env.INSTAGRAM_PASSWORD,
-              },
-              {
-                language: "en-US",
-              }
-            );
-
             const delayedLoginFunction = async (timeout) => {
               setTimeout(async () => {
                 loggerLog("Logging in again.");
+                const newClient = new Instagram(
+                  {
+                    username: process.env.INSTAGRAM_USERNAME,
+                    password: process.env.INSTAGRAM_PASSWORD,
+                  },
+                  {
+                    language: "en-US",
+                  }
+                );
                 await newClient
                   .login()
                   .then(() => {
@@ -148,8 +149,111 @@ const createInstagramPost = async (videoTitle) => {
               }, timeout);
             };
 
-            // Wait 2 minutes before trying to log in again
-            await delayedLoginFunction(120000);
+            if (err.statusCode === 403 || err.statusCode === 429) {
+              loggerLog(
+                "Throttled! Waiting 2 minutes, then logging in again..."
+              );
+              // Wait 2 minutes before trying to log in again
+              await delayedLoginFunction(120000);
+            }
+
+            // Instagram has thrown a checkpoint error
+            if (err.error && err.error.message === "checkpoint_required") {
+              const challengeUrl = err.error.checkpoint_url;
+
+              await client.updateChallenge({ challengeUrl, choice: 1 });
+
+              const emailConfig = {
+                imap: {
+                  user: `${process.env.AUTO_MASHUP_MIX_EMAIL}`,
+                  password: `${process.env.AUTO_MASHUP_MIX_EMAIL_PASSWORD}`,
+                  host: "imap.gmail.com",
+                  port: 993,
+                  tls: true,
+                  tlsOptions: {
+                    servername: "imap.gmail.com",
+                    rejectUnauthorized: false,
+                  },
+                  authTimeout: 30000,
+                },
+              };
+
+              // Connect to email and solve Instagram challenge after delay
+              const delayedEmailFunction = async (timeout) => {
+                setTimeout(() => {
+                  imaps.connect(emailConfig).then(async (connection) => {
+                    return connection.openBox("INBOX").then(async () => {
+                      // Fetch emails from the last hour
+                      const delay = 1 * 3600 * 1000;
+                      let lastHour = new Date();
+                      lastHour.setTime(Date.now() - delay);
+                      lastHour = lastHour.toISOString();
+                      const searchCriteria = ["ALL", ["SINCE", lastHour]];
+                      const fetchOptions = {
+                        bodies: [""],
+                      };
+                      return connection
+                        .search(searchCriteria, fetchOptions)
+                        .then((messages) => {
+                          messages.forEach((item) => {
+                            const all = _.find(item.parts, { which: "" });
+                            const id = item.attributes.uid;
+                            const idHeader = "Imap-Id: " + id + "\r\n";
+                            simpleParser(
+                              idHeader + all.body,
+                              async (err, mail) => {
+                                if (err) {
+                                  loggerLog(err);
+                                }
+
+                                loggerLog(mail.subject);
+
+                                const answerCodeArr = mail.text
+                                  .split("\n")
+                                  .filter(
+                                    (item) =>
+                                      item &&
+                                      /^\S+$/.test(item) &&
+                                      !isNaN(Number(item))
+                                  );
+
+                                if (mail.text.includes("Instagram")) {
+                                  if (answerCodeArr.length > 0) {
+                                    // Answer code must be kept as string type and not manipulated to a number type to preserve leading zeros
+                                    const answerCode = answerCodeArr[0];
+                                    loggerLog(answerCode);
+
+                                    await client.updateChallenge({
+                                      challengeUrl,
+                                      securityCode: answerCode,
+                                    });
+
+                                    loggerLog(
+                                      `Answered Instagram security challenge with answer code: ${answerCode}`
+                                    );
+
+                                    await client
+                                      .login()
+                                      .then(() => {
+                                        loggerLog(
+                                          "Login successful after successfully completing Instagram challenge!"
+                                        );
+                                        instagramPostFunction(client);
+                                      })
+                                      .catch((err) => loggerLog(err));
+                                  }
+                                }
+                              }
+                            );
+                          });
+                        });
+                    });
+                  });
+                }, timeout);
+              };
+
+              await delayedEmailFunction(40000);
+            }
           });
       };
 

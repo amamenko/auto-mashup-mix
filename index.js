@@ -13,6 +13,9 @@ const {
 const { createVideo } = require("./functions/video/createVideo");
 const { onLoggerShutdown } = require("./functions/logger/onLoggerShutdown");
 const { delayExecution } = require("./functions/utils/delayExecution");
+const {
+  createInstagramPost,
+} = require("./functions/video/createInstagramPost");
 require("dotenv").config();
 
 const port = process.env.PORT || 4000;
