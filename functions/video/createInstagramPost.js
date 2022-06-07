@@ -1,4 +1,4 @@
-const Instagram = require("instagram-web-api");
+const Instagram = require("../../instagram-web-api/index");
 const { format, startOfWeek } = require("date-fns");
 const { checkExistsAndDelete } = require("../utils/checkExistsAndDelete");
 const { checkFileExists } = require("../utils/checkFileExists");
@@ -10,7 +10,6 @@ const { logger } = require("../logger/initializeLogger");
 const imaps = require("imap-simple");
 const _ = require("lodash");
 const simpleParser = require("mailparser").simpleParser;
-
 require("dotenv").config();
 
 const createInstagramPost = async (videoTitle) => {

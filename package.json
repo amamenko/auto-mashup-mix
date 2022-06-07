@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@ffprobe-installer/ffprobe": "^1.4.1",
     "@logdna/logger": "^2.6.0",
     "axios": "^0.24.0",
     "contentful": "^9.1.5",
