@@ -10,6 +10,7 @@ const { logger } = require("../logger/initializeLogger");
 const imaps = require("imap-simple");
 const _ = require("lodash");
 const simpleParser = require("mailparser").simpleParser;
+const resizeImg = require("resize-img");
 require("dotenv").config();
 
 const createInstagramPost = async (videoTitle) => {
@@ -25,6 +26,15 @@ const createInstagramPost = async (videoTitle) => {
 
   if (videoTitle) {
     if (thumbnailExists) {
+      // Image needs to be resized - otherwise Instagram returns unprocessable entity error
+      const resizedImage = await resizeImg(fs.readFileSync("thumbnail.jpg"), {
+        width: 1280,
+        height: 720,
+      });
+
+      // Overwrites original file with resized image
+      fs.writeFileSync("thumbnail.jpg", resizedImage);
+
       const client = new Instagram(
         {
           username: process.env.INSTAGRAM_USERNAME,
