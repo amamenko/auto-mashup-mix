@@ -1,3 +1,4 @@
+const fs = require("fs");
 const Instagram = require("../../instagram-web-api/index");
 const { format, startOfWeek } = require("date-fns");
 const { checkExistsAndDelete } = require("../utils/checkExistsAndDelete");
