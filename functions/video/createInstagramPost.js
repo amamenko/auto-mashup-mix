@@ -31,6 +31,7 @@ const createInstagramPost = async (videoTitle) => {
       const resizedImage = await resizeImg(fs.readFileSync("thumbnail.jpg"), {
         width: 1280,
         height: 720,
+        format: "jpg",
       });
 
       // Overwrites original file with resized image
