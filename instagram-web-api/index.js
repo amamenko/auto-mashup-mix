@@ -54,7 +54,7 @@ class Instagram {
     await this.request("/", { resolveWithFullResponse: true }).then((res) => {
       const pattern = new RegExp(/(csrf_token":")\w+/);
       const matches = res.toJSON().body.match(pattern);
-      value = matches[0].substring(13);
+      value = matches ? matches[0].substring(13) : "";
     });
 
     // Provide CSRFToken for login or challenge request
