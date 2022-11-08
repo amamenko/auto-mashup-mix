@@ -52,9 +52,9 @@ class Instagram {
     // Get CSRFToken from cookie before login
     let value;
     await this.request("/", { resolveWithFullResponse: true }).then((res) => {
-      const pattern = new RegExp(/(csrf_token":")\w+/);
-      const matches = res.toJSON().body.match(pattern);
-      value = matches ? matches[0].substring(13) : "";
+      const pattern = new RegExp(/(csrf_token\\":\\")[\w]+/);
+      const matches = res.body.match(pattern);
+      if (matches && matches[0]) value = matches[0].substring(15);
     });
 
     // Provide CSRFToken for login or challenge request
@@ -158,7 +158,10 @@ class Instagram {
         referer: baseUrl + "/" + username + "/",
         "x-instagram-gis": await this._getGis(`/${username}/`),
       },
-    }).then((data) => data.graphql.user);
+    }).then((data) => {
+      console.log(data);
+      return data.graphql.user;
+    });
   }
 
   async getStoryReelFeed({ onlyStories = false } = {}) {
@@ -221,8 +224,10 @@ class Instagram {
   }
 
   async getPhotosByUsername({ username, first, after }) {
-    const user = await this.getUserByUsername({ username });
-    return this.getUserIdPhotos({ id: user.id, first, after });
+    // Instagram throws a "Sorry, something went wrong" error for ?__a=1 arg for some reason
+    // Hard-coding Inky Doodle ID for now - getUserByUsername throws error otherwise
+    // const user = await this.getUserByUsername({ username })
+    return this.getUserIdPhotos({ id: "45890074512", first, after });
   }
 
   async getStoryItemsByUsername({ username }) {
