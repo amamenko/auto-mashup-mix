@@ -4,7 +4,7 @@ const { getClosestBeatArr } = require("./getClosestBeatArr");
 const { getAudioDurationInSeconds } = require("get-audio-duration");
 const { addMixToContentful } = require("../contentful/addMixToContentful");
 const { checkExistsAndDelete } = require("../utils/checkExistsAndDelete");
-const { logger } = require("../logger/initializeLogger");
+const { logger } = require("../../logger/logger");
 require("dotenv").config();
 
 const trimResultingMix = async (instrumentals, vocals) => {
@@ -92,14 +92,8 @@ const trimResultingMix = async (instrumentals, vocals) => {
           const stdErrStatement = "FFMPEG stderr:\n" + stderr;
 
           if (process.env.NODE_ENV === "production") {
-            logger.error(errorMessageStatement, {
-              indexMeta: true,
-              meta: {
-                message: err.message,
-              },
-            });
-
-            logger.log(stdErrStatement);
+            logger("server").error(`${errorMessageStatement}: ${err.message}`);
+            logger("server").info(stdErrStatement);
           } else {
             console.error(`${errorMessageStatement} ${err.message}`);
             console.log(stdErrStatement);
@@ -117,7 +111,7 @@ const trimResultingMix = async (instrumentals, vocals) => {
           }s\nSuccessfully trimmed original MP3 file.\nSaved to trimmed_mix.mp3.`;
 
           if (process.env.NODE_ENV === "production") {
-            logger.log(successStatement);
+            logger("server").info(successStatement);
           } else {
             console.log(successStatement);
           }
@@ -129,14 +123,8 @@ const trimResultingMix = async (instrumentals, vocals) => {
             "trimmed_mix.mp3"
           ).catch((err) => {
             if (process.env.NODE_ENV === "production") {
-              logger.error(
-                "Received error when attempting to get audio duration of trimmed_mix.mp3 in seconds",
-                {
-                  indexMeta: true,
-                  meta: {
-                    message: err,
-                  },
-                }
+              logger("server").error(
+                `Received error when attempting to get audio duration of trimmed_mix.mp3 in seconds: ${err}`
               );
             } else {
               console.error(err);
@@ -159,7 +147,7 @@ const trimResultingMix = async (instrumentals, vocals) => {
         "No instrumental sections available!";
 
       if (process.env.NODE_ENV === "production") {
-        logger.log(noSectionsAvailableStatement);
+        logger("server").info(noSectionsAvailableStatement);
       } else {
         console.log(noSectionsAvailableStatement);
       }
@@ -171,7 +159,7 @@ const trimResultingMix = async (instrumentals, vocals) => {
       "No original_mix.mp3 file available to trim!";
 
     if (process.env.NODE_ENV === "production") {
-      logger.log(noFileAvailableStatement);
+      logger("server").info(noFileAvailableStatement);
     } else {
       console.log(noFileAvailableStatement);
     }

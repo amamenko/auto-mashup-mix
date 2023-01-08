@@ -1,7 +1,7 @@
 const fs = require("fs");
 const { checkFileExists } = require("../utils/checkFileExists");
 const contentful = require("contentful-management");
-const { logger } = require("../logger/initializeLogger");
+const { logger } = require("../../logger/logger");
 require("dotenv").config();
 
 const addMixToContentful = async (
@@ -30,7 +30,7 @@ const addMixToContentful = async (
           const leftoverDeletedStatement = "Leftover trimmed_mix file deleted!";
 
           if (process.env.NODE_ENV === "production") {
-            logger.log(leftoverDeletedStatement);
+            logger("server").info(leftoverDeletedStatement);
           } else {
             console.log(leftoverDeletedStatement);
           }
@@ -65,12 +65,9 @@ const addMixToContentful = async (
 
       const getErrorLogs = (err) => {
         if (process.env.NODE_ENV === "production") {
-          logger.error("Received error during entry creation.", {
-            indexMeta: true,
-            meta: {
-              message: err,
-            },
-          });
+          logger("server").error(
+            `Received error during entry creation: ${err}`
+          );
         } else {
           console.error(`Received error during entry creation: ${err}`);
         }
@@ -168,7 +165,7 @@ const addMixToContentful = async (
                       "Successfully created new mashup entry!";
 
                     if (process.env.NODE_ENV === "production") {
-                      logger.log(successStatement);
+                      logger("server").info(successStatement);
                     } else {
                       console.log(successStatement);
                     }
@@ -198,7 +195,7 @@ const addMixToContentful = async (
         "Mashup mp3 audio does not exist! Moving on to next mashup.";
 
       if (process.env.NODE_ENV === "production") {
-        logger.log(doesntExistStatement);
+        logger("server").info(doesntExistStatement);
       } else {
         console.log(doesntExistStatement);
       }
@@ -210,7 +207,7 @@ const addMixToContentful = async (
       "Both accompaniment and vocals parameters are required in the addMixToContentful.js function! Aborting process and moving on to next mashup.";
 
     if (process.env.NODE_ENV === "production") {
-      logger.log(doesntExistStatement);
+      logger("server").info(doesntExistStatement);
     } else {
       console.log(doesntExistStatement);
     }

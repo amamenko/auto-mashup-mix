@@ -3,7 +3,7 @@ const ffmpeg = require("fluent-ffmpeg");
 const { createComplexFilter } = require("./createComplexFilter");
 const { checkFileExists } = require("../utils/checkFileExists");
 const { trimResultingMix } = require("./trimResultingMix");
-const { logger } = require("../logger/initializeLogger");
+const { logger } = require("../../logger/logger");
 require("dotenv").config();
 
 const mixTracks = (instrumentals, vox, accompanimentPath, voxPath) => {
@@ -31,14 +31,8 @@ const mixTracks = (instrumentals, vox, accompanimentPath, voxPath) => {
         const stdErrStatement = "FFMPEG stderr:\n" + stderr;
 
         if (process.env.NODE_ENV === "production") {
-          logger.error(errorMessageStatement, {
-            indexMeta: true,
-            meta: {
-              message: err.message,
-            },
-          });
-
-          logger.log(stdErrStatement);
+          logger("server").error(`${errorMessageStatement}: ${err.message}`);
+          logger("server").info(stdErrStatement);
         } else {
           console.error(`${errorMessageStatement} ${err.message}`);
           console.log(stdErrStatement);
@@ -59,7 +53,7 @@ const mixTracks = (instrumentals, vox, accompanimentPath, voxPath) => {
                 "Audio MP3 inputs directory deleted!";
 
               if (process.env.NODE_ENV === "production") {
-                logger.log(leftoverDeletedStatement);
+                logger("server").info(leftoverDeletedStatement);
               } else {
                 console.log(leftoverDeletedStatement);
               }
@@ -79,7 +73,7 @@ const mixTracks = (instrumentals, vox, accompanimentPath, voxPath) => {
                 "Leftover output MP3 file deleted!";
 
               if (process.env.NODE_ENV === "production") {
-                logger.log(leftoverDeletedStatement);
+                logger("server").info(leftoverDeletedStatement);
               } else {
                 console.log(leftoverDeletedStatement);
               }
@@ -99,7 +93,7 @@ const mixTracks = (instrumentals, vox, accompanimentPath, voxPath) => {
         }" by ${vox.artist}.\nSaved to original_mix.mp3.`;
 
         if (process.env.NODE_ENV === "production") {
-          logger.log(doneStatement);
+          logger("server").info(doneStatement);
         } else {
           console.log(doneStatement);
         }
@@ -113,7 +107,7 @@ const mixTracks = (instrumentals, vox, accompanimentPath, voxPath) => {
     const noComplexFilterStatement = `No complex filter provided! Can't mix the instrumentals of the track "${instrumentals.title}" by ${instrumentals.artist} with the vocals of the track "${vox.title}" by ${vox.artist}. Moving on to next mix.`;
 
     if (process.env.NODE_ENV === "production") {
-      logger.log(noComplexFilterStatement);
+      logger("server").info(noComplexFilterStatement);
     } else {
       console.log(noComplexFilterStatement);
     }

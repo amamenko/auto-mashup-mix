@@ -5,7 +5,7 @@ const { checkExistsAndDelete } = require("../utils/checkExistsAndDelete");
 const { createSlideshow } = require("./createSlideshow");
 const { getMashupImagesAndAudio } = require("./getMashupImagesAndAudio");
 const { getMashupsForVideo } = require("./getMashupsForVideo");
-const { logger } = require("../logger/initializeLogger");
+const { logger } = require("../../logger/logger");
 require("dotenv").config();
 
 const createVideo = async () => {
@@ -24,7 +24,7 @@ const createVideo = async () => {
 
   const loggerLog = (statement) => {
     if (process.env.NODE_ENV === "production") {
-      logger.log(statement);
+      logger("server").info(statement);
     } else {
       console.log(statement);
     }
@@ -69,12 +69,9 @@ const createVideo = async () => {
             })
             .catch((err) => {
               if (process.env.NODE_ENV === "production") {
-                logger.error(`Received error when creating full mashup mix`, {
-                  indexMeta: true,
-                  meta: {
-                    message: err,
-                  },
-                });
+                logger("server").error(
+                  `Received error when creating full mashup mix: ${err}`
+                );
               } else {
                 console.error(err);
               }
@@ -91,14 +88,8 @@ const createVideo = async () => {
     })
     .catch(async (err) => {
       if (process.env.NODE_ENV === "production") {
-        logger.error(
-          `Received error when waiting for all promises related to getting applicable song profile images and mashup audio to succeed`,
-          {
-            indexMeta: true,
-            meta: {
-              message: err,
-            },
-          }
+        logger("server").error(
+          `Received error when waiting for all promises related to getting applicable song profile images and mashup audio to succeed: ${err}`
         );
       } else {
         console.error(err);

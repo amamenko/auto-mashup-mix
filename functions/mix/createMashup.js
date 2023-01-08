@@ -9,7 +9,7 @@ const {
 const {
   updateMixLoopInProgress,
 } = require("../contentful/updateMixLoopInProgress");
-const { logger } = require("../logger/initializeLogger");
+const { logger } = require("../../logger/logger");
 require("dotenv").config();
 
 const createMashup = async () => {
@@ -21,14 +21,8 @@ const createMashup = async () => {
 
   const errorLog = (err) => {
     if (process.env.NODE_ENV === "production") {
-      logger.error(
-        "Received error when attempting to get individual song entries to create a new mashup entry",
-        {
-          indexMeta: true,
-          meta: {
-            message: err,
-          },
-        }
+      logger("server").error(
+        `Received error when attempting to get individual song entries to create a new mashup entry: ${err}`
       );
     } else {
       console.error(err);
@@ -156,7 +150,7 @@ const createMashup = async () => {
                         const alreadyExistsStatement = `The mashup with accompaniment track "${currentSongs.accompanimentTitle}" by ${currentSongs.accompanimentArtist} mixed with the vocal track "${currentSongs.vocalsTitle}" by ${currentSongs.vocalsArtist} already exists! Moving on to next mashup.`;
 
                         if (process.env.NODE_ENV === "production") {
-                          logger.log(alreadyExistsStatement);
+                          logger("server").info(alreadyExistsStatement);
                         } else {
                           console.log(alreadyExistsStatement);
                         }
@@ -166,7 +160,7 @@ const createMashup = async () => {
                     const missingEntryStatement = `Can't find one or both song entries when trying to create a mashup with accompaniment track "${currentSongs.accompanimentTitle}" by ${currentSongs.accompanimentArtist} and vocal track "${currentSongs.vocalsTitle}" by ${currentSongs.vocalsArtist}. Moving on to next mashup.`;
 
                     if (process.env.NODE_ENV === "production") {
-                      logger.log(missingEntryStatement);
+                      logger("server").info(missingEntryStatement);
                     } else {
                       console.log(missingEntryStatement);
                     }

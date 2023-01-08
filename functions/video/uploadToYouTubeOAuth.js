@@ -4,7 +4,7 @@ const Youtube = require("youtube-api");
 const { checkFileExists } = require("../utils/checkFileExists");
 const { getVideoDescription } = require("./getVideoDescription");
 const { getVideoTitle } = require("./getVideoTitle");
-const { logger } = require("../logger/initializeLogger");
+const { logger } = require("../../logger/logger");
 const { updateLatestVideoURL } = require("../contentful/updateLatestVideoURL");
 const { createInstagramPost } = require("./createInstagramPost");
 require("dotenv").config();
@@ -45,7 +45,7 @@ const uploadToYouTubeOAuth = async (voxAccompanimentNames) => {
 
     const loggerLog = (statement) => {
       if (process.env.NODE_ENV === "production") {
-        logger.log(statement);
+        logger("server").info(statement);
       } else {
         console.log(statement);
       }
@@ -89,14 +89,8 @@ const uploadToYouTubeOAuth = async (voxAccompanimentNames) => {
               (err, res) => {
                 if (err) {
                   if (process.env.NODE_ENV === "production") {
-                    logger.error(
-                      "Received an error when attempt to upload video to YouTube via videos.insert method",
-                      {
-                        indexMeta: true,
-                        meta: {
-                          message: err,
-                        },
-                      }
+                    logger("server").error(
+                      `Received an error when attempt to upload video to YouTube via videos.insert method: ${err}`
                     );
                   } else {
                     console.error(err);
@@ -120,12 +114,7 @@ const uploadToYouTubeOAuth = async (voxAccompanimentNames) => {
                         "The YouTube API returned an error when attempting to upload thumbnail: ";
 
                       if (process.env.NODE_ENV === "production") {
-                        logger.error(apiErrorStatement, {
-                          indexMeta: true,
-                          meta: {
-                            message: err,
-                          },
-                        });
+                        logger("server").error(`${apiErrorStatement}: ${err}`);
                       } else {
                         console.error(apiErrorStatement + err);
                       }
@@ -162,12 +151,9 @@ const uploadToYouTubeOAuth = async (voxAccompanimentNames) => {
     }
   } catch (e) {
     if (process.env.NODE_ENV === "production") {
-      logger.error("Received error when attempting to upload to YouTube", {
-        indexMeta: true,
-        meta: {
-          message: e,
-        },
-      });
+      logger("server").error(
+        `Received error when attempting to upload to YouTube: ${e}`
+      );
     } else {
       console.error(e);
     }

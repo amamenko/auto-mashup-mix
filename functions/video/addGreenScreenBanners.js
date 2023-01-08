@@ -1,5 +1,5 @@
 const wget = require("wget-improved");
-const { logger } = require("../logger/initializeLogger");
+const { logger } = require("../../logger/logger");
 const { checkExistsAndDelete } = require("../utils/checkExistsAndDelete");
 const spawnCommand = require("../utils/spawnCommand");
 const { combineIntroWithMain } = require("./combineIntroWithMain");
@@ -8,7 +8,7 @@ require("dotenv").config();
 const addGreenScreenBanners = async (thanksDelay, voxAccompanimentNames) => {
   const loggerLog = (statement) => {
     if (process.env.NODE_ENV === "production") {
-      logger.log(statement);
+      logger("server").info(statement);
     } else {
       console.log(statement);
     }
@@ -21,14 +21,8 @@ const addGreenScreenBanners = async (thanksDelay, voxAccompanimentNames) => {
 
   download.on("error", (err) => {
     if (process.env.NODE_ENV === "production") {
-      logger.error(
-        "Received error when attempting to download green screen 'Like and Subscribe' button video",
-        {
-          indexMeta: true,
-          meta: {
-            message: err,
-          },
-        }
+      logger("server").error(
+        `Received error when attempting to download green screen 'Like and Subscribe' button video: ${err}`
       );
     } else {
       console.error(err);
@@ -42,7 +36,7 @@ const addGreenScreenBanners = async (thanksDelay, voxAccompanimentNames) => {
       "Done downloading green screen 'Like and Subscribe' button video!\nNow downloading green screen 'Thanks for Watching' video...";
 
     if (process.env.NODE_ENV === "production") {
-      logger.log(doneStatement);
+      logger("server").info(doneStatement);
     } else {
       console.log(doneStatement);
     }
@@ -54,14 +48,8 @@ const addGreenScreenBanners = async (thanksDelay, voxAccompanimentNames) => {
 
     thanksDownload.on("error", (err) => {
       if (process.env.NODE_ENV === "production") {
-        logger.error(
-          "Received error when attempting to download green screen 'Thanks for Watching' banner video",
-          {
-            indexMeta: true,
-            meta: {
-              message: err,
-            },
-          }
+        logger("server").error(
+          `Received error when attempting to download green screen 'Thanks for Watching' banner video: ${err}`
         );
       } else {
         console.error(err);
@@ -75,7 +63,7 @@ const addGreenScreenBanners = async (thanksDelay, voxAccompanimentNames) => {
         "Done downloading green screen 'Thanks for Watching' banner video!\nNow re-encoding green screen 'Like and Subscribe' video...";
 
       if (process.env.NODE_ENV === "production") {
-        logger.log(doneString);
+        logger("server").info(doneString);
       } else {
         console.log(doneString);
       }

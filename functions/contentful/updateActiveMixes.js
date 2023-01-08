@@ -1,7 +1,7 @@
 const contentfulManagement = require("contentful-management");
 const contentful = require("contentful");
 const { delayExecution } = require("../utils/delayExecution");
-const { logger } = require("../logger/initializeLogger");
+const { logger } = require("../../logger/logger");
 require("dotenv").config();
 
 const updateActiveMixes = async (applicableMode) => {
@@ -13,12 +13,9 @@ const updateActiveMixes = async (applicableMode) => {
 
   const errorLog = (err) => {
     if (process.env.NODE_ENV === "production") {
-      logger.error("Received error when attempting to update active mixes", {
-        indexMeta: true,
-        meta: {
-          message: err,
-        },
-      });
+      logger("server").error(
+        `Received error when attempting to update active mixes: ${err}`
+      );
     } else {
       console.error(err);
     }
@@ -105,7 +102,9 @@ const updateActiveMixes = async (applicableMode) => {
                                         if (
                                           process.env.NODE_ENV === "production"
                                         ) {
-                                          logger.log(updateSuccessStatement);
+                                          logger("server").info(
+                                            updateSuccessStatement
+                                          );
                                         } else {
                                           console.log(updateSuccessStatement);
                                         }
@@ -133,7 +132,7 @@ const updateActiveMixes = async (applicableMode) => {
                                     const deletingStatement = `Entry for mashup "${currentMashupTitle}" has been unpublished. Deleting now...`;
 
                                     if (process.env.NODE_ENV === "production") {
-                                      logger.log(deletingStatement);
+                                      logger("server").info(deletingStatement);
                                     } else {
                                       console.log(deletingStatement);
                                     }
@@ -146,7 +145,7 @@ const updateActiveMixes = async (applicableMode) => {
                                     const deletedStatement = `Entry for mashup "${currentMashupTitle}" has been deleted.`;
 
                                     if (process.env.NODE_ENV === "production") {
-                                      logger.log(deletedStatement);
+                                      logger("server").info(deletedStatement);
                                     } else {
                                       console.log(deletedStatement);
                                     }
@@ -168,7 +167,7 @@ const updateActiveMixes = async (applicableMode) => {
                                                   process.env.NODE_ENV ===
                                                   "production"
                                                 ) {
-                                                  logger.log(
+                                                  logger("server").info(
                                                     unpublishedStatement
                                                   );
                                                 } else {
@@ -189,7 +188,9 @@ const updateActiveMixes = async (applicableMode) => {
                                                 process.env.NODE_ENV ===
                                                 "production"
                                               ) {
-                                                logger.log(deletedStatement);
+                                                logger("server").info(
+                                                  deletedStatement
+                                                );
                                               } else {
                                                 console.log(deletedStatement);
                                               }

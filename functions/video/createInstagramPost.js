@@ -7,7 +7,7 @@ const {
   cleanUpRemainingFilesAfterVideo,
 } = require("../utils/cleanUpRemainingFilesAfterVideo");
 const removeAccents = require("remove-accents");
-const { logger } = require("../logger/initializeLogger");
+const { logger } = require("../../logger/logger");
 const imaps = require("imap-simple");
 const _ = require("lodash");
 const simpleParser = require("mailparser").simpleParser;
@@ -19,7 +19,7 @@ const createInstagramPost = async (videoTitle) => {
 
   const loggerLog = (statement) => {
     if (process.env.NODE_ENV === "production") {
-      logger.log(statement);
+      logger("server").info(statement);
     } else {
       console.log(statement);
     }

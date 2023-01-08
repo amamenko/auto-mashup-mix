@@ -1,5 +1,5 @@
 const { spawn } = require("child_process");
-const { logger } = require("../logger/initializeLogger");
+const { logger } = require("../../logger/logger");
 require("dotenv").config();
 
 module.exports = (cmd, args, onError, onFinish) => {
@@ -12,12 +12,7 @@ module.exports = (cmd, args, onError, onFinish) => {
 
   proc.on("error", (err) => {
     if (process.env.NODE_ENV === "production") {
-      logger.error("Received child process spawn error", {
-        indexMeta: true,
-        meta: {
-          message: err,
-        },
-      });
+      logger("server").error(`Received child process spawn error: ${err}`);
     } else {
       console.error(`Child process spawn error: ${err}`);
     }

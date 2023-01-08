@@ -5,7 +5,7 @@ const {
 } = require("../utils/cleanUpRemainingFilesAfterVideo");
 const { getUniqueOnly } = require("../utils/getUniqueOnly");
 const { findMatchingSongs } = require("./findMatchingSongs");
-const { logger } = require("../logger/initializeLogger");
+const { logger } = require("../../logger/logger");
 require("dotenv").config();
 
 const findMixable = async (applicableMode) => {
@@ -137,7 +137,9 @@ const findMixable = async (applicableMode) => {
                                             process.env.NODE_ENV ===
                                             "production"
                                           ) {
-                                            logger.log(updatedMixListStatement);
+                                            logger("server").info(
+                                              updatedMixListStatement
+                                            );
                                           } else {
                                             console.log(
                                               updatedMixListStatement

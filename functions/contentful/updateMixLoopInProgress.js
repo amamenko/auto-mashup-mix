@@ -1,5 +1,5 @@
 const contentfulManagement = require("contentful-management");
-const { logger } = require("../logger/initializeLogger");
+const { logger } = require("../../logger/logger");
 const { getMostRecentSaturday } = require("../utils/getMostRecentSaturday");
 require("dotenv").config();
 
@@ -13,14 +13,8 @@ const updateMixLoopInProgress = async (mixChartID, state) => {
 
   const errorLog = (err) => {
     if (process.env.NODE_ENV === "production") {
-      logger.error(
-        "Received error when attempting to update mix loop in progress",
-        {
-          indexMeta: true,
-          meta: {
-            message: err,
-          },
-        }
+      logger("server").error(
+        `Received error when attempting to update mix loop in progress: ${err}`
       );
     } else {
       console.error(err);
@@ -63,7 +57,7 @@ const updateMixLoopInProgress = async (mixChartID, state) => {
                     }`;
 
                     if (process.env.NODE_ENV === "production") {
-                      logger.log(successStatement);
+                      logger("server").info(successStatement);
                     } else {
                       console.log(successStatement);
                     }

@@ -2,7 +2,7 @@ const fs = require("fs");
 const axios = require("axios");
 const { mixTracks } = require("./mixTracks");
 const { delayExecution } = require("../utils/delayExecution");
-const { logger } = require("../logger/initializeLogger");
+const { logger } = require("../../logger/logger");
 require("dotenv").config();
 
 const normalizeInputsAndMix = async (instrumentals, vocals) => {
@@ -50,12 +50,7 @@ const normalizeInputsAndMix = async (instrumentals, vocals) => {
             "Received an error when attempting to download song entry audio. Terminating process. Output: ";
 
           if (process.env.NODE_ENV === "production") {
-            logger.error(errorStatement, {
-              indexMeta: true,
-              meta: {
-                message: err,
-              },
-            });
+            logger("server").error(`${errorStatement}: ${err}`);
           } else {
             console.error(errorStatement + err);
           }

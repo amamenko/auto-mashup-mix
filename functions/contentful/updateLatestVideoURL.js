@@ -1,6 +1,6 @@
 const contentfulManagement = require("contentful-management");
 const contentful = require("contentful");
-const { logger } = require("../logger/initializeLogger");
+const { logger } = require("../../logger/logger");
 require("dotenv").config();
 
 const updateLatestVideoURL = async (url, voxAccompanimentNames) => {
@@ -13,14 +13,8 @@ const updateLatestVideoURL = async (url, voxAccompanimentNames) => {
   if (url) {
     const errorLog = (err) => {
       if (process.env.NODE_ENV === "production") {
-        logger.error(
-          "Received error when attempting to update latest video URL entry",
-          {
-            indexMeta: true,
-            meta: {
-              message: err,
-            },
-          }
+        logger("server").error(
+          `Received error when attempting to update latest video URL entry: ${err}`
         );
       } else {
         console.error(err);
@@ -73,7 +67,7 @@ const updateLatestVideoURL = async (url, voxAccompanimentNames) => {
                                   const successStatement = `Successfully updated entry for latest YouTube video. The new latest URL is ${url}.`;
 
                                   if (process.env.NODE_ENV === "production") {
-                                    logger.log(successStatement);
+                                    logger("server").info(successStatement);
                                   } else {
                                     console.log(successStatement);
                                   }
@@ -98,7 +92,7 @@ const updateLatestVideoURL = async (url, voxAccompanimentNames) => {
       "No URL was provided. Can't update latest YouTube video entry's URL!";
 
     if (process.env.NODE_ENV === "production") {
-      logger.log(noURLStatement);
+      logger("server").info(noURLStatement);
     } else {
       console.log(noURLStatement);
     }

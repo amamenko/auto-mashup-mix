@@ -2,7 +2,7 @@ const { upload } = require("youtube-videos-uploader");
 const { checkFileExists } = require("../utils/checkFileExists");
 const { getVideoDescription } = require("./getVideoDescription");
 const { getVideoTitle } = require("./getVideoTitle");
-const { logger } = require("../logger/initializeLogger");
+const { logger } = require("../../logger/logger");
 const {
   cleanUpRemainingFilesAfterVideo,
 } = require("../utils/cleanUpRemainingFilesAfterVideo");
@@ -25,7 +25,7 @@ const uploadToYouTube = async (voxAccompanimentNames) => {
 
   const doesntExistStatementLog = (statement) => {
     if (process.env.NODE_ENV === "production") {
-      logger.log(statement);
+      logger("server").info(statement);
     } else {
       console.log(statement);
     }
@@ -40,7 +40,7 @@ const uploadToYouTube = async (voxAccompanimentNames) => {
               "Successfully uploaded video and associated thumbnail photo!";
 
             if (process.env.NODE_ENV === "production") {
-              logger.log(successStatement);
+              logger("server").info(successStatement);
             } else {
               console.log(successStatement);
             }
@@ -70,14 +70,8 @@ const uploadToYouTube = async (voxAccompanimentNames) => {
             );
           } catch (err) {
             if (process.env.NODE_ENV === "production") {
-              logger.error(
-                "Received error when attempting to upload to YouTube",
-                {
-                  indexMeta: true,
-                  meta: {
-                    message: err,
-                  },
-                }
+              logger("server").error(
+                `Received error when attempting to upload to YouTube: ${err}`
               );
             } else {
               console.error(err);

@@ -4,7 +4,7 @@ const contentful = require("contentful");
 const { generateSongImage } = require("../images/generateSongImage");
 const { delayExecution } = require("../utils/delayExecution");
 const { checkFileExists } = require("../utils/checkFileExists");
-const { logger } = require("../logger/initializeLogger");
+const { logger } = require("../../logger/logger");
 require("dotenv").config();
 
 const getMashupImagesAndAudio = async (currentMashup, i, lastIndex) => {
@@ -50,16 +50,10 @@ const getMashupImagesAndAudio = async (currentMashup, i, lastIndex) => {
 
               download.on("error", (err) => {
                 if (process.env.NODE_ENV === "production") {
-                  logger.error(
+                  logger("server").error(
                     `Received error when attempting to download audio from ${
                       "https:" + currentMashup.fields.mix.fields.file.url
-                    }`,
-                    {
-                      indexMeta: true,
-                      meta: {
-                        message: err,
-                      },
-                    }
+                    }: ${err}`
                   );
                 } else {
                   console.error(err);
@@ -81,14 +75,8 @@ const getMashupImagesAndAudio = async (currentMashup, i, lastIndex) => {
                   (err) => {
                     if (err) {
                       if (process.env.NODE_ENV === "production") {
-                        logger.error(
-                          "Received error when attempting to write to ./video_audio/times.txt",
-                          {
-                            indexMeta: true,
-                            meta: {
-                              message: err,
-                            },
-                          }
+                        logger("server").error(
+                          `Received error when attempting to write to ./video_audio/times.txt: ${err}`
                         );
                       } else {
                         console.error(err);
@@ -106,14 +94,8 @@ const getMashupImagesAndAudio = async (currentMashup, i, lastIndex) => {
                   (err) => {
                     if (err) {
                       if (process.env.NODE_ENV === "production") {
-                        logger.error(
-                          "Received error when attempting to write to allArtists.txt",
-                          {
-                            indexMeta: true,
-                            meta: {
-                              message: err,
-                            },
-                          }
+                        logger("server").error(
+                          `Received error when attempting to write to allArtists.txt: ${err}`
                         );
                       } else {
                         console.error(err);
@@ -140,7 +122,7 @@ const getMashupImagesAndAudio = async (currentMashup, i, lastIndex) => {
                     } of ${lastIndex + 1} - ${currentMashup.fields.title}`;
 
                     if (process.env.NODE_ENV === "production") {
-                      logger.log(successStatement);
+                      logger("server").info(successStatement);
                     } else {
                       console.log(successStatement);
                     }

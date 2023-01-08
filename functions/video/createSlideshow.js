@@ -1,6 +1,6 @@
 const fs = require("fs");
 const wget = require("wget-improved");
-const { logger } = require("../logger/initializeLogger");
+const { logger } = require("../../logger/logger");
 const spawnCommand = require("../utils/spawnCommand");
 const { readStartEndTimes } = require("../utils/readStartEndTimes");
 const { addGreenScreenBanners } = require("./addGreenScreenBanners");
@@ -14,12 +14,9 @@ const createSlideshow = (voxAccompanimentNames) => {
 
   download.on("error", (err) => {
     if (process.env.NODE_ENV === "production") {
-      logger.error("Received error when attempting to download intro video", {
-        indexMeta: true,
-        meta: {
-          message: err,
-        },
-      });
+      logger("server").error(
+        `Received error when attempting to download intro video: ${err}`
+      );
     } else {
       console.error(err);
     }
@@ -31,7 +28,7 @@ const createSlideshow = (voxAccompanimentNames) => {
     const doneStatement = "Done downloading intro video!";
 
     if (process.env.NODE_ENV === "production") {
-      logger.log(doneStatement);
+      logger("server").info(doneStatement);
     } else {
       console.log(doneStatement);
     }
@@ -75,14 +72,8 @@ const createSlideshow = (voxAccompanimentNames) => {
         (err) => {
           if (err) {
             if (process.env.NODE_ENV === "production") {
-              logger.error(
-                "Received error when attempting to write to description.txt",
-                {
-                  indexMeta: true,
-                  meta: {
-                    message: err,
-                  },
-                }
+              logger("server").error(
+                `Received error when attempting to write to description.txt: ${err}`
               );
             } else {
               console.error(err);
@@ -174,7 +165,7 @@ const createSlideshow = (voxAccompanimentNames) => {
         } seconds.`;
 
         if (process.env.NODE_ENV === "production") {
-          logger.log(successStatement);
+          logger("server").info(successStatement);
         } else {
           console.log(successStatement);
         }

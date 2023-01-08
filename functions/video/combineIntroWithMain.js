@@ -1,5 +1,5 @@
 const { checkExistsAndDelete } = require("../utils/checkExistsAndDelete");
-const { logger } = require("../logger/initializeLogger");
+const { logger } = require("../../logger/logger");
 const { uploadToYouTubeOAuth } = require("./uploadToYouTubeOAuth");
 const spawnCommand = require("../utils/spawnCommand");
 require("dotenv").config();
@@ -16,7 +16,7 @@ const combineIntroWithMain = (voxAccompanimentNames) => {
 
   const loggerLog = (statement) => {
     if (process.env.NODE_ENV === "production") {
-      logger.log(statement);
+      logger("server").info(statement);
     } else {
       console.log(statement);
     }

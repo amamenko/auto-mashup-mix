@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 const cron = require("node-cron");
-const { logger } = require("./functions/logger/initializeLogger");
+const { logger } = require("./logger/logger");
 const {
   checkMashupLoopInProgress,
 } = require("./functions/contentful/checkMashupLoopInProgress");
@@ -11,13 +11,10 @@ const {
   updateActiveMixes,
 } = require("./functions/contentful/updateActiveMixes");
 const { createVideo } = require("./functions/video/createVideo");
-const { onLoggerShutdown } = require("./functions/logger/onLoggerShutdown");
 const { delayExecution } = require("./functions/utils/delayExecution");
 require("dotenv").config();
 
 const port = process.env.PORT || 4000;
-
-onLoggerShutdown();
 
 // Get all mixable mashups in major key
 // Runs at 1 AM on Sundays
@@ -56,7 +53,7 @@ cron.schedule("0 7 * * 1", async () => {
   const restartingStatement = "Restarting server on purpose!";
 
   if (process.env.NODE_ENV === "production") {
-    logger.log(restartingStatement);
+    logger("server").info(restartingStatement);
   } else {
     console.log(restartingStatement);
   }
@@ -75,7 +72,7 @@ app.listen(port, () => {
   const portStatement = `Listening on port ${port}...`;
 
   if (process.env.NODE_ENV === "production") {
-    logger.log(portStatement);
+    logger("server").info(portStatement);
   } else {
     console.log(portStatement);
   }

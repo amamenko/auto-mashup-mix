@@ -4,7 +4,7 @@ const svg64 = require("svg64");
 const { checkFileExists } = require("../utils/checkFileExists");
 const { format, startOfWeek } = require("date-fns");
 const axios = require("axios");
-const { logger } = require("../logger/initializeLogger");
+const { logger } = require("../../logger/logger");
 require("dotenv").config();
 
 const svg = fs.readFileSync("./assets/automashup_logo.svg", "utf-8");
@@ -101,14 +101,8 @@ const generateSongImage = async (instrumentals, vocals, index) => {
     (err) => {
       if (err) {
         if (process.env.NODE_ENV === "production") {
-          logger.error(
-            "Received error when attempting to write to thumbnail_photos.txt",
-            {
-              indexMeta: true,
-              meta: {
-                message: err,
-              },
-            }
+          logger("server").error(
+            `Received error when attempting to write to thumbnail_photos.txt: ${err}`
           );
         } else {
           console.error(err);
