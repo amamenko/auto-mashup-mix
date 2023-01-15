@@ -48,14 +48,20 @@ const normalizeInputsAndMix = async (instrumentals, vocals) => {
         response.data.on("error", (err) => {
           const errorStatement =
             "Received an error when attempting to download song entry audio. Terminating process. Output: ";
-
           if (process.env.NODE_ENV === "production") {
             logger("server").error(`${errorStatement}: ${err}`);
           } else {
             console.error(errorStatement + err);
           }
+        });
 
-          return;
+        response.data.on("finish", () => {
+          const finishStatement = `Successfully downloaded song entry ${file.name} audio from ${file.url} to ${file.path}.`;
+          if (process.env.NODE_ENV === "production") {
+            logger("server").info(finishStatement);
+          } else {
+            console.log(finishStatement);
+          }
         });
       }
 
