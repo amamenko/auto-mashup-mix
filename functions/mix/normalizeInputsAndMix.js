@@ -55,7 +55,7 @@ const normalizeInputsAndMix = async (instrumentals, vocals) => {
           }
         });
 
-        response.data.on("finish", () => {
+        response.data.on("end", () => {
           const finishStatement = `Successfully downloaded song entry ${file.name} audio from ${file.url} to ${file.path}.`;
           if (process.env.NODE_ENV === "production") {
             logger("server").info(finishStatement);
