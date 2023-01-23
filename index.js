@@ -43,8 +43,8 @@ cron.schedule("*/15 8-23 * * 0", () => {
   checkMashupLoopInProgress();
 });
 
-// Loop next mashup position of current in-progress mix list (if any) every 2 minutes from 8 AM Sunday to 12 AM Monday
-cron.schedule("*/2 8-23 * * 0", async () => {
+// Loop next mashup position of current in-progress mix list (if any) every 3 minutes from 8 AM Sunday to 12 AM Monday
+cron.schedule("*/3 8-23 * * 0", async () => {
   createMashup();
 });
 
