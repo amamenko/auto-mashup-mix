@@ -10,9 +10,13 @@ const {
   updateMixLoopInProgress,
 } = require("../contentful/updateMixLoopInProgress");
 const { logger } = require("../../logger/logger");
+const { exec } = require("child_process");
 require("dotenv").config();
 
 const createMashup = async () => {
+  // Kill all leftover FFMPEG processes
+  exec("pkill -9 -f ffmpeg");
+
   // Access to Contentful Delivery API
   const client = contentful.createClient({
     space: process.env.CONTENTFUL_SPACE_ID,
