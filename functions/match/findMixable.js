@@ -110,12 +110,13 @@ const findMixable = async (applicableMode) => {
                               await environment
                                 .getEntry(mixListID)
                                 .then(async (entry) => {
+                                  const trimmedArr = matchNames.slice(0, 2612);
                                   entry.fields.mashups = {
-                                    "en-US": matchNames,
+                                    "en-US": trimmedArr,
                                   };
 
                                   entry.fields.total = {
-                                    "en-US": matchNames.length,
+                                    "en-US": trimmedArr.length,
                                   };
 
                                   entry.fields.loopInProgress = {
@@ -131,7 +132,7 @@ const findMixable = async (applicableMode) => {
                                       .getEntry(mixListID)
                                       .then((updatedEntry) => {
                                         updatedEntry.publish().then(() => {
-                                          const updatedMixListStatement = `${capitalizedMode} key mashups mix list has been updated! Total number of mixes: ${matchNames.length}`;
+                                          const updatedMixListStatement = `${capitalizedMode} key mashups mix list has been updated! Total number of mixes: ${trimmedArr.length}`;
 
                                           if (
                                             process.env.NODE_ENV ===
