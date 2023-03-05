@@ -6,15 +6,22 @@ const {
   checkMashupLoopInProgress,
 } = require("./functions/contentful/checkMashupLoopInProgress");
 const { findMixable } = require("./functions/match/findMixable");
-const { createMashup } = require("./functions/mix/createMashup");
 const {
   updateActiveMixes,
 } = require("./functions/contentful/updateActiveMixes");
 const { createVideo } = require("./functions/video/createVideo");
 const { delayExecution } = require("./functions/utils/delayExecution");
+const { LambdaClient } = require("@aws-sdk/client-lambda");
+const { triggerMashupLambda } = require("./functions/mix/triggerMashupLambda");
 require("dotenv").config();
 
 const port = process.env.PORT || 4000;
+
+const lambdaClient = new LambdaClient({
+  region: process.env.AWS_LAMBDA_REGION,
+  accessKeyId: process.env.AWS_LAMBDA_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_LAMBDA_SECRET_ACCESS_KEY,
+});
 
 // Get all mixable mashups in major key
 // Runs at 1 AM on Sundays
@@ -43,9 +50,9 @@ cron.schedule("*/15 8-23 * * 0", () => {
   checkMashupLoopInProgress();
 });
 
-// Loop next mashup position of current in-progress mix list (if any) every 3 minutes from 8 AM Sunday to 12 AM Monday
-cron.schedule("*/3 8-23 * * 0", async () => {
-  createMashup();
+// Loop next mashup position of current in-progress mix list (if any) every 2 minutes from 8 AM Sunday to 12 AM Monday
+cron.schedule("*/2 8-23 * * 0", async () => {
+  triggerMashupLambda(lambdaClient);
 });
 
 // Restart server at 7 AM on Mondays
