@@ -1,4 +1,5 @@
 const { InvokeCommand } = require("@aws-sdk/client-lambda");
+const { logger } = require("../../logger/logger");
 require("dotenv").config();
 
 const triggerMashupLambda = async (client) => {
