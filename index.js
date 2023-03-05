@@ -19,8 +19,10 @@ const port = process.env.PORT || 4000;
 
 const lambdaClient = new LambdaClient({
   region: process.env.AWS_LAMBDA_REGION,
-  accessKeyId: process.env.AWS_LAMBDA_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_LAMBDA_SECRET_ACCESS_KEY,
+  credentials: {
+    accessKeyId: process.env.AWS_LAMBDA_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_LAMBDA_SECRET_ACCESS_KEY,
+  },
 });
 
 // Get all mixable mashups in major key
