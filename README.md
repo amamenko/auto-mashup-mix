@@ -41,7 +41,7 @@ The Auto Mashup project is split into two repositories.
 The first repository ([https://github.com/amamenko/auto-mashup](https://github.com/amamenko/auto-mashup))
 handles the scraping of [Billboard](https://www.billboard.com/) charts for song details and ranking information, as well as individual song data acquisition (e.g. tempo, key, mode, song structure and timestamps, beat positions, instrumental/vocal stems, etc.) using data from [Spotify](https://www.npmjs.com/package/spotify-web-api-node), [Genius](https://www.npmjs.com/package/genius-lyrics-api), [YouTube](https://www.youtube.com/), and other sources. This data is then stored in [Contentful's Content Management System](https://www.contentful.com/).
 
-The second repository ([the one you are visiting right now](https://github.com/amamenko/auto-mashup-mix)) is responsible for hosting the front-end code of Auto Mashup's official website, [automashup.ml](https://www.automashup.ml/), using the data stored in Contentful to find mixable songs, creating those mashups, selecting non-blacklisted mashups and mixing them altogether, creating an associated video slideshow and uploading it to its [YouTube channel](https://www.youtube.com/channel/UCbjaDBiyXCqWGT4inY8LCmQ), and uploading the associated video thumbnail to the [@automaticmashup](https://www.instagram.com/automaticmashup/) Instagram page.
+The second repository ([the one you are visiting right now](https://github.com/amamenko/auto-mashup-mix)) is responsible for hosting the front-end code of Auto Mashup's official website, [auto-mashup.vercel.app](https://auto-mashup.vercel.app/), using the data stored in Contentful to find mixable songs, creating those mashups, selecting non-blacklisted mashups and mixing them altogether, creating an associated video slideshow and uploading it to its [YouTube channel](https://www.youtube.com/channel/UCbjaDBiyXCqWGT4inY8LCmQ), and uploading the associated video thumbnail to the [@automaticmashup](https://www.instagram.com/automaticmashup/) Instagram page.
 
 ## Functionality
 
@@ -56,7 +56,7 @@ The second repository ([the one you are visiting right now](https://github.com/a
 The basic functionality of this repository's code logic is:
 
 <strong>Front-End Code:</strong>
-* The [automashup.ml](https://www.automashup.ml/) website is built with [React](https://reactjs.org/) and is responsive.
+* [auto-mashup.vercel.app](https://auto-mashup.vercel.app/) is a responsive website built with [React](https://reactjs.org/).
 * The burger menu of the site was created with the help of the library [react-burger-menu](https://www.npmjs.com/package/react-burger-menu).
 * The most recent [Auto Mashup YouTube video](https://www.youtube.com/channel/UCbjaDBiyXCqWGT4inY8LCmQ) URL is updated automatically when a new video is posted in Contentful with Contentful's [Content Management API](https://www.npmjs.com/package/contentful-management). Upon app mount, a request is made via Contentful's [Content Delivery API](https://www.npmjs.com/package/contentful) to get the YouTube URL. This URL is then used to embed the YouTube video onto the homepage of the website with the library [react-player](https://www.npmjs.com/package/react-player).
 
@@ -66,6 +66,7 @@ The basic functionality of this repository's code logic is:
 * Remove mashup entries and associated audio assets if either one or both of the instrumental or vocal song entries have been deleted from Contentful due to not being found on any Billboard charts.
 
 <strong>Create Mashups:</strong>
+* Mashups are created within a custom [Dockerized AWS Lambda function](https://github.com/amamenko/lambda-automashup-mix-docker) written in TypeScript. The AWS Lambda Docker image is bundled with Node 18 and FFmpeg/FFprobe binary files.
 * If both instrumental and vocal entries exist, both audio assets are downloaded from Contentful and mixed using [fluent-ffmpeg](https://www.npmjs.com/package/fluent-ffmpeg). A [complex filter](https://github.com/fluent-ffmpeg/node-fluent-ffmpeg#complexfilterfilters-map-set-complex-filtergraph) is used to [trim](https://ffmpeg.org/ffmpeg-filters.html#atrim) and [delay](https://ffmpeg.org/ffmpeg-filters.html#adelay) the matching vocal sections to [match the beats](https://en.wikipedia.org/wiki/Beatmatching) of the appropriate associated sections of the instrumental track.
 * The [pitch](https://en.wikipedia.org/wiki/Pitch_(music)) and [tempo](https://en.wikipedia.org/wiki/Tempo) of the vocal audio are manipulated using [FFMPEG's](https://ffmpeg.org/) [rubberband](http://underpop.online.fr/f/ffmpeg/help/rubberband.htm.gz) feature to match the instrumental track using a predetermined key-scale and tempo-scale factor. This factor is also used to adjust the [beat positions](https://essentia.upf.edu/reference/std_BeatTrackerMultiFeature.html) of the vocal track identified with [essentia.js](https://mtg.github.io/essentia.js/).
 * Audio inputs are normalized with FFMPEG's [loudnorm](https://ffmpeg.org/ffmpeg-filters.html#loudnorm) filter to have similar audio volumes.
@@ -94,7 +95,7 @@ The basic functionality of this repository's code logic is:
 
 ## Deployment
 
-Server deployed via [AWS EC2](https://aws.amazon.com/ec2/) instance. Client-side website deployed with [Vercel](https://vercel.com/). Custom domain from [Freenom](https://www.freenom.com/) with DNS routing by [Cloudflare](https://www.cloudflare.com/).
+Server deployed via [AWS EC2](https://aws.amazon.com/ec2/) instance. Client-side website deployed with [Vercel](https://vercel.com/).
 
 
 <!-- LICENSE -->
@@ -118,6 +119,7 @@ Project Link: [https://github.com/amamenko/auto-mashup-mix](https://github.com/a
 * [Billboard](https://www.billboard.com/)
 * [instagram-web-api](https://www.npmjs.com/package/instagram-web-api)
 * [Contentful](https://www.contentful.com/)
+* [AWS](https://aws.amazon.com/)
 * [node-cron](https://www.npmjs.com/package/node-cron)
 * [FFMPEG](https://ffmpeg.org/)
 * [fluent-ffmpeg](https://www.npmjs.com/package/fluent-ffmpeg)
