@@ -110,7 +110,7 @@ const findMixable = async (applicableMode) => {
                               await environment
                                 .getEntry(mixListID)
                                 .then(async (entry) => {
-                                  const trimmedArr = matchNames.slice(0, 2612);
+                                  const trimmedArr = matchNames.slice(0, 2605);
                                   entry.fields.mashups = {
                                     "en-US": trimmedArr,
                                   };
@@ -159,7 +159,8 @@ const findMixable = async (applicableMode) => {
           }
         }
       }
-    });
+    })
+    .catch((e) => console.error(e));
 };
 
 module.exports = { findMixable };
